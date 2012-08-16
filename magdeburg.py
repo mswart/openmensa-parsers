@@ -20,6 +20,9 @@ def parse_url(url):
 	output = Document()
 	openmensa = output.createElement('openmensa')
 	openmensa.setAttribute('version', '2.0')
+	openmensa.setAttribute('xmlns',"http://openmensa.org/open-mensa-v2")
+	openmensa.setAttribute('xmlns:xsi', "http://www.w3.org/2001/XMLSchema-instance")
+	openmensa.setAttribute('xsi:schemaLocation', "http://openmensa.org/open-mensa-v2 http://openmensa.org/open-mensa-v2.xsd")
 	output.appendChild(openmensa)
 	canteen = output.createElement('canteen')
 	openmensa.appendChild(canteen)
@@ -32,22 +35,16 @@ def parse_url(url):
 				break
 		if not table: continue
 		day = output.createElement('day')
-		day.setAttribute('date', '{}-{}-{}'.format(date[6:10], date[3:4], date[0:1]))
+		day.setAttribute('date', '{}-{}-{}'.format(date[6:10], date[3:5], date[0:2]))
 		category = output.createElement('category')
 		category.setAttribute('name', 'Hauptgerichte')
 		for tr in table.tbody.find_all('tr'):
 			if len(tr) != 3 : continue # no meal
 			strings = list(tr.contents[0].strings)
-			name = strings[0]
 			meal = output.createElement('meal')
-			meal.setAttribute('name', name)
-			prices = {}
-			for k, v in enumerate(strings[-1].split('|')):
-				prices[roles[k]] = v.strip().replace(',', '.')	
-				price = output.createElement('price')
-				price.setAttribute('priveRole', roles[k])
-				price.appendChild(output.createTextNode(v.strip().replace(',', '.')))
-				meal.appendChild(price)
+			name = output.createElement('name')
+			name.appendChild(output.createTextNode(strings[0]))
+			meal.appendChild(name)
 			# notes:
 			notes = []
 			for img in tr.contents[1].find_all('img'):
@@ -59,7 +56,14 @@ def parse_url(url):
 				note = output.createElement('note')
 				note.appendChild(output.createTextNode(noteText))
 				meal.appendChild(note)
+			prices = {}
+			for k, v in enumerate(strings[-1].split('|')):
+				prices[roles[k]] = v.strip().replace(',', '.')	
+				price = output.createElement('price')
+				price.setAttribute('role', roles[k])
+				price.appendChild(output.createTextNode(v.strip().replace(',', '.')))
+				meal.appendChild(price)
 			category.appendChild(meal)
 		day.appendChild(category)
 		canteen.appendChild(day)
-	return openmensa.toprettyxml(indent='  ')
+	return '<?xml version="1.0" encoding="UTF-8"?>\n' + openmensa.toprettyxml(indent='  ')
