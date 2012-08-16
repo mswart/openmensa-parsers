@@ -7,11 +7,12 @@ providers = {
 		'handler': magdeburg_parse,
 		'prefix': 'http://www.studentenwerk-magdeburg.de/mensen-cafeterien/',
 		'canteens': {
-			'magdeburg-campus-unten': 'mensa-unicampus/speiseplan-unten/',
-			'magdeburg-campus-oben': 'mensa-unicampus/speiseplan-oben',
+			'ovgu-unten': 'mensa-unicampus/speiseplan-unten/',
+			'ovgu-oben': 'mensa-unicampus/speiseplan-oben/',
+			'herrenkrug': 'mensa-herrenkrug/speiseplan/',
 			'stendal': 'mensa-stendal/speiseplan/',
 			'halberstadt': 'mensa-halberstadt/speiseplan/',
-			'Wernigerode': 'mensa-wernigerode/speiseplan/'
+			'wernigerode': 'mensa-wernigerode/speiseplan/'
 		}
 	}
 }
