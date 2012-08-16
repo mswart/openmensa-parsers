@@ -31,7 +31,7 @@ def parse_week(url, canteen, output):
 				day.setAttribute('date', '{}-{}-{}'.format(date[6:10], date[3:5], date[0:2]))
 				continue
 		if not line.startswith('>'):
-			if day:
+			if day and date is True:
 				canteen.appendChild(day)
 			date = None
 			continue
@@ -60,6 +60,7 @@ def parse_week(url, canteen, output):
 			meal.appendChild(price)
 		category.appendChild(meal)
 		day.appendChild(category)
+		date = True
 
 def parse_url(url):
 	output = Document()
