@@ -7,7 +7,12 @@ from xml.dom.minidom import Document
 day_regex = re.compile('(?P<date>\d{2}\.\d{2}\.\d{4})')
 extra_regex = re.compile('\((?P<number>\d+)\)')
 legend_regex = re.compile('(?P<number>\d+)\) (?P<value>\w+(\s+\w+)*)')
-roles = ['student', 'employee', 'other']
+def rolesGenerator():
+	yield 'student'
+	yield 'employee'
+	while True:
+		yield 'other'
+
 
 def parse_url(url):
 	content = urlopen(url).read()
