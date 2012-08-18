@@ -39,7 +39,6 @@ class OpenMensaCanteen():
 			prices[next(priceRoles)] = price
 		return prices
 
-
 	def addMeal(self, date, category, name, notes = [],
 			prices = {}, priceRoles = None):
 		""" This is the main helper, it adds a meal to the
@@ -138,6 +137,6 @@ class OpenMensaCanteen():
 		for role in prices:
 			price = output.createElement('price')
 			price.setAttribute('role', role)
-			price.appendChild(output.createTextNode(prices[role]))
+			price.appendChild(output.createTextNode(prices[role].strip().replace(',', '.')))
 			meal.appendChild(price)
 		return meal
