@@ -27,12 +27,21 @@ class OpenMensaCanteen():
 			Currently only DD.MM.YYYY is supported additional."""
 		match = cls.date_format.match(datestr)
 		if not match:
-			raise ValueError('unsupported date format: DD.MM.YYYY or YYYY-MM-DD')
+			raise ValueError('unsupported date format: DD.MM.YYYY or YYYY-MM-DD needed')
 		# convert DD.MM.YYYY into YYYY-MM-DD
 		return '-'.join(reversed(datestr.split('.')))
 
+	@staticmethod
+	def buildPrices(priceList, roles):
+		prices = {}
+		priceRoles = iter(roles())
+		for price in priceList:
+			prices[next(priceRoles)] = price
+		return prices
 
-	def addMeal(self, date, category, name, notes = [], prices = {}):
+
+	def addMeal(self, date, category, name, notes = [],
+			prices = {}, priceRoles = None):
 		""" This is the main helper, it adds a meal to the
 			canteen. The following data are needed:
 			* date datestr: Date for the meal (see convertDate)
@@ -49,12 +58,15 @@ class OpenMensaCanteen():
 		date = self.convertDate(date) # ensure correct date format
 		# ensure we have an entry for this date
 		if date not in self._days:
-			self._days[date] = []
+			self._days[date] = {}
 		# ensure we have a category element for this category
-		if category not in self._days[category]:
-			self._days[category] = category
+		if category not in self._days[date]:
+			self._days[date][category] = []
+		# convert prices if needed:
+		if priceRoles:
+			prices = self.buildPrices(prices, priceRoles)
 		# add meal into category:
-		self._days[category].append((name, notes, prices))
+		self._days[date][category].append((name, notes, prices))
 
 	def setDayClosed(self, date):
 		""" Stores that this cateen is closed on $date."""
@@ -63,6 +75,12 @@ class OpenMensaCanteen():
 	def toXMLFeed(self):
 		""" Convert this cateen information into string
 			which is a valid OpenMensa v2 xml feed"""
+		feed, document = self.createDocument()
+		feed.appendChild(self.toTag(document))
+		return '<?xml version="1.0" encoding="UTF-8"?>\n' + feed.toprettyxml(indent='  ')
+
+	@staticmethod
+	def createDocument():
 		# create xml document
 		output = Document()
 		# build main openmensa element with correct xml namespaces
@@ -71,9 +89,11 @@ class OpenMensaCanteen():
 		openmensa.setAttribute('xmlns', 'http://openmensa.org/open-mensa-v2')
 		openmensa.setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
 		openmensa.setAttribute('xsi:schemaLocation', 'http://openmensa.org/open-mensa-v2 http://openmensa.org/open-mensa-v2.xsd')
+		return openmensa, output
+
+	def toTag(self, output):
 		# create canteen tag, which represents our data
 		canteen = output.createElement('canteen')
-		openmensa.appendChild(canteen)
 		# iterate above all days (sorted):
 		for date in sorted(self._days.keys()):
 			day = output.createElement('day')
@@ -84,33 +104,40 @@ class OpenMensaCanteen():
 				canteen.appendChild(day)
 				continue
 			# canteen is open
-			haveCategoriesWithMeal = False # don't add days without content
 			for categoryname in self._days[date]:
-				# skip empty categories:
-				if len(self._days[date][categoryname]) < 1:
-					continue
-				category = output.createElement('category')
-				category.setAttribute('name', categoryname)
-				for name, notes, prices in self._days[categoryname]:
-					meal = output.createElement('meal')
-					# add name
-					nametag = output.createElement('name')
-					nametag.appendChild(document.createTextNode(name))
-					meal.appendChild(nametag)
-					# add notes:
-					for note in notes:
-						notetag = output.createElement('note')
-						notetag.appendChild(document.createTextNode(note))
-						meal.appendChild(notetag)
-					# add prices:
-					for role in prices:
-						price = output.createElement('price')
-						price.setAttribute('role', role)
-						price.appendChild(document.createTextNode(prices[price]))
-						meal.appendChild(price)
-					category.appendChild(meal)
-				haveCategoriesWithMeal = True
-				day.appendChild(category)
-			if haveCategoriesWithMeal:
-				canteen.appendChild(day)
+				day.appendChild(self.buildCategoryTag(
+					categoryname, self._days[date][categoryname], output))
+			canteen.appendChild(day)
+		return canteen
 
+	@classmethod
+	def buildCategoryTag(cls, name, data, output):
+		# skip empty categories:
+		if len(data) < 1:
+			return None
+		category = output.createElement('category')
+		category.setAttribute('name', name)
+		for meal in data:
+			category.appendChild(cls.buildMealTag(meal, output))
+		return category
+
+	@classmethod
+	def buildMealTag(cls, mealData, output):
+		name, notes, prices = mealData
+		meal = output.createElement('meal')
+		# add name
+		nametag = output.createElement('name')
+		nametag.appendChild(output.createTextNode(name))
+		meal.appendChild(nametag)
+		# add notes:
+		for note in notes:
+			notetag = output.createElement('note')
+			notetag.appendChild(output.createTextNode(note))
+			meal.appendChild(notetag)
+		# add prices:
+		for role in prices:
+			price = output.createElement('price')
+			price.setAttribute('role', role)
+			price.appendChild(output.createTextNode(prices[role]))
+			meal.appendChild(price)
+		return meal
