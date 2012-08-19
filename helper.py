@@ -71,6 +71,15 @@ class OpenMensaCanteen():
 		""" Stores that this cateen is closed on $date."""
 		self._days[self.convertDate(date)] = False
 
+	def clearDay(self, date):
+		try:
+			del self._days[self.convertDate(date)]
+		except KeyError:
+			pass
+
+	def dayCount(self):
+		return len(self._days)
+
 	def toXMLFeed(self):
 		""" Convert this cateen information into string
 			which is a valid OpenMensa v2 xml feed"""
