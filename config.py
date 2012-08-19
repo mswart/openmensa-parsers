@@ -1,6 +1,7 @@
 from magdeburg import parse_url as magdeburg_parse
 from hannover import parse_url as hannover_parse
 from karlsruhe import parse_url as karlsruhe_parse
+from leipzig import parse_url as leipzig_parse
 
 providers = {
 	'magdeburg': {
@@ -43,6 +44,23 @@ providers = {
 			'schloss-gottesaue': ('', ('canteen_place_4',)),
 			'tiefenbronner-strasse': ('', ('canteen_place_5',)),
 			'holzgartenstrasse': ('', ('canteen_place_6',))
+		}
+	},
+	'leipzig': {
+		'handler': leipzig_parse,
+		'prefix': 'http://www.studentenwerk-leipzig.de/mensen-und-cafeterien/speiseplan/m/meals.php?canteen=',
+		'canteens': {
+			'dittrichring': '153',
+			'koburger-straße': '121',
+			'philipp-rosenthal-strasse': '127',
+			'waechterstrasse': '129',
+			'academica': '118',
+			'am-park': '106',
+			'am-elsterbecken': '115',
+			'liebigstrasse': '162',
+			'peterssteinweg': '111',
+			'schoenauer-strasse': '140',
+			'tierklinik': '170'
 		}
 	}
 }
