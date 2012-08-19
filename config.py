@@ -2,6 +2,7 @@ from magdeburg import parse_url as magdeburg_parse
 from hannover import parse_url as hannover_parse
 from karlsruhe import parse_url as karlsruhe_parse
 from leipzig import parse_url as leipzig_parse
+from dresden import parse_url as dresden_parse
 
 providers = {
 	'magdeburg': {
@@ -61,6 +62,28 @@ providers = {
 			'peterssteinweg': '111',
 			'schoenauer-strasse': '140',
 			'tierklinik': '170'
+		}
+	},
+	'dresden': {
+		'handler': dresden_parse,
+		'prefix': 'http://www.studentenwerk-dresden.de/mensen/speiseplan/',
+		'canteens': {
+			'neue-mensa': 'neue-mensa',
+			'alte-mensa': 'alte-mensa',
+			'reichenbachstrasse': 'mensa-reichenbachstrasse',
+			'mensologie': 'mensologie',
+			'siedepunkt': 'mensa-siedepunkt',
+			'tellerrandt': 'mensa-tellerrandt',
+			'palucca-schule': 'mensa-palucca-schule',
+			'blau': 'mensa-blau',
+			'stimm-gabel': 'mensa-stimm-gabel',
+			'johannstadt': 'mensa-johannstadt',
+			'u-boot': 'biomensa-u-boot',
+			'zittau': 'mensa-zittau',
+			'haus-vii': 'mensa-haus-vii',
+			'goerlitz': 'mensa-goerlitz',
+			'sport': 'mensa-sport',
+			'kreuzgymnasium': 'mensa-kreuzgymnasium',
 		}
 	}
 }
