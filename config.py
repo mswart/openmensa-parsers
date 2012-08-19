@@ -1,5 +1,6 @@
 from magdeburg import parse_url as magdeburg_parse
 from hannover import parse_url as hannover_parse
+from karlsruhe import parse_url as karlsruhe_parse
 
 providers = {
 	'magdeburg': {
@@ -30,6 +31,18 @@ providers = {
 			'kurt-schwitters-forum': '7',
 			'blumhardtstrasse': '14',
 			'herrenhausen': '12',
+		}
+	},
+	'karlsruhe': {
+		'handler': karlsruhe_parse,
+		'prefix': 'http://www.studentenwerk-karlsruhe.de/de/essen/',
+		'canteens': {
+			'adenauerring': ('', ('canteen_place_1',)),
+			'moltke': ('', ('canteen_place_2',)),
+			'erzbergerstrasse': ('', ('canteen_place_3',)),
+			'schloss-gottesaue': ('', ('canteen_place_4',)),
+			'tiefenbronner-strasse': ('', ('canteen_place_5',)),
+			'holzgartenstrasse': ('', ('canteen_place_6',))
 		}
 	}
 }
