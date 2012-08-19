@@ -1,5 +1,5 @@
 #!python3
-from config import providers
+from config import providers, parse
 import re
 
 canteen_request = re.compile('/(?P<provider>\w+)/(?P<canteen>[-_a-zA-Z0-9]+).xml')
@@ -19,10 +19,8 @@ def handler(eniron, start_response):
 	elif match.group('canteen') not in providers[match.group('provider')]['canteens']:
 		start_response('404 Canteen not found', [])
 	else:
-		provider = providers[match.group('provider')]
-		canteen = provider['canteens'][match.group('canteen')]
 		try:
-			content = provider['handler'](provider['prefix'] + canteen)
+			content = parse(match.group('provider'), match.group('canteen'))
 		except Exception as e:
 			print(e)
 			start_response('500 Internal Server Error', [])

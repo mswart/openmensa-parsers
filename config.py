@@ -33,3 +33,16 @@ providers = {
 		}
 	}
 }
+
+
+def parse(provider, canteen):
+	if provider not in providers:
+		return False
+	provider = providers[provider]
+	if canteen not in provider['canteens']:
+		return False
+	canteen = provider['canteens'][canteen]
+	if type(canteen) is tuple:
+		return provider['handler'](provider['prefix'] + canteen[0], *canteen[1])
+	else:
+		return provider['handler'](provider['prefix'] + canteen)
