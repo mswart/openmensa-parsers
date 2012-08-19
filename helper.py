@@ -10,8 +10,21 @@ class OpenMensaCanteen():
 		OpenMensa v2 xml feed string. """
 
 	# regex to parse and validate date formats:
-	date_format = re.compile("^(\d{4}-\d{2}-\d{2}|\d{2}\.\d{2}\.\d{4})$")
-
+	date_format = re.compile("^(\d{4}-\d{2}-\d{2}|\d{2}\.\d{2}\.\d{4}|(?P<day>\d{2})\. ?(?P<month>\w+) ?(?P<year>\d{4}))$")
+	month_names = {
+		'Januar': '01',
+		'Februar': '02',
+		'März': '03',
+		'April': '04',
+		'Mai': '05',
+		'Juni': '06',
+		'Juli': '07',
+		'August': '08',
+		'September': '09',
+		'Oktober': '10',
+		'November': '11',
+		'Dezember': '12'
+	}
 
 	def __init__(self):
 		""" Creates new instance and prepares interal data
@@ -27,8 +40,15 @@ class OpenMensaCanteen():
 			Currently only DD.MM.YYYY is supported additional."""
 		match = cls.date_format.match(datestr)
 		if not match:
-			raise ValueError('unsupported date format: DD.MM.YYYY or YYYY-MM-DD needed')
+			raise ValueError('unsupported date format: DD.MM.YYYY, YYYY-MM-DD, DD. Month YYYY needed')
 		# convert DD.MM.YYYY into YYYY-MM-DD
+		if match.group('month'):
+			if not match.group('month') in cls.month_names:
+				raise ValueError('unknown month names')
+			return '{}-{}-{}'.format(
+				match.group('year'),
+				cls.month_names[match.group('month')],
+				match.group('day'))
 		return '-'.join(reversed(datestr.split('.')))
 
 	@staticmethod
