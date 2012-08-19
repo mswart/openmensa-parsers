@@ -21,6 +21,8 @@ def parse_week(url, canteen):
 			canteen.setDayClosed(date)
 			continue
 		for meal_tr in day_table.tbody.children:
+			if len(meal_tr.find_all('a') or []) < 1:
+				continue
 			name = meal_tr.td.text
 			if ':' in name:
 				category, name = name.split(': ', 1)
@@ -30,7 +32,7 @@ def parse_week(url, canteen):
 			for img in meal_tr.find_all('img'):
 				notes.append(img['title'])
 			canteen.addMeal(date, category, name, notes,
-				price_regex.findall(meal_tr.text), rolesGenerator)
+				price_regex.findall(meal_tr.contents[2].text), rolesGenerator)
 
 def parse_url(url):
 	canteen = OpenMensaCanteen()
