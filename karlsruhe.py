@@ -13,8 +13,7 @@ def rolesGenerator():
 	yield 'student'
 	yield 'other'
 	yield 'employee'
-	while True:
-		yield 'other'
+	yield 'pupil'
 
 
 def parse_week(canteen, url, place_class=None):
