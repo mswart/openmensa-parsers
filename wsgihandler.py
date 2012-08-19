@@ -12,8 +12,8 @@ def handler(eniron, start_response):
 		uri = uri[len(prefix):]
 	match = canteen_request.match(uri)
 	if not match:
-		start_response("200 Wrong Path", [("Content-type", 'application/xml; encoding=utf8')])
-		return ['<xml version="1.0"><test/></xml>']
+		start_response("404 Wrong Path", [("Content-type", 'application/xml; charset=utf-8')])
+		return ['<xml version="1.0"><info>{provider}/{canteen}.xml</info></xml>']
 	elif match.group('provider') not in providers:
 		start_response('404 Provider not found', [])
 	elif match.group('canteen') not in providers[match.group('provider')]['canteens']:
@@ -26,5 +26,5 @@ def handler(eniron, start_response):
 			start_response('500 Internal Server Error', [])
 			return
 		content = content.encode('utf8')
-		start_response('200 OK', [('Content-Type', 'application/xml; coding=utf-8l'), ('Content-length', str(len(content)))])
+		start_response('200 OK', [('Content-Type', 'application/xml; charset=utf-8'), ('Content-length', str(len(content)))])
 		return (content,)
