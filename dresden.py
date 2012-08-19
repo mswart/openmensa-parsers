@@ -28,6 +28,8 @@ def parse_week(url, canteen):
 				category, name = name.split(': ', 1)
 			else:
 				category = 'Angebote'
+			if len(name) > 200:
+				name = name[:200] + ' ...'
 			notes = []
 			for img in meal_tr.find_all('img'):
 				notes.append(img['title'])
