@@ -30,13 +30,12 @@ def parse_url(url):
 		for meal_article in day_div.find_all('article', 'menu'):
 			name = meal_article.find('div', 'title').text
 			category = meal_article.find('div', 'desc').text
-			notes = [ v['title'] for v in meal_article.find_all('div', 'theicon') ]
+			notes = [ v['title'] for v in meal_article.find_all('div', 'theicon') if v['title'] ]
 			if meal_article.find('div', 'additive'):
 				notes += [ v[0] for v in extra_regex.findall(meal_article.find('div', 'additive').text) ]
-				print(notes)
 			price_div = meal_article.find('div', 'price')
 			prices = {}
-			for v, r in ( ('default', 'student'), ('bed', 'employee'), ('guest', 'guest') ):
+			for v, r in ( ('default', 'student'), ('bed', 'employee'), ('guest', 'other') ):
 				price = price_regex.search(price_div['data-' + v])
 				if price:
 					prices[r] = price.group('price')
