@@ -3,6 +3,7 @@ from hannover import parse_url as hannover_parse
 from karlsruhe import parse_url as karlsruhe_parse
 from leipzig import parse_url as leipzig_parse
 from dresden import parse_url as dresden_parse
+from aachen import parse_url as aachen_parse 
 
 providers = {
 	'magdeburg': {
@@ -85,7 +86,21 @@ providers = {
 			'sport': 'mensa-sport',
 			'kreuzgymnasium': 'mensa-kreuzgymnasium',
 		}
-	}
+	},
+	'aachen': {
+		'handler': aachen_parse,
+		'prefix': 'http://speiseplan.studentenwerk-aachen.de/mensa/',
+		'canteens': {
+			'zeltmensa': 'wo_mensa1_turm.std.php',
+			'templergraben': 'wo_bistro_templer.std.php',
+			'ahorn': 'wo_mensa_ahorn.std.php',
+			'vita': 'wo_mensa_vita.std.php',
+			'bayernallee': 'wo_mensa3_bayern.std.php',
+			'eups': 'wo_mensa_eups.std.php',
+			'goethe': 'wo_gastro_goethe.std.php',
+			'juelich': 'wo_mensa4_juelich.std.php'
+		},
+	},
 }
 
 
