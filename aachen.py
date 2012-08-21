@@ -8,6 +8,7 @@ import datetime
 from helper import OpenMensaCanteen
 
 day_regex = re.compile('(?P<date>\d{2}\. ?\d{2}\. ?\d{4})')
+day_range_regex = re.compile('(?P<from>\d{2}\.\d{2}).* (?P<to>\d{2}\.\d{2}\.(?P<year>\d{4}))')
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
 extra_regex = re.compile('\((?P<extra>[0-9,]+)\)')
 legend_regex = re.compile('\((\d+)\) (\w+(\s|\w)*)')
@@ -21,12 +22,27 @@ def parse_week(url, data, canteen):
 	# parse extra/notes legend
 	legends = {}
 	legendsData = document.find('table', 'zusatz_std')
-	if legendsData:
+	if legendsData:				
 		legends = { int(v[0]): v[1] for v in legend_regex.findall(legendsData.text.replace('\xa0',' ')) }
+	data = document.find('table', 'wo_std')
+	if not data:
+		message = document.find('div', 'Meldung_std')
+		if message:
+			m = day_range_regex.search(message.text)
+			if m:
+				fromDate = datetime.datetime.strptime(m.group('from') + '.' + m.group('year'), '%d.%m.%Y')
+				toDate = datetime.datetime.strptime(m.group('to'), '%d.%m.%Y')
+				while fromDate <= toDate:
+					canteen.setDayClosed(fromDate.strftime('%Y-%m-%d'))
+					fromDate += datetime.date.resolution
+		return
 	# iterator about all rows of the table
 	rowIter = iter(document.find('table', 'wo_std').find_all('tr'))
 	# extra category names fro th's of first row
-	categories = list(map(lambda v: v.text.strip(), next(rowIter).find_all('th')))[1:]
+	headRow = next(rowIter)
+	for br in headRow.find_all('br'):
+		br.replace_with(document.new_string(' - '))
+	categories = list(map(lambda v: (v.text.strip() + '#').replace(' -#', '#')[:-1] , headRow.find_all('th')))[1:]
 	try:
 		while True:
 			tr = next(rowIter) # meal row
@@ -48,9 +64,9 @@ def parse_week(url, data, canteen):
 					# from notes from name
 					name = extra_regex.sub('', name).replace('\xa0',' ').replace('  ', ' ').strip()
 					# extract price
-					price = float(price_regex.search(v).group('price').replace(',', '.'))
+					price = float(price_regex.search(next(colIter).text).group('price').replace(',', '.'))
 					prices = {
-						'students': str(price),
+						'student': str(price),
 						'other': str(price + 1.5)
 					}
 					canteen.addMeal(date, next(categoriesIterator), name, notes, prices)
