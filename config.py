@@ -3,7 +3,8 @@ from hannover import parse_url as hannover_parse
 from karlsruhe import parse_url as karlsruhe_parse
 from leipzig import parse_url as leipzig_parse
 from dresden import parse_url as dresden_parse
-from aachen import parse_url as aachen_parse 
+from aachen import parse_url as aachen_parse
+from wuerzburg import parse_url as wuerzburg_parse
 
 providers = {
 	'magdeburg': {
@@ -99,6 +100,22 @@ providers = {
 			'eups': 'wo_mensa_eups.std.php',
 			'goethe': 'wo_gastro_goethe.std.php',
 			'juelich': 'wo_mensa4_juelich.std.php'
+		},
+	},
+	'wuerzburg': {
+		'handler': wuerzburg_parse,
+		'prefix': 'http://www.studentenwerk-wuerzburg.de/essen-trinken/speiseplaene/plan/show/',
+		'canteens': {
+			'austrasse': 'austrasse-bamberg.html',
+			'burse': 'burse-wuerzburg.html',
+			'feldkirchenstrasse': 'feldkirchenstrasse-bamberg.html',
+			'frankenstube': 'frankenstube-wuerzburg.html',
+			'hubland': 'mensa-am-hubland-wuerzburg.html',
+			'studentenhaus': 'mensa-am-studentenhaus.html',
+			'aschaffenburg': 'mensa-aschaffenburg',
+			'augenklinik': 'mensa-augenklinik-wuerzburg.html',
+			'josef-schneider': 'mensa-josef-schneider-strasse-wuerzburg.html',
+			'schweinfurt': 'mensa-schweinfurt.html',
 		},
 	},
 }
