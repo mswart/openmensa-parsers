@@ -5,6 +5,7 @@ from leipzig import parse_url as leipzig_parse
 from dresden import parse_url as dresden_parse
 from aachen import parse_url as aachen_parse
 from wuerzburg import parse_url as wuerzburg_parse
+from marburg import parse_url as marburg_parse
 
 providers = {
 	'magdeburg': {
@@ -117,6 +118,18 @@ providers = {
 			'josef-schneider': 'mensa-josef-schneider-strasse-wuerzburg.html',
 			'schweinfurt': 'mensa-schweinfurt.html',
 		},
+	},
+	'marburg': {
+		'handler': marburg_parse,
+		'prefix': 'http://www.studentenwerk-marburg.de/essen-trinken/speiseplan/',
+		'canteens': {
+			'bistro': ('', 'Speiseplan.*Bistro', 'diese-woche-bistro.html', 'naechste-woche-bistro.html'),
+			'mosDiner': ('', 'Speiseplan.*Diner', 'diese-woche-mos-diner.html'),
+			'erlenring': ('', 'Mensa Erlenring', 'diese-woche-mensa-erlenring-und-lahnberge.html',
+					'naechste-woche-mensa-erlenring-und-lahnberge.html' ),
+			'lahnberge': ('', 'Mensa Lahnberge', 'diese-woche-mensa-erlenring-und-lahnberge.html',
+					'naechste-woche-mensa-erlenring-und-lahnberge.html' ),
+		}
 	},
 }
 
