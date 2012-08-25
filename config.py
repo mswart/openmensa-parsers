@@ -41,12 +41,12 @@ providers = {
 		'handler': karlsruhe_parse,
 		'prefix': 'http://www.studentenwerk-karlsruhe.de/de/essen/',
 		'canteens': {
-			'adenauerring': ('', ('canteen_place_1',)),
-			'moltke': ('', ('canteen_place_2',)),
-			'erzbergerstrasse': ('', ('canteen_place_3',)),
-			'schloss-gottesaue': ('', ('canteen_place_4',)),
-			'tiefenbronner-strasse': ('', ('canteen_place_5',)),
-			'holzgartenstrasse': ('', ('canteen_place_6',))
+			'adenauerring': ('', 'canteen_place_1'),
+			'moltke': ('', 'canteen_place_2'),
+			'erzbergerstrasse': ('', 'canteen_place_3'),
+			'schloss-gottesaue': ('', 'canteen_place_4'),
+			'tiefenbronner-strasse': ('', 'canteen_place_5'),
+			'holzgartenstrasse': ('', 'canteen_place_6')
 		}
 	},
 	'leipzig': {
@@ -129,6 +129,6 @@ def parse(provider, canteen):
 		return False
 	canteen = provider['canteens'][canteen]
 	if type(canteen) is tuple:
-		return provider['handler'](provider['prefix'] + canteen[0], *canteen[1])
+		return provider['handler'](provider['prefix'] + canteen[0], *canteen[1:])
 	else:
 		return provider['handler'](provider['prefix'] + canteen)
