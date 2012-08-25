@@ -76,7 +76,14 @@ class OpenMensaCanteen():
 		""" Creates new instance and prepares interal data
 			structures"""
 		self._days = {}
+		self.legendData = None
+		self.additionalCharges = None
 
+	default_legend_regex = '(?P<number>\d+)\)\s*(?P<value>\w+((\s+\w+)*[^0-9)]))'
+	def setLegendData(self, text, legend_regex = default_legend_regex):
+		self.legendData = {}
+		for match in re.finditer(legend_regex, text):
+			self.legendData[int(match.group('number'))] = match.group('value').strip()
 
 	def setAdditionalCharges(self, defaultPriceRole, additionalCharges):
 		""" This is a helper function, which fast up the calculation
@@ -114,6 +121,9 @@ class OpenMensaCanteen():
 		# ensure we have a category element for this category
 		if category not in self._days[date]:
 			self._days[date][category] = []
+		# handle notes:
+		if notes is True:
+			name, notes = self.extractNotes(name)
 		# convert prices if needed:
 		prices = self.buildPrices(prices, priceRoles)
 		# add meal into category:
@@ -138,6 +148,21 @@ class OpenMensaCanteen():
 		feed, document = self.createDocument()
 		feed.appendChild(self.toTag(document))
 		return '<?xml version="1.0" encoding="UTF-8"?>\n' + feed.toprettyxml(indent='  ')
+
+	default_extra_regex = re.compile('\((?P<extra>[0-9,]+)\)')
+	def extractNotes(self, name):
+		if self.legendData is None:
+			raise ValueError('setLegendData call needed!')
+		# extract note
+		notes = []
+		for note in set(','.join(self.default_extra_regex.findall(name)).split(',')):
+			if note and int(note) in self.legendData:
+				notes.append(self.legendData[int(note)])
+			elif note: # skip empty notes
+				print('could not find extra note "{}"'.format(note))
+		# from notes from name
+		name = self.default_extra_regex.sub('', name).replace('\xa0',' ').replace('  ', ' ').strip()
+		return name, notes
 
 	price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€?')
 	def buildPrices(self, data, roles):
