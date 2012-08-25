@@ -78,6 +78,18 @@ class OpenMensaCanteen():
 		self._days = {}
 
 
+	def setAdditionalCharges(self, defaultPriceRole, additionalCharges):
+		""" This is a helper function, which fast up the calculation
+			of prices. It is useable if the canteen has fixed
+			additional charges for special roles.
+			defaultPriceRole specifies for which price role the price
+			of addMeal are.
+			additionalCharges is a dictonary which defines the extra
+			costs (value) for other roles (key)."""
+		for role in additionalCharges:
+			if type(additionalCharges[role]) is not float:
+				additionalCharges[role] = float(additionalCharges[role].replace(',', '.'))
+		self.additionalCharges = (defaultPriceRole, additionalCharges)
 
 	def addMeal(self, date, category, name, notes = [],
 			prices = {}, priceRoles = None):
@@ -103,8 +115,7 @@ class OpenMensaCanteen():
 		if category not in self._days[date]:
 			self._days[date][category] = []
 		# convert prices if needed:
-		if priceRoles:
-			prices = self.buildPrices(prices, priceRoles)
+		prices = self.buildPrices(prices, priceRoles)
 		# add meal into category:
 		self._days[date][category].append((name, notes, prices))
 
@@ -127,6 +138,31 @@ class OpenMensaCanteen():
 		feed, document = self.createDocument()
 		feed.appendChild(self.toTag(document))
 		return '<?xml version="1.0" encoding="UTF-8"?>\n' + feed.toprettyxml(indent='  ')
+
+	price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€?')
+	def buildPrices(self, data, roles):
+		prices = {}
+		if roles:
+			priceRoles = iter(roles())
+			for price in priceList:
+				prices[next(priceRoles)] = price
+		elif type(data) is str:
+			if self.additionalCharges is None:
+				raise ValueError('You have to call setAdditionalCharges before it is possible to pass a string as price')
+			match = self.price_regex.search(data)
+			if not match:
+				raise ValueError('Could not extract price from given string: "{}"'.format(data))
+			price = float(match.group('price').replace(',', '.'))
+			prices = {
+				self.additionalCharges[0]: '{:.2f}'.format(price),
+			}
+			for role in self.additionalCharges[1]:
+				prices[role] = '{:.2f}'.format(price + self.additionalCharges[1][role])
+		elif type(data) is dict:
+			prices = data
+		else:
+			raise TypeError('This type is for prices not supported!')
+		return prices
 
 	@staticmethod
 	def createDocument():
