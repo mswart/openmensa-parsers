@@ -1,5 +1,68 @@
 import re
 from xml.dom.minidom import Document
+import datetime
+
+date_format = re.compile(".*?(?P<datestr>(" +
+				"\d{2}(\d{2})?-\d{2}-\d{2}|" +
+				"\d{2}\.\d{2}\.\d{2}(\d{2})?|" +
+				"(?P<day>\d{2})\. ?(?P<month>\w+) ?(?P<year>\d{2}(\d{2})?))).*")
+month_names = {
+	'Januar': '01',
+	'Februar': '02',
+	'März': '03',
+	'April': '04',
+	'Mai': '05',
+	'Juni': '06',
+	'Juli': '07',
+	'August': '08',
+	'September': '09',
+	'Oktober': '10',
+	'November': '11',
+	'Dezember': '12'
+}
+
+def extractDate(text):
+	match = date_format.search(text)
+	if not match:
+		raise ValueError('unsupported date format: DD.MM.YYYY, DD.MM.YY, YYYY-MM-DD, YY-MM-DD, DD. Month YYYY or DD. Month YY needed')
+	# convert DD.MM.YYYY into YYYY-MM-DD
+	if match.group('month'):
+		if not match.group('month') in month_names:
+			raise ValueError('unknown month names')
+		year = int(match.group('year'))
+		return datetime.date(
+			year if year > 2000 else 2000 + year,
+			int(month_names[match.group('month')]),
+			int(match.group('day')))
+	else:
+		parts = list(map(lambda v : int(v), '-'.join(reversed(match.group('datestr').split('.'))).split('-')))
+		if parts[0] < 2000: parts[0] += 2000
+		return datetime.date(*parts)
+
+
+class extractWeekDates():
+	weekdaynames = {
+		0: 0,
+		'Mon': 0,
+		'Montag': 0,
+		'Dienstag': 1,
+		'Mittwoch': 2,
+		'Donnerstag': 3,
+		'Freitag': 4,
+		'Samstag': 5,
+		'Sonntag': 6
+	}
+	def __init__(self, start, end=None):
+		self.monday = extractDate(start)
+	def __getitem__(self, value):
+		if type(value) not in [int, str]:
+			raise TypeError
+		if value not in self.weekdaynames:
+			raise ValueError
+		return self.monday + datetime.date.resolution * self.weekdaynames[value]
+	def __iter__(self):
+		for i in range(7):
+			yield self.monday + datetime.date.resolution * i
 
 
 class OpenMensaCanteen():
@@ -9,55 +72,12 @@ class OpenMensaCanteen():
 		So the complete object can be converted to a valid
 		OpenMensa v2 xml feed string. """
 
-	# regex to parse and validate date formats:
-	date_format = re.compile("^(\d{4}-\d{2}-\d{2}|\d{2}\.\d{2}\.\d{4}|(?P<day>\d{2})\. ?(?P<month>\w+) ?(?P<year>\d{4}))$")
-	month_names = {
-		'Januar': '01',
-		'Februar': '02',
-		'März': '03',
-		'April': '04',
-		'Mai': '05',
-		'Juni': '06',
-		'Juli': '07',
-		'August': '08',
-		'September': '09',
-		'Oktober': '10',
-		'November': '11',
-		'Dezember': '12'
-	}
-
 	def __init__(self):
 		""" Creates new instance and prepares interal data
 			structures"""
 		self._days = {}
 
 
-	# helper
-	@classmethod
-	def convertDate(cls, datestr):
-		""" helper to convert all often date str into
-			OpenMensa format (YYYY-MM-DD).
-			Currently only DD.MM.YYYY is supported additional."""
-		match = cls.date_format.match(datestr)
-		if not match:
-			raise ValueError('unsupported date format: DD.MM.YYYY, YYYY-MM-DD, DD. Month YYYY needed')
-		# convert DD.MM.YYYY into YYYY-MM-DD
-		if match.group('month'):
-			if not match.group('month') in cls.month_names:
-				raise ValueError('unknown month names')
-			return '{}-{}-{}'.format(
-				match.group('year'),
-				cls.month_names[match.group('month')],
-				match.group('day'))
-		return '-'.join(reversed(datestr.split('.')))
-
-	@staticmethod
-	def buildPrices(priceList, roles):
-		prices = {}
-		priceRoles = iter(roles())
-		for price in priceList:
-			prices[next(priceRoles)] = price
-		return prices
 
 	def addMeal(self, date, category, name, notes = [],
 			prices = {}, priceRoles = None):
@@ -72,9 +92,10 @@ class OpenMensaCanteen():
 			  key must be a string for the role of the persons
 			  who can use this tariff; The value is the price in €,
 			  as string. dot and comma are possible as decimal mark
-			The site of the OpenMensa projects offers more detailed
+			The site of the OpenMensa project offers more detailed
 			information."""
-		date = self.convertDate(date) # ensure correct date format
+		if type(date) is not datetime.date:
+			date = extractDate(date)
 		# ensure we have an entry for this date
 		if date not in self._days:
 			self._days[date] = {}
@@ -89,11 +110,11 @@ class OpenMensaCanteen():
 
 	def setDayClosed(self, date):
 		""" Stores that this cateen is closed on $date."""
-		self._days[self.convertDate(date)] = False
+		self._days[extractDate(date)] = False
 
 	def clearDay(self, date):
 		try:
-			del self._days[self.convertDate(date)]
+			del self._days[extractDate(date)]
 		except KeyError:
 			pass
 
@@ -125,7 +146,7 @@ class OpenMensaCanteen():
 		# iterate above all days (sorted):
 		for date in sorted(self._days.keys()):
 			day = output.createElement('day')
-			day.setAttribute('date', date)
+			day.setAttribute('date', str(date))
 			if self._days[date] is False: # canteen closed
 				closed = output.createElement('closed')
 				day.appendChild(closed)
