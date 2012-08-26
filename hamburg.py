@@ -19,13 +19,14 @@ def parse_week(url, canteen):
 		i = 0
 		for day_td in category_tr.find_all('td'):
 			for meal_data in day_td.find_all('p', 'dish'):
+				if not meal_data.find('strong'): continue
 				name = extra_regex.sub('', meal_data.find('strong').text)
 				name = strip_regex.sub(' ', name).strip()
 				notes = [ span['title'] for span in meal_data.find_all('span', 'tooltip')]
 				notes += [ img['title'] for img in meal_data.find_all('img')]
 				prices = price_regex.findall(meal_data.find('span', 'price').text)
 				canteen.addMeal(weekDays[i], category, name,
-					list(set(notes)), prices, lambda: ['student', 'employee'])
+					list(set(notes)), prices, lambda: ['student', 'employee', 'other'])
 			i += 1
 
 def parse_url(url):
