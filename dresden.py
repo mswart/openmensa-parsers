@@ -4,9 +4,8 @@ from bs4 import BeautifulSoup as parse
 import re
 import datetime
 
-from helper import OpenMensaCanteen
+from helper import OpenMensaCanteen, extractDate
 
-day_regex = re.compile('(?P<date>\d{2}\. ?\w+ ?\d{4})')
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
 
 def rolesGenerator():
@@ -16,7 +15,7 @@ def rolesGenerator():
 def parse_week(url, canteen):
 	document = parse(urlopen(url).read())
 	for day_table in document.find_all('table', 'speiseplan'):
-		date = day_regex.search(day_table.thead.tr.th.text).group('date')
+		date = extractDate(day_table.thead.tr.th.text)
 		if day_table.find('td', 'keinangebot'):
 			canteen.setDayClosed(date)
 			continue
