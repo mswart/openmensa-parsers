@@ -83,7 +83,7 @@ providers = {
 			'blau': 'mensa-blau',
 			'stimm-gabel': 'mensa-stimm-gabel',
 			'johannstadt': 'mensa-johannstadt',
-			'u-boot': 'biomensa-u-boot',
+			'u-boot': 'u-boot',
 			'zittau': 'mensa-zittau',
 			'haus-vii': 'mensa-haus-vii',
 			'goerlitz': 'mensa-goerlitz',
