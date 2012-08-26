@@ -42,7 +42,7 @@ def extractDate(text):
 
 class extractWeekDates():
 	weekdaynames = {
-		0: 0,
+		0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6,
 		'Mon': 0,
 		'Montag': 0,
 		'Dienstag': 1,
@@ -169,7 +169,7 @@ class OpenMensaCanteen():
 		prices = {}
 		if roles:
 			priceRoles = iter(roles())
-			for price in priceList:
+			for price in data:
 				prices[next(priceRoles)] = price
 		elif type(data) is str:
 			if self.additionalCharges is None:
