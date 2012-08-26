@@ -6,10 +6,10 @@ import traceback, sys
 canteen_request = re.compile('/(?P<provider>\w+)/(?P<canteen>[-_a-zA-Z0-9]+).xml')
 
 def handler(eniron, start_response):
-	prefix = eniron['PATH_PREFIX']
+	prefix = eniron.get('PATH_PREFIX', None)
 	uri = eniron['PATH_INFO']
 	docroot = eniron['DOCUMENT_ROOT']
-	if uri.startswith(prefix):
+	if prefix and uri.startswith(prefix):
 		uri = uri[len(prefix):]
 	match = canteen_request.match(uri)
 	if not match:
