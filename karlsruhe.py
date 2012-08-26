@@ -17,7 +17,6 @@ def rolesGenerator():
 
 
 def parse_week(canteen, url, place_class=None):
-	print('parsing {}'.format(url))
 	content = urlopen(url).read()
 	document = parse(content)
 	legends = document.find_all('div', {'class':'legende'})
