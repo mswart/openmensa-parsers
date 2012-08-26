@@ -127,7 +127,7 @@ class OpenMensaCanteen():
 		if category not in self._days[date]:
 			self._days[date][category] = []
 		# handle notes:
-		if len(self.legendData) > 0:
+		if self.legendData:
 			name, notes = self.extractNotes(name, notes)
 		# convert prices if needed:
 		prices = self.buildPrices(prices, priceRoles)
