@@ -13,16 +13,12 @@ price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
 extra_regex = re.compile('\((?P<extra>[0-9,]+)\)')
 legend_regex = re.compile('\((\d+)\) (\w+(\s|\w)*)')
 
-def rolesGenerator():
-	yield 'student'
-	yield 'employee'
-
 def parse_week(url, data, canteen):
 	document = parse(urlopen(url, data).read())
 	# parse extra/notes legend
 	legends = {}
 	legendsData = document.find('table', 'zusatz_std')
-	if legendsData:				
+	if legendsData:
 		legends = { int(v[0]): v[1] for v in legend_regex.findall(legendsData.text.replace('\xa0',' ')) }
 	data = document.find('table', 'wo_std')
 	if not data:
@@ -64,12 +60,7 @@ def parse_week(url, data, canteen):
 					# from notes from name
 					name = extra_regex.sub('', name).replace('\xa0',' ').replace('  ', ' ').strip()
 					# extract price
-					price = float(price_regex.search(next(colIter).text).group('price').replace(',', '.'))
-					prices = {
-						'student': str(price),
-						'other': str(price + 1.5)
-					}
-					canteen.addMeal(date, next(categoriesIterator), name, notes, prices)
+					canteen.addMeal(date, next(categoriesIterator), name, notes, next(colIter).text)
 			except StopIteration:
 				pass
 	except StopIteration:
@@ -77,6 +68,7 @@ def parse_week(url, data, canteen):
 
 def parse_url(url):
 	canteen = OpenMensaCanteen()
+	canteen.setAdditionalCharges('student', {'other': 1.5})
 	document = parse(urlopen(url).read())
 	for submit in document.find_all('input'):
 		if submit['type'] != 'submit': continue
