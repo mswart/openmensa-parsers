@@ -7,6 +7,7 @@ from aachen import parse_url as aachen_parse
 from wuerzburg import parse_url as wuerzburg_parse
 from marburg import parse_url as marburg_parse
 from hamburg import parse_url as hamburg_parse
+from muenchen import parse_url as muenchen_parse
 
 providers = {
 	'magdeburg': {
@@ -152,6 +153,26 @@ providers = {
 			'philosophenturm':      '350',
 			'stellingen':           '580',
 			'studierendenhaus':     '310',
+		}
+	},
+	'muenchen': {
+		'handler': muenchen_parse,
+		'prefix': 'http://www.studentenwerk-muenchen.de/mensa/speiseplan/',
+		'canteens': {
+			'leopoldstrasse':      'speiseplan_{}_411_-de.html',
+			'martinsried':         'speiseplan_{}_412_-de.html',
+			'grosshadern':         'speiseplan_{}_414_-de.html',
+			'schellingstrasse':    'speiseplan_{}_416_-de.html',
+			'goethestrasse':       'speiseplan_{}_418_-de.html',
+			'archisstrasse':       'speiseplan_{}_421_-de.html',
+			'garching':            'speiseplan_{}_422_-de.html',
+			'weihenstephan':       'speiseplan_{}_423_-de.html',
+			'lothstrasse':         'speiseplan_{}_431_-de.html',
+			'pasing':              'speiseplan_{}_432_-de.html',
+			'olympiapark':         'speiseplan_{}_523_-de.html',
+			'cafeteria-garching':  'speiseplan_{}_524_-de.html',
+			'akademie':            'speiseplan_{}_526_-de.html',
+			'boltzmannstrasse':    'speiseplan_{}_527_-de.html',
 		}
 	},
 }
