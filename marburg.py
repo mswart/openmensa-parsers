@@ -33,7 +33,7 @@ def parse_week(url, canteen, mensa):
 		for tr_menu in day_table.tbody.find_all('tr'):
 			category = tr_menu.find_all('td')[0].text.strip()
 			name = tr_menu.find_all('td')[1].text.replace('\r\n', ' ').strip()
-			canteen.addMeal(date, category, name, True, tr_menu.find_all('td')[2].text)
+			canteen.addMeal(date, category, name, [], tr_menu.find_all('td')[2].text)
 
 def parse_url(url, mensa, *weeks):
 	canteen = OpenMensaCanteen()
