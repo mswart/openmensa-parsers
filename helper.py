@@ -22,6 +22,8 @@ month_names = {
 }
 
 def extractDate(text):
+	if type(text) is datetime.date:
+		return text
 	match = date_format.search(text)
 	if not match:
 		raise ValueError('unsupported date format: DD.MM.YYYY, DD.MM.YY, YYYY-MM-DD, YY-MM-DD, DD. Month YYYY or DD. Month YY needed')
@@ -81,6 +83,9 @@ class OpenMensaCanteen():
 
 	default_legend_regex = '(?P<number>\d+)\)\s*(?P<value>\w+((\s+\w+)*[^0-9)]))'
 	def setLegendData(self, text, legend_regex = default_legend_regex):
+		if type(text) is dict:
+			self.legendData = text
+			return
 		self.legendData = {}
 		for match in re.finditer(legend_regex, text):
 			self.legendData[int(match.group('number'))] = match.group('value').strip()
@@ -122,8 +127,8 @@ class OpenMensaCanteen():
 		if category not in self._days[date]:
 			self._days[date][category] = []
 		# handle notes:
-		if notes is True:
-			name, notes = self.extractNotes(name)
+		if len(self.legendData) > 0:
+			name, notes = self.extractNotes(name, notes)
 		# convert prices if needed:
 		prices = self.buildPrices(prices, priceRoles)
 		# add meal into category:
@@ -149,20 +154,19 @@ class OpenMensaCanteen():
 		feed.appendChild(self.toTag(document))
 		return '<?xml version="1.0" encoding="UTF-8"?>\n' + feed.toprettyxml(indent='  ')
 
-	default_extra_regex = re.compile('\((?P<extra>[0-9,]+)\)')
-	def extractNotes(self, name):
+	default_extra_regex = re.compile('\((?P<extra>[0-9a-zA-Z,]{1,2})\)')
+	def extractNotes(self, name, notes):
 		if self.legendData is None:
 			raise ValueError('setLegendData call needed!')
 		# extract note
-		notes = []
 		for note in set(','.join(self.default_extra_regex.findall(name)).split(',')):
-			if note and int(note) in self.legendData:
-				notes.append(self.legendData[int(note)])
+			if note and note in self.legendData:
+				notes.append(self.legendData[note])
 			elif note: # skip empty notes
 				print('could not find extra note "{}"'.format(note))
 		# from notes from name
 		name = self.default_extra_regex.sub('', name).replace('\xa0',' ').replace('  ', ' ').strip()
-		return name, notes
+		return name, list(set(notes))
 
 	price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€?')
 	def buildPrices(self, data, roles):
