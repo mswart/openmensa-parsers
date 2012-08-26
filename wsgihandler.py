@@ -1,6 +1,7 @@
 #!python3
 from config import providers, parse
 import re
+import traceback, sys
 
 canteen_request = re.compile('/(?P<provider>\w+)/(?P<canteen>[-_a-zA-Z0-9]+).xml')
 
@@ -22,7 +23,7 @@ def handler(eniron, start_response):
 		try:
 			content = parse(match.group('provider'), match.group('canteen'))
 		except Exception as e:
-			print(e)
+			traceback.print_exception(*sys.exc_info())
 			start_response('500 Internal Server Error', [])
 			return
 		content = content.encode('utf8')
