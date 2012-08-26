@@ -6,6 +6,7 @@ from dresden import parse_url as dresden_parse
 from aachen import parse_url as aachen_parse
 from wuerzburg import parse_url as wuerzburg_parse
 from marburg import parse_url as marburg_parse
+from hamburg import parse_url as hamburg_parse
 
 providers = {
 	'magdeburg': {
@@ -129,6 +130,28 @@ providers = {
 					'naechste-woche-mensa-erlenring-und-lahnberge.html' ),
 			'lahnberge': ('', 'Mensa Lahnberge', 'diese-woche-mensa-erlenring-und-lahnberge.html',
 					'naechste-woche-mensa-erlenring-und-lahnberge.html' ),
+		}
+	},
+	'hamburg': {
+		'handler': hamburg_parse,
+		'prefix': 'http://speiseplan.studwerk.uptrade.de/index.php/de/',
+		'canteens': {
+			'armgartstraße':        '590',
+			'bergedorf':            '520',
+			'berliner-tor':         '530',
+			'averhoffstraße':       '650',
+			'botanischer-garten':   '560',
+			'bucerius-law-school':  '410',
+			'cafe-jungiusstraße':   '610',
+			'cafe-alexanderstraße': '660',
+			'campus':               '340',
+			'city-nord':            '550',
+			'finkenau':             '620',
+			'geomatikum':           '540',
+			'harburg':              '570',
+			'philosophenturm':      '350',
+			'stellingen':           '580',
+			'studierendenhaus':     '310',
 		}
 	},
 }
