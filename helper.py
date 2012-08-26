@@ -81,14 +81,14 @@ class OpenMensaCanteen():
 		self.legendData = None
 		self.additionalCharges = None
 
-	default_legend_regex = '(?P<number>\d+)\)\s*(?P<value>\w+((\s+\w+)*[^0-9)]))'
+	default_legend_regex = '(?P<name>\d+)\)\s*(?P<value>\w+((\s+\w+)*[^0-9)]))'
 	def setLegendData(self, text, legend_regex = default_legend_regex):
 		if type(text) is dict:
 			self.legendData = text
 			return
 		self.legendData = {}
 		for match in re.finditer(legend_regex, text):
-			self.legendData[int(match.group('number'))] = match.group('value').strip()
+			self.legendData[match.group('name')] = match.group('value').strip()
 
 	def setAdditionalCharges(self, defaultPriceRole, additionalCharges):
 		""" This is a helper function, which fast up the calculation
@@ -154,7 +154,7 @@ class OpenMensaCanteen():
 		feed.appendChild(self.toTag(document))
 		return '<?xml version="1.0" encoding="UTF-8"?>\n' + feed.toprettyxml(indent='  ')
 
-	default_extra_regex = re.compile('\((?P<extra>[0-9a-zA-Z,]{1,2})\)')
+	default_extra_regex = re.compile('\((?P<extra>[0-9a-zA-Z]{1,2}(?:,[0-9a-zA-Z]{1,2})*)\)')
 	def extractNotes(self, name, notes):
 		if self.legendData is None:
 			raise ValueError('setLegendData call needed!')
