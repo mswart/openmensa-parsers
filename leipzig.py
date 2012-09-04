@@ -6,8 +6,8 @@ import datetime
 from helper import OpenMensaCanteen
 
 def correct_prices(v):
-	if 'employe' in v:
-		v['employee'] = v.pop('employe')
+	if 'employe' in v: v['employee'] = v.pop('employe')
+	if 'guest'   in v: v['other'   ] = v.pop('guest')
 	return v
 
 def parse_day(canteen, url, date):
