@@ -39,5 +39,10 @@ def parse_url(url):
 				price = price_regex.search(price_div['data-' + v])
 				if price:
 					prices[r] = price.group('price')
-			canteen.addMeal(date, category, name, notes, prices)
+				elif v == 'default':
+					prices = False
+					canteen.setDayClosed(date)
+					break
+			if prices:
+				canteen.addMeal(date, category, name, notes, prices)
 	return canteen.toXMLFeed()
