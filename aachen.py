@@ -42,9 +42,12 @@ def parse_week(url, data, canteen):
 	try:
 		while True:
 			tr = next(rowIter) # meal row
-			extratr = next(rowIter) # addition meal component row, ToDo
 			# extract date from first column:
 			date = day_regex.search(tr.contents[0].text).group('date')
+			if tr.contents[0].get('rowspan') is None:
+				canteen.setDayClosed(date)
+				continue
+			extratr = next(rowIter) # addition meal component row, ToDo
 			# build iterators for lists:
 			categoriesIterator = iter(categories)
 			colIter = iter(tr.find_all('td'))
