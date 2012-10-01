@@ -43,6 +43,6 @@ def parse_url(url):
 					prices = False
 					canteen.setDayClosed(date)
 					break
-			if prices:
+			if prices and name:
 				canteen.addMeal(date, category, name, notes, prices)
 	return canteen.toXMLFeed()
