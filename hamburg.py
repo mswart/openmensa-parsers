@@ -22,6 +22,7 @@ def parse_week(url, canteen):
 				if not meal_data.find('strong'): continue
 				name = extra_regex.sub('', meal_data.find('strong').text)
 				name = strip_regex.sub(' ', name).strip()
+				if len(name) > 250: name = name[:245] + '...'
 				notes = [ span['title'] for span in meal_data.find_all('span', 'tooltip')]
 				notes += [ img['title'] for img in meal_data.find_all('img')]
 				prices = price_regex.findall(meal_data.find('span', 'price').text)
