@@ -29,6 +29,8 @@ def parse_url(url):
 			continue
 		for meal_article in day_div.find_all('article', 'menu'):
 			name = meal_article.find('div', 'title').text
+			if not name:
+				continue
 			category = meal_article.find('div', 'desc').text
 			notes = [ v['title'] for v in meal_article.find_all('div', 'theicon') if v['title'] ]
 			if meal_article.find('div', 'additive'):
