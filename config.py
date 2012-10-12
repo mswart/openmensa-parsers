@@ -57,7 +57,7 @@ providers = {
 		'prefix': 'http://www.studentenwerk-leipzig.de/mensen-und-cafeterien/speiseplan/m/meals.php?canteen=',
 		'canteens': {
 			'dittrichring': '153',
-			'koburger-straße': '121',
+			'koburger-strasse': '121',
 			'philipp-rosenthal-strasse': '127',
 			'waechterstrasse': '129',
 			'academica': '118',
