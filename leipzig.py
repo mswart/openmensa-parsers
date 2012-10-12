@@ -3,7 +3,7 @@ from urllib.request import urlopen
 import json
 import datetime
 
-from helper import OpenMensaCanteen
+from pyopenmensa.feed import OpenMensaCanteen
 
 def correct_prices(v):
 	if 'employe' in v: v['employee'] = v.pop('employe')

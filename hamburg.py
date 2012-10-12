@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup as parse
 import re
 import datetime
 
-from helper import OpenMensaCanteen, extractWeekDates
+from pyopenmensa.feed import OpenMensaCanteen, extractWeekDates
 
 extra_regex = re.compile('\(.*?\)')
 strip_regex = re.compile('\s{2,}')

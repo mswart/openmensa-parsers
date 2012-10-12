@@ -3,7 +3,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup as parse
 import re
 
-from helper import OpenMensaCanteen, extractWeekDates
+from pyopenmensa.feed import OpenMensaCanteen, extractWeekDates
 
 employeePrice = re.compile('Unibedienstetenzuschlag:? ?(?P<price>\d+[,.]\d{2}) ?€?')
 otherPrice = re.compile('Gästezuschlag:? ?(?P<price>\d+[,.]\d{2}) ?€?')

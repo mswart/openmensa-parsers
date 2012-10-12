@@ -1,0 +1,3 @@
+[submodule "pyopenmensa"]
+	path = pyopenmensa
+	url = git://github.com/techleopard/pyopenmensa.git

@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup as parse
 import re
 import datetime
 
-from helper import OpenMensaCanteen
+from pyopenmensa.feed import OpenMensaCanteen
 
 day_regex = re.compile('(?P<date>\d{4}-\d{2}-\d{2})')
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')

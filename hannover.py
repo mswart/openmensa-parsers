@@ -3,7 +3,7 @@ from urllib.request import urlopen
 import re
 from xml.dom.minidom import Document
 
-from helper import OpenMensaCanteen
+from pyopenmensa.feed import OpenMensaCanteen
 
 day_regex = re.compile('(?P<date>\d{2}\.\d{2}\.\d{4})')
 price_regex = re.compile('(?P<price>\d+[,.]\d{2})€')

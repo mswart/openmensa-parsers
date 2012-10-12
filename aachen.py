@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup as parse
 import re
 import datetime
 
-from helper import OpenMensaCanteen
+from pyopenmensa.feed import OpenMensaCanteen
 
 day_regex = re.compile('(?P<date>\d{2}\. ?\d{2}\. ?\d{4})')
 day_range_regex = re.compile('(?P<from>\d{2}\.\d{2}).* (?P<to>\d{2}\.\d{2}\.(?P<year>\d{4}))')
