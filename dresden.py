@@ -23,7 +23,7 @@ def parse_week(url, canteen):
 			if len(meal_tr.find_all('a') or []) < 1:
 				continue
 			name = meal_tr.td.text
-			if ':' in name:
+			if ': ' in name:
 				category, name = name.split(': ', 1)
 			else:
 				category = 'Angebote'
