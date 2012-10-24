@@ -43,7 +43,8 @@ def parse_url(url):
 					prices[r] = price.group('price')
 				elif v == 'default':
 					prices = False
-					canteen.setDayClosed(date)
+					if canteen.hasMealsFor(date):
+						canteen.setDayClosed(date)
 					break
 			if prices and name:
 				canteen.addMeal(date, category, name, notes, prices)
