@@ -30,7 +30,7 @@ def parse_week(url, canteen):
 			if len(name) > 200:
 				name = name[:200] + ' ...'
 			notes = []
-			for img in meal_tr.find_all('img'):
+			for img in meal_tr.contents[1].find_all('img'):
 				notes.append(img['title'])
 			canteen.addMeal(date, category, name, notes,
 				price_regex.findall(meal_tr.contents[2].text), rolesGenerator)
