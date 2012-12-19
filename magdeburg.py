@@ -35,7 +35,7 @@ def parse_url(url):
 				break
 		if not table: continue
 		for tr in table.tbody.find_all('tr'):
-			if 'geschlossen' in tr.text:
+			if 'geschlossen' in tr.text or 'Feiertage' in tr.text:
 				match = day_range_regex.search(tr.text)
 				if not match:
 					canteen.setDayClosed(date)
