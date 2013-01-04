@@ -32,8 +32,8 @@ def parse_week(url, canteen):
 
 def parse_url(url):
 	canteen = OpenMensaCanteen()
-	parse_week(url +
-			datetime.date.today().strftime('/%Y/%W/'), canteen)
 	parse_week(url + (datetime.date.today()
 			 + datetime.date.resolution * 7).strftime('/%Y/%W/'), canteen)
+	parse_week(url + (datetime.date.today()
+			 + datetime.date.resolution * 14).strftime('/%Y/%W/'), canteen)
 	return canteen.toXMLFeed()
