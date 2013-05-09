@@ -28,12 +28,13 @@ def parse_url(url):
 		if 'nodata' in day_div.attrs.get('class', []) or 'GESCHLOSSEN' in day_div.text:
 			canteen.setDayClosed(date)
 			continue
+		closed_candidate = False
 		for meal_article in day_div.find_all('article', 'menu'):
 			name = meal_article.find('div', 'title').text
 			if not name:
 				continue
 			if 'geschlossen' in name:
-				canteen.setDayClosed(date)
+				closed_candidate = True
 				continue
 			category = meal_article.find('div', 'desc').text
 			notes = [v['title'] for v in meal_article.find_all('div', 'theicon') if v['title']]
@@ -49,10 +50,9 @@ def parse_url(url):
 				if price:
 					prices[r] = price.group('price')
 				elif v == 'default':
-					prices = False
-					if canteen.hasMealsFor(date):
-						canteen.setDayClosed(date)
+					prices = {}
 					break
-			if prices:
-				canteen.addMeal(date, category, name, notes, prices)
+			canteen.addMeal(date, category, name, notes, prices)
+		if closed_candidate and not canteen.hasMealsFor(date):
+			canteen.setDayClosed(date)
 	return canteen.toXMLFeed()
