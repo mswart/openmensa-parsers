@@ -2,15 +2,13 @@
 from urllib.request import urlopen
 from bs4 import BeautifulSoup as parse
 import re
-import datetime
 
-from pyopenmensa.feed import OpenMensaCanteen, extractDate
+from pyopenmensa.feed import LazyBuilder, extractDate
 
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
 
-def rolesGenerator():
-	yield 'student'
-	yield 'employee'
+roles = ('student', 'employee')
+
 
 def parse_week(url, canteen):
 	document = parse(urlopen(url).read())
@@ -33,10 +31,11 @@ def parse_week(url, canteen):
 			for img in meal_tr.contents[1].find_all('img'):
 				notes.append(img['title'])
 			canteen.addMeal(date, category, name, notes,
-				price_regex.findall(meal_tr.contents[2].text), rolesGenerator)
+				price_regex.findall(meal_tr.contents[2].text), roles)
+
 
 def parse_url(url):
-	canteen = OpenMensaCanteen()
+	canteen = LazyBuilder()
 	parse_week(url + '.html', canteen)
 	parse_week(url + '-w1.html', canteen)
 	parse_week(url + '-w2.html', canteen)

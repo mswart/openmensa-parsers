@@ -5,13 +5,14 @@ from bs4 import BeautifulSoup as parse
 import re
 import datetime
 
-from pyopenmensa.feed import OpenMensaCanteen, extractWeekDates
+from pyopenmensa.feed import LazyBuilder
 
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€?')
 otherPrice = re.compile('Gästezuschlag:? ?(?P<price>\d+[,.]\d{2}) ?€?')
 
+
 def parse_url(url):
-	canteen = OpenMensaCanteen()
+	canteen = LazyBuilder()
 	legend = {}
 	document = parse(urlopen('http://www.studentenwerk-muenchen.de/mensa/speiseplan/zusatzstoffe-de.html').read())
 	for td in document.find_all('td', 'beschreibung'):
@@ -20,11 +21,13 @@ def parse_url(url):
 	prices = {}
 	for tr in document.find('table', 'essenspreise').find_all('tr'):
 		meal = tr.find('th')
-		if not meal or not meal.text.strip(): continue
-		if len(tr.find_all('td', 'betrag')) < 3: continue
+		if not meal or not meal.text.strip():
+			continue
+		if len(tr.find_all('td', 'betrag')) < 3:
+			continue
 		meal = meal.text.strip()
 		prices[meal] = {}
-		for role, _id in [ ('student', 0), ('employee', 1), ('other', 2)]:
+		for role, _id in [('student', 0), ('employee', 1), ('other', 2)]:
 			prices[meal][role] = price_regex.search(
 					tr.find_all('td', 'betrag')[_id].text)\
 					.group('price')
@@ -55,7 +58,7 @@ def parse_url(url):
 				category = menu_tr.find('td', 'gericht').text
 			data = menu_tr.find('td', 'beschreibung')
 			name = data.find('span').text.strip()
-			notes = [ span['title'] for span in data.find_all('span', title=True) ]
+			notes = [span['title'] for span in data.find_all('span', title=True)]
 			canteen.addMeal(date, category, name, notes,
 				prices.get(category.replace('Aktionsessen', 'Bio-/Aktionsgericht'), {}))
 		date += datetime.date.resolution

@@ -3,22 +3,25 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup as parse
 import re
 
-from pyopenmensa.feed import OpenMensaCanteen, extractWeekDates
+from pyopenmensa.feed import LazyBuilder, extractWeekDates
 
 employeePrice = re.compile('Unibedienstetenzuschlag:? ?(?P<price>\d+[,.]\d{2}) ?€?')
 otherPrice = re.compile('Gästezuschlag:? ?(?P<price>\d+[,.]\d{2}) ?€?')
 
+
 def parse_week(url, canteen, mensa):
 	document = parse(urlopen(url).read())
 	# extra legends information
-	canteen.setLegendData(document.find(text='Zusatzstoffe:').parent.parent.next_sibling.next_sibling.text.replace('&nbsp;', ' '))
+	canteen.setLegendData(text=document.find(text='Zusatzstoffe:').parent.parent.next_sibling.next_sibling.text.replace('&nbsp;', ' '))
 	# additional charges
 	prices = {}
 	for p in document.find_all('p'):
 		match = employeePrice.search(p.text)
-		if match: prices['employee'] = match.group('price')
+		if match:
+			prices['employee'] = match.group('price')
 		match = otherPrice.search(p.text)
-		if match: prices['other'] = match.group('price')
+		if match:
+			prices['other'] = match.group('price')
 	if len(prices) != 2:
 		print('Could not extract addtional charges for employee and others')
 	canteen.setAdditionalCharges('student', prices)
@@ -35,8 +38,9 @@ def parse_week(url, canteen, mensa):
 			name = tr_menu.find_all('td')[1].text.replace('\r\n', ' ').strip()
 			canteen.addMeal(date, category, name, [], tr_menu.find_all('td')[2].text)
 
+
 def parse_url(url, mensa, *weeks):
-	canteen = OpenMensaCanteen()
+	canteen = LazyBuilder()
 	for week in weeks:
 		parse_week(url + week, canteen, mensa)
 	return canteen.toXMLFeed()

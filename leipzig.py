@@ -3,12 +3,14 @@ from urllib.request import urlopen
 import json
 import datetime
 
-from pyopenmensa.feed import OpenMensaCanteen
+from pyopenmensa.feed import LazyBuilder
+
 
 def correct_prices(v):
 	if 'employe' in v: v['employee'] = v.pop('employe')
 	if 'guest'   in v: v['other'   ] = v.pop('guest')
 	return v
+
 
 def parse_day(canteen, url, date):
 	content = urlopen(url).read()
@@ -29,8 +31,9 @@ def parse_day(canteen, url, date):
 				print('unknown meal type: {}'.format(type(meal)))
 	return len(data) > 0
 
+
 def parse_url(url):
-	canteen = OpenMensaCanteen()
+	canteen = LazyBuilder()
 	day = datetime.date.today()
 	emptyCount = 0
 	while emptyCount < 7:

@@ -13,13 +13,14 @@ price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
 extra_regex = re.compile('\((?P<extra>[0-9,]+)\)')
 legend_regex = re.compile('\((\d+)\) (\w+(\s|\w)*)')
 
+
 def parse_week(url, data, canteen):
 	document = parse(urlopen(url, data).read())
 	# parse extra/notes legend
 	legends = {}
 	legendsData = document.find('table', 'zusatz_std')
 	if legendsData:
-		legends = { int(v[0]): v[1] for v in legend_regex.findall(legendsData.text.replace('\xa0',' ')) }
+		legends = {int(v[0]): v[1] for v in legend_regex.findall(legendsData.text.replace('\xa0', ' '))}
 	data = document.find('table', 'wo_std')
 	if not data:
 		message = document.find('div', 'Meldung_std')
@@ -38,16 +39,16 @@ def parse_week(url, data, canteen):
 	headRow = next(rowIter)
 	for br in headRow.find_all('br'):
 		br.replace_with(document.new_string(' - '))
-	categories = list(map(lambda v: (v.text.strip() + '#').replace(' -#', '#')[:-1] , headRow.find_all('th')))[1:]
+	categories = list(map(lambda v: (v.text.strip() + '#').replace(' -#', '#')[:-1], headRow.find_all('th')))[1:]
 	try:
 		while True:
-			tr = next(rowIter) # meal row
+			tr = next(rowIter)  # meal row
 			# extract date from first column:
 			date = day_regex.search(tr.contents[0].text).group('date')
 			if tr.contents[0].get('rowspan') is None:
 				canteen.setDayClosed(date)
 				continue
-			extratr = next(rowIter) # addition meal component row, ToDo
+			extratr = next(rowIter)  # addition meal component row, ToDo
 			# build iterators for lists:
 			categoriesIterator = iter(categories)
 			colIter = iter(tr.find_all('td'))
@@ -59,9 +60,9 @@ def parse_week(url, data, canteen):
 				while True:
 					name = next(colIter).text
 					# extract notes from name
-					notes = [ legends[int(v)] for v in set(','.join(extra_regex.findall(name)).split(',')) if v and int(v) in legends ]
+					notes = [legends[int(v)] for v in set(','.join(extra_regex.findall(name)).split(',')) if v and int(v) in legends]
 					# from notes from name
-					name = extra_regex.sub('', name).replace('\xa0',' ').replace('  ', ' ').strip()
+					name = extra_regex.sub('', name).replace('\xa0', ' ').replace('  ', ' ').strip()
 					# extract price
 					canteen.addMeal(date, next(categoriesIterator), name, notes, next(colIter).text)
 			except StopIteration:
@@ -69,11 +70,13 @@ def parse_week(url, data, canteen):
 	except StopIteration:
 		pass
 
+
 def parse_url(url):
 	canteen = OpenMensaCanteen()
 	canteen.setAdditionalCharges('student', {'other': 1.5})
 	document = parse(urlopen(url).read())
 	for submit in document.find_all('input'):
-		if submit['type'] != 'submit': continue
-		parse_week(url, urlencode({ submit['name']: submit['value']}).encode('utf8'), canteen)
+		if submit['type'] != 'submit':
+			continue
+		parse_week(url, urlencode({submit['name']: submit['value']}).encode('utf8'), canteen)
 	return canteen.toXMLFeed()
