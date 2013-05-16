@@ -12,7 +12,7 @@ from muenchen import parse_url as muenchen_parse
 providers = {
 	'magdeburg': {
 		'handler': magdeburg_parse,
-		'prefix': 'http://www.studentenwerk-magdeburg.de/mensen-cafeterien/',
+		'prefix': 'http://www.studentenwerk-magdeburg.de/',
 		'canteens': {
 			'ovgu-unten': 'mensa-unicampus/speiseplan-unten/',
 			'ovgu-oben': 'mensa-unicampus/speiseplan-oben/',
