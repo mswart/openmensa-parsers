@@ -48,6 +48,11 @@ def parse_url(url):
 				continue  # no meal
 			strings = list(tr.contents[0].strings)
 			name = strings[0]
+			# prices:
+			prices = strings[-1].split('|')
+			print(prices)
+			if '-' in map(lambda v: v.strip(), prices):
+				prices = {}
 			# notes:
 			notes = []
 			for img in tr.contents[1].find_all('img'):
@@ -55,6 +60,5 @@ def parse_url(url):
 			for extra in list(set(map(lambda v: int(v), extra_regex.findall(tr.text)))):
 				if extra in extraLegend:
 					notes.append(extraLegend[extra])
-			canteen.addMeal(date, 'Hauptgerichte', name, notes,
-				strings[-1].split('|'), roles)
+			canteen.addMeal(date, 'Hauptgerichte', name, notes, prices, roles if prices else None)
 	return canteen.toXMLFeed()
