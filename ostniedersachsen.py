@@ -23,9 +23,9 @@ def parse_week(url, canteen, type):
             else:
                 notes = []
             prices = {
-                'student':  meal_tr.find('td', class_='swbs_speiseplan_price_s').text,
-                'employee': meal_tr.find('td', class_='swbs_speiseplan_price_e').text,
-                'other':    meal_tr.find('td', class_='swbs_speiseplan_price_g').text
+                'student':  tds[2].text,
+                'employee': tds[3].text,
+                'other':    tds[4].text
             }
             canteen.addMeal(date, category, name, notes, prices)
 
