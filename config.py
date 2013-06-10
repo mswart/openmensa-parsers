@@ -197,7 +197,7 @@ def parse(provider, canteen):
     if canteen not in provider['canteens']:
         return False
     canteen = provider['canteens'][canteen]
-    if type(canteen) is tuple:
-        return provider['handler'](provider['prefix'] + canteen[0], *canteen[1:])
-    else:
-        return provider['handler'](provider['prefix'] + canteen)
+    if type(canteen) is not tuple:
+        canteen = (canteen,)
+    return provider['handler'](provider['prefix'] + canteen[0], *canteen[1:],
+                               **provider.get('options', {}))
