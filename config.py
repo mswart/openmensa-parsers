@@ -8,7 +8,6 @@ from wuerzburg import parse_url as wuerzburg_parse
 from marburg import parse_url as marburg_parse
 from hamburg import parse_url as hamburg_parse
 from muenchen import parse_url as muenchen_parse
-from ostniedersachsen import parse_url as ostniedersachsen_parse
 
 
 providers = {
@@ -177,17 +176,10 @@ providers = {
             'boltzmannstrasse':    'speiseplan_{}_527_-de.html',
         }
     },
-    'braunschweig': {
-        'handler': ostniedersachsen_parse,
-        'prefix': 'http://www.stw-on.de/braunschweig/essen/menus/mensa-',
-        'canteens': {
-            'mensa1-mittag': ('1', 'Mittagsmensa'),
-            'mensa1-abend':  ('1', 'Abendmensa'),
-            'mensa2':         '2',
-            'hbk':            'hbk',
-        }
-    },
 }
+
+from ostniedersachsen import register_canteens as register_ostniedersachsen
+register_ostniedersachsen(providers)
 
 
 def parse(provider, canteen):
