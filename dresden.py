@@ -34,9 +34,10 @@ def parse_week(url, canteen):
                             price_regex.findall(meal_tr.contents[2].text), roles)
 
 
-def parse_url(url):
+def parse_url(url, today=False):
     canteen = LazyBuilder()
     parse_week(url + '.html', canteen)
-    parse_week(url + '-w1.html', canteen)
-    parse_week(url + '-w2.html', canteen)
+    if not today:
+        parse_week(url + '-w1.html', canteen)
+        parse_week(url + '-w2.html', canteen)
     return canteen.toXMLFeed()

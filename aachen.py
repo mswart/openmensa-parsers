@@ -71,7 +71,7 @@ def parse_week(url, data, canteen):
         pass
 
 
-def parse_url(url):
+def parse_url(url, today=False):
     canteen = OpenMensaCanteen()
     canteen.setAdditionalCharges('student', {'other': 1.5})
     document = parse(urlopen(url).read())
@@ -79,4 +79,6 @@ def parse_url(url):
         if submit['type'] != 'submit':
             continue
         parse_week(url, urlencode({submit['name']: submit['value']}).encode('utf8'), canteen)
+        if today:
+            break
     return canteen.toXMLFeed()

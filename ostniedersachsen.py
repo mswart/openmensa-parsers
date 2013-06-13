@@ -30,7 +30,7 @@ def parse_week(url, canteen, type):
             canteen.addMeal(date, category, name, notes, prices)
 
 
-def parse_url(url, canteentype='Mittagsmensa', legend_url=None, next_week=True):
+def parse_url(url, today=False, canteentype='Mittagsmensa', legend_url=None, next_week=True):
     canteen = LazyBuilder()
     if not legend_url:
         legend_url = url[:url.find('essen/') + 6] + 'lebensmittelkennzeichnung'
@@ -40,9 +40,9 @@ def parse_url(url, canteentype='Mittagsmensa', legend_url=None, next_week=True):
         regex=r'(?P<name>(\d+|[A-Z]+))\s+=\s+(?P<value>\w+( |\t|\w)*)'
     )
     parse_week(url, canteen, canteentype)
-    if next_week is True:
+    if not today and next_week is True:
         parse_week(url + '-kommende-woche', canteen, canteentype)
-    if type(next_week) is str:
+    if not today and type(next_week) is str:
         parse_week(url + next_week, canteen, canteentype)
     return canteen.toXMLFeed()
 

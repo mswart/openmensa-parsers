@@ -11,7 +11,7 @@ price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
 extra_regex = re.compile('[0-9,]+=(?P<note>\w+(\s|\w)*)')
 
 
-def parse_url(url):
+def parse_url(url, today=False):
     canteen = LazyBuilder()
     document = parse(urlopen(url).read())
     for day_div in document.find_all('div', 'day') + document.find_all('article', attrs={'data-day': True}):

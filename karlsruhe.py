@@ -56,15 +56,16 @@ def parse_week(canteen, url, place_class=None):
                                 price_regex.findall(meal_tr.contents[2].text), roles)
 
 
-def parse_url(url, place_class=None):
+def parse_url(url, today=False, place_class=None):
     canteen = OpenMensaCanteen()
     parse_week(canteen, url, place_class)
     day = datetime.date.today()
     old = -1
     day += datetime.date.resolution * 7
-    parse_week(canteen, '{}?kw={}'.format(url, day.isocalendar()[1]), place_class)
+    if not today:
+        parse_week(canteen, '{}?kw={}'.format(url, day.isocalendar()[1]), place_class)
     day += datetime.date.resolution * 7
-    while old != canteen.dayCount():
+    while not today and old != canteen.dayCount():
         old = canteen.dayCount()
         parse_week(canteen, '{}?kw={}'.format(url, day.isocalendar()[1]), place_class)
         day += datetime.date.resolution * 7

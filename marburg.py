@@ -39,8 +39,10 @@ def parse_week(url, canteen, mensa):
             canteen.addMeal(date, category, name, [], tr_menu.find_all('td')[2].text)
 
 
-def parse_url(url, mensa, *weeks):
+def parse_url(url, today, mensa, *weeks):
     canteen = LazyBuilder()
     for week in weeks:
         parse_week(url + week, canteen, mensa)
+        if today:
+            break
     return canteen.toXMLFeed()

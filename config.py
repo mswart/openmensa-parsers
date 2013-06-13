@@ -182,7 +182,7 @@ from ostniedersachsen import register_canteens as register_ostniedersachsen
 register_ostniedersachsen(providers)
 
 
-def parse(provider, canteen):
+def parse(provider, canteen, today=False):
     if provider not in providers:
         return False
     provider = providers[provider]
@@ -191,5 +191,5 @@ def parse(provider, canteen):
     canteen = provider['canteens'][canteen]
     if type(canteen) is not tuple:
         canteen = (canteen,)
-    return provider['handler'](provider['prefix'] + canteen[0], *canteen[1:],
-                               **provider.get('options', {}))
+    return provider['handler'](provider['prefix'] + canteen[0], today,
+                               *canteen[1:], **provider.get('options', {}))

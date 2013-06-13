@@ -36,10 +36,11 @@ def parse_week(url, canteen):
             i += 1
 
 
-def parse_url(url):
+def parse_url(url, today=False):
     canteen = LazyBuilder()
     parse_week(url + (datetime.date.today()
                + datetime.date.resolution * 7).strftime('/%Y/%W/'), canteen)
-    parse_week(url + (datetime.date.today()
-               + datetime.date.resolution * 14).strftime('/%Y/%W/'), canteen)
+    if not today:
+        parse_week(url + (datetime.date.today()
+                       + datetime.date.resolution * 14).strftime('/%Y/%W/'), canteen)
     return canteen.toXMLFeed()

@@ -13,4 +13,4 @@ if canteen not in providers[provider]['canteens']:
     print('unknown canteen', file=sys.stderr)
     print('registered canteen:\n{}'.format('\n'.join(sorted(providers[provider]['canteens'].keys()))), file=sys.stderr)
 
-print(parse(provider, canteen))
+print(parse(provider, canteen, len(sys.argv) > 3))

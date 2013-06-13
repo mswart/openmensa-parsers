@@ -5,7 +5,7 @@ import re
 
 from config import providers, parse
 
-canteen_request = re.compile('/(?P<provider>\w+)/(?P<canteen>[-_a-zA-Z0-9]+).xml')
+canteen_request = re.compile('/(?P<provider>\w+)/(?P<canteen>[-_a-zA-Z0-9]+)(?P<today>/today)?.xml')
 
 
 def handler(eniron, start_response):
@@ -23,11 +23,13 @@ def handler(eniron, start_response):
         start_response('404 Canteen not found', [])
     else:
         try:
-            content = parse(match.group('provider'), match.group('canteen'))
+            content = parse(match.group('provider'), match.group('canteen'),
+                            bool(match.group('today')))
         except Exception:
             traceback.print_exception(*sys.exc_info())
             start_response('500 Internal Server Error', [])
             return
         content = content.encode('utf8')
-        start_response('200 OK', [('Content-Type', 'application/xml; charset=utf-8'), ('Content-length', str(len(content)))])
+        start_response('200 OK', [('Content-Type', 'application/xml; charset=utf-8'),
+                                  ('Content-length', str(len(content)))])
         return (content,)

@@ -14,7 +14,7 @@ legend_regex = re.compile('(?P<number>\d+)\) (?P<value>\w+(\s+\w+)*)')
 roles = ('student', 'employee', 'other')
 
 
-def parse_url(url):
+def parse_url(url, today=False):
     content = urlopen(url).read()
     document = parse(content)
     legends = document.find_all('div', {'class': 'legende'})

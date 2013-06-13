@@ -11,7 +11,7 @@ price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€?')
 otherPrice = re.compile('Gästezuschlag:? ?(?P<price>\d+[,.]\d{2}) ?€?')
 
 
-def parse_url(url):
+def parse_url(url, today=False):
     canteen = LazyBuilder()
     legend = {}
     document = parse(urlopen('http://www.studentenwerk-muenchen.de/mensa/speiseplan/zusatzstoffe-de.html').read())
@@ -63,4 +63,6 @@ def parse_url(url):
                 prices.get(category.replace('Aktionsessen', 'Bio-/Aktionsgericht'), {})
             )
         date += datetime.date.resolution
+        if today:
+            break
     return canteen.toXMLFeed()
