@@ -39,7 +39,6 @@ def parse_url(url, today=False):
     day = datetime.date.today()
     emptyCount = 0
     while emptyCount < 7:
-        print(canteen._days)
         if not parse_day(canteen, '{}&day={}&month={}&year={}&limit=25'
                          .format(url, day.day, day.month, day.year),
                          day.strftime('%Y-%m-%d')):
