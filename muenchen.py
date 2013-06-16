@@ -13,7 +13,7 @@ otherPrice = re.compile('Gästezuschlag:? ?(?P<price>\d+[,.]\d{2}) ?€?')
 
 def parse_url(url, today=False):
     canteen = LazyBuilder()
-    legend = {}
+    legend = {'f': 'fleischloses Gericht', 'v': 'veganes Gericht'}
     document = parse(urlopen('http://www.studentenwerk-muenchen.de/mensa/speiseplan/zusatzstoffe-de.html').read())
     for td in document.find_all('td', 'beschreibung'):
         legend[td.previous_sibling.previous_sibling.text] = td.text

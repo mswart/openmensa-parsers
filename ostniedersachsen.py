@@ -32,6 +32,7 @@ def parse_week(url, canteen, type):
 
 def parse_url(url, today=False, canteentype='Mittagsmensa', legend_url=None, next_week=True):
     canteen = LazyBuilder()
+    canteen.legendKeyFunc = lambda v: v.lower()
     if not legend_url:
         legend_url = url[:url.find('essen/') + 6] + 'lebensmittelkennzeichnung'
     legend_doc = parse(urlopen(legend_url))
