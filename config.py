@@ -8,6 +8,7 @@ from wuerzburg import parse_url as wuerzburg_parse
 from marburg import parse_url as marburg_parse
 from hamburg import parse_url as hamburg_parse
 from muenchen import parse_url as muenchen_parse
+from darmstadt import parse_url as darmstadt_parse
 
 
 providers = {
@@ -174,6 +175,13 @@ providers = {
             'cafeteria-garching':  'speiseplan_{}_524_-de.html',
             'akademie':            'speiseplan_{}_526_-de.html',
             'boltzmannstrasse':    'speiseplan_{}_527_-de.html',
+        }
+    },
+    'darmstadt': {
+        'handler': darmstadt_parse,
+        'prefix': 'http://www.stwda.de/components/com_spk/',
+        'canteens': {
+            'stadtmitte': 'spk_Stadtmitte_print.php?ansicht=week'
         }
     },
 }
