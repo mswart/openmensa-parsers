@@ -181,7 +181,31 @@ providers = {
         'handler': darmstadt_parse,
         'prefix': 'http://www.stwda.de/components/com_spk/',
         'canteens': {
-            'stadtmitte': 'spk_Stadtmitte_print.php?ansicht=week'
+            'Stadtmitte': (
+                '',
+                'spk_Stadtmitte_print.php?ansicht=week',
+                'spk_Stadtmitte_print.php?ansicht=nextweek'
+            ),
+            'Lichtwiese': (
+                '',
+                'spk_Lichtwiese_print.php?ansicht=week' 
+                'spk_Lichtwiese_print.php?ansicht=nextweek'
+            ),
+            'Schöfferstraße': (
+                '',
+                'spk_Schoefferstrasse_print.php?ansicht=week',
+                'spk_Schoefferstrasse_print.php?ansicht=nextweek'
+            ),
+            'Dieburg': (
+                '',
+                'spk_Dieburg_print.php?ansicht=week',
+                'spk_Dieburg_print.php?ansicht=nextweek'
+            ),
+            'Bistro Haardtring': (
+                '',
+                'spk_Haardtring_print.php?ansicht=week',
+                'spk_Haardtring_print.php?ansicht=nextweek'
+            )
         }
     },
 }
