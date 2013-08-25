@@ -9,29 +9,24 @@ from functools import partial
 meal_regex = re.compile(r"""(?P<mealName>.+[^\s])\s*
                             (?P<mealType>\b[A-Z]+)\s*
                             (?P<price>\d+,\d{2})""", re.VERBOSE)
-additions_regex = re.compile(r"""(\((\d\s*,?\s*)+\))\s*""")
 
 typeLegend_regex = re.compile(r"""\(([A-Z])\)\s*
                                   ([^#]+)#?""", re.VERBOSE)
-additionsLegend_regex = re.compile(r"""\((\d+)\)\s*
-                                       ([^#]+)#?""", re.VERBOSE)
 
 def parse_week(url, canteen):
 
     soup = BeautifulSoup(urlopen(url).read())
 
     mealTypes = {}
-    additionsMapping = {}
-    for legende in soup.find_all('div', {'class' : 'legende'}):
-        for le in typeLegend_regex.findall(legende.string):
+    for legendTag in soup.find_all('div', {'class' : 'legende'}):
+        for le in typeLegend_regex.findall(legendTag.string):
             mealTypes[le[0]] = le[1].strip()
-        for le in additionsLegend_regex.findall(legende.string):
-            additionsMapping[le[0]] = le[1].strip()
+        canteen.setLegendData(text=legendTag.string, legend=canteen.legendData)
 
     sp_table = soup.find("table", { "class" : "spk_table" } )
     if sp_table is None:
         # call setDayClosed() on current dates ?
-        return canteen.toXMLFeed()
+        return
 
     dates = []
     subCanteen = None
@@ -46,7 +41,7 @@ def parse_week(url, canteen):
 
             if len(dates) == 0:
                 # call setDayClosed() on current dates ?
-                return canteen.toXMLFeed()
+                return
 
             dateRow = False
             continue
@@ -82,17 +77,6 @@ def parse_week(url, canteen):
 
                 for mealTypeChar in mealType.strip():
                     notes += [mealTypes[mealTypeChar]]
-
-                # remove "(1,2,4)" additions specifiers from name & store them in a set()
-                additions = set()
-                def adder(match, additions):
-                    for a in match.group(0).strip('() \t').split(','):
-                        additions.add(a)
-                    return ''
-                name = additions_regex.sub(partial(adder, additions=additions), name).strip()
-
-                for a in additions:
-                    notes += [additionsMapping[a.strip()]]
 
                 canteen.addMeal(date=dates[dateIdx], category=subCanteen, name=name, prices=price, notes=notes)
 
