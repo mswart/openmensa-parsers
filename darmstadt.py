@@ -76,17 +76,18 @@ def parse_week(url, canteen):
                 notes = []
 
                 for mealTypeChar in mealType.strip():
-                    notes += [mealTypes[mealTypeChar]]
+                    if mealTypeChar in mealTypes:
+                        notes += [mealTypes[mealTypeChar]]
 
                 canteen.addMeal(date=dates[dateIdx], category=subCanteen, name=name, prices=price, notes=notes)
 
 
-#TODO: what does that "today" mean?
-def parse_url(url, today, *weeks):
+def parse_url(url, today):
     canteen = LazyBuilder()
     canteen.setAdditionalCharges('student', { })
-    for week in weeks:
-        parse_week(url + week, canteen)
+    parse_week(url + 'week', canteen)
+    if not today:
+        parse_week(url + 'nextweek', canteen)
     
     return canteen.toXMLFeed()
 
