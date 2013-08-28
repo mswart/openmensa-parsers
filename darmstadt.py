@@ -35,7 +35,7 @@ def parse_week(url, canteen):
     for row in sp_table.find_all("tr"):
 
         if dateRow:
-            for datecell in row.find_all("td"):
+            for datecell in row.find_all(["td", "th"]):
                 if len(datecell.string.strip()) > 0:
                     dates.append(datecell.string)
 
@@ -85,8 +85,10 @@ def parse_week(url, canteen):
 def parse_url(url, today):
     canteen = LazyBuilder()
     canteen.setAdditionalCharges('student', { })
-    parse_week(url + 'week', canteen)
-    if not today:
+    if today:
+        parse_week(url, canteen) # base url only contains current day
+    else:
+        parse_week(url + 'week', canteen)
         parse_week(url + 'nextweek', canteen)
     
     return canteen.toXMLFeed()
