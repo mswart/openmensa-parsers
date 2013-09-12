@@ -1,6 +1,7 @@
 #!python3
 from urllib.request import urlopen
 from bs4 import BeautifulSoup as parse
+from bs4.element import Tag
 import re
 
 from pyopenmensa.feed import LazyBuilder, extractWeekDates
@@ -27,7 +28,8 @@ def parse_week(url, canteen, mensa):
     canteen.setAdditionalCharges('student', prices)
     # find
     mensa_data = document.find('h1', text=re.compile(mensa)).parent
-    while mensa_data.name != 'div' or 'tx-cagcafeteria-pi1' not in mensa_data['class']:
+    while type(mensa_data) != Tag or mensa_data.name != 'div'\
+            or 'tx-cagcafeteria-pi1' not in mensa_data.get('class', []):
         mensa_data = mensa_data.next_sibling
     weekDays = extractWeekDates(mensa_data.find('h2').text)
     for day_headline in mensa_data.find_all('h3'):
