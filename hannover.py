@@ -9,7 +9,7 @@ day_regex = re.compile('(?P<date>\d{2}\.\d{2}\.\d{4})')
 price_regex = re.compile('(?P<price>\d+[,.]\d{2})€')
 note_regex = re.compile('\((?P<number>[a-z0-9]+?)\)')
 legend_regex = re.compile('\((?P<number>\w+)\) ?(?P<value>\w+(\s+\w+)*)')
-meal_regex = re.compile('(?P<category>(\w|\s|\(|\))+):\s*(?P<meal>(\w|\s)+)')
+meal_regex = re.compile('(?P<category>(\w|\s|\(|\))+):\s*(?P<meal>(\w|\s|-|,)+)')
 
 roles = ('student', 'employee', 'other')
 
