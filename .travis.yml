@@ -8,12 +8,12 @@ install:
   - sudo apt-get install -qq python3 uwsgi uwsgi-plugin-python3
   - which python3
   - python3 --version
-script: dpkg-buildpackage -us -uc
-after_success:
-  - ls -lah ..
-  - cat ../*.changes
-  - dpkg --info ../openmensa-parsers_1.0*.deb
-  - dpkg --contents ../openmensa-parsers_1.0*.deb
+script:
+  - dpkg-buildpackage -us -uc
+  - sudo sh -c 'echo "  http: 127.0.0.1:9090" >> /etc/uwsgi/apps-enabled/openmensa-parsers.yml'
+  - sudo /etc/init.d/uwsgi restart openmensa-parsers
+  - wget -O /dev/null http://localhost:9090/magdeburg/ovgu-unten.xml
+after_script: sudo cat /var/log/uwsgi/app/openmensa-parsers.log
 env:
   global:
     DEBEMAIL: packages@devtation.de
