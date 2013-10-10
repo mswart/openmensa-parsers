@@ -5,13 +5,10 @@ before_install:
 install:
   - sudo rm -f /etc/apt/sources.list.d/travis_ci_zeromq3-source.list
   - sudo apt-get update -qq
-  - sudo apt-get install -qq python3 uwsgi uwsgi-plugin-python3
-  - which python3
-  - python3 --version
+  - sudo apt-get install -qq python3 uwsgi uwsgi-plugin-python3 devscripts
 script:
   - dpkg-buildpackage -us -uc
-  - sudo sh -c 'echo "  http: 127.0.0.1:9090" >> /etc/uwsgi/apps-enabled/openmensa-parsers.yml'
-  - sudo /etc/init.d/uwsgi restart openmensa-parsers
+  - sudo scripts/travis-install-and-setup-deb.sh
   - wget -O /dev/null http://localhost:9090/magdeburg/ovgu-unten.xml
 after_script: sudo cat /var/log/uwsgi/app/openmensa-parsers.log
 env:
