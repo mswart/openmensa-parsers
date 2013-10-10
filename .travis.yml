@@ -1,7 +1,7 @@
 language: python
 python: "3.2"
 install:
-  - sudo apt-get install -qq dpkg-dev debhelper python3 uwsgi uwsgi-plugin-python3
+  - sudo apt-get install dpkg-dev debhelper uwsgi uwsgi-plugin-python3
 script: dpkg-buildpackage -us -uc
 after_success:
   - ls -lah ..
@@ -11,4 +11,4 @@ after_success:
 env:
   global:
     DEBEMAIL: packages@devtation.de
-    DEBFULLNAME: Travis CI Build VM
+    DEBFULLNAME: "Travis CI Build VM"
