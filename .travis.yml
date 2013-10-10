@@ -2,7 +2,7 @@ language: python
 python: "3.2"
 install:
   - find /etc/apt
-  - rm /etc/apt/sources.list.d/*zero*.list
+  - sudo rm -f /etc/apt/sources.list.d/travis_ci_zeromq3-source.list
   - sudo apt-get update
   - sudo apt-get install dpkg-dev debhelper uwsgi uwsgi-plugin-python3
 script: dpkg-buildpackage -us -uc
