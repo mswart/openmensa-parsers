@@ -8,7 +8,7 @@ install:
   - sudo apt-get install -qq python3 uwsgi uwsgi-plugin-python3 devscripts
 script:
   - dpkg-buildpackage -us -uc
-  - sudo bash scripts/travis-install-and-setup-deb.sh
+  - sudo scripts/travis-install-and-setup-deb.sh
   - wget -O /dev/null http://localhost:9090/magdeburg/ovgu-unten.xml
 after_script: sudo cat /var/log/uwsgi/app/openmensa-parsers.log
 env:
