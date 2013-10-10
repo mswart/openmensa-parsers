@@ -1,6 +1,7 @@
 language: python
 python: "3.2"
 install:
+  - sudo apt-get update
   - sudo apt-get install dpkg-dev debhelper uwsgi uwsgi-plugin-python3
 script: dpkg-buildpackage -us -uc
 after_success:
