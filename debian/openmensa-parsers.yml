@@ -1,0 +1,6 @@
+uwsgi:
+    plugins: python3
+    chdir: /usr/share/openmensa-parsers
+    pythonpath: /usr/share/openmensa-parsers
+    module: wsgihandler:handler
+    carbon-id: openmensa-parsers

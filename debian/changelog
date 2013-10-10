@@ -1,0 +1,5 @@
+openmensa-parsers (1.0) precise; urgency=low
+
+  * Create debian package to improve deploy steps
+
+ -- Malte Swart <packages@devtation.de>  Thu, 10 Oct 2013 21:17:43 +0200

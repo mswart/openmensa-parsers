@@ -1,0 +1,5 @@
+*.substvars
+*.debhelper
+*.debhelper.log
+openmensa-parsers
+files

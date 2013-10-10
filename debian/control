@@ -1,0 +1,20 @@
+Source: openmensa-parsers
+Maintainer: Malte Swart <packages@devtation.de>
+Section: python
+Priority: optional
+Build-Depends: python3 (>= 3.2), debhelper (>= 9)
+Standards-Version: 3.9.3
+X-Python3-Version: >= 3.2
+
+Package: openmensa-parsers
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, uwsgi, uwsgi-plugin-python3
+Description: Collection with parsers for openmensa
+ OpenMensa is a platform to exchange meal information for canteens in a
+ standardized way. See http://openmensa.org for more information.
+ .
+ OpenMensa received the meal data from standalone community-developed parsers
+ presenting the data in a standardized XML format (by parsing original sites).
+ .
+ The package contains parsers for canteens for common cities like Hannover,
+ Magdeburg, München ... They are deployed on http://omfeeds.devtation.de

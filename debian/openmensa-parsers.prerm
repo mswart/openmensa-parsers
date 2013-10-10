@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+if [ "$1" = "remove" ]; then
+  /etc/init.d/uwsgi stop openmensa-parsers
+fi
+
+#DEBHELPER#

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+/etc/init.d/uwsgi restart openmensa-parsers
+
+#DEBHELPER#

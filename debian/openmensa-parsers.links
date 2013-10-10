@@ -1,0 +1,1 @@
+/etc/uwsgi/apps-available/openmensa-parsers.yml /etc/uwsgi/apps-enabled/openmensa-parsers.yml
