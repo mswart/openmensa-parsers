@@ -8,7 +8,7 @@ X-Python3-Version: >= 3.2
 
 Package: openmensa-parsers
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends}, uwsgi, uwsgi-plugin-python3
+Depends: ${misc:Depends}, ${python3:Depends}, python3-bs4, uwsgi, uwsgi-plugin-python3
 Description: Collection with parsers for openmensa
  OpenMensa is a platform to exchange meal information for canteens in a
  standardized way. See http://openmensa.org for more information.
