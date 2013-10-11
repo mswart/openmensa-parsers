@@ -6,12 +6,11 @@ install:
   - sudo rm -f /etc/apt/sources.list.d/travis_ci_zeromq3-source.list
   - sudo apt-get update -qq
   - sudo apt-get install -qq python3 python3-bs4 uwsgi uwsgi-plugin-python3 uwsgi-plugin-http
+before_script:
+  - sudo scripts/travis-prepare-packaging.sh
 script:
   - dpkg-buildpackage -us -uc
   - sudo scripts/travis-install-and-setup-deb.sh
   - wget -O /dev/null http://localhost:9090/magdeburg/ovgu-unten.xml
-after_script: sudo cat /var/log/uwsgi/app/openmensa-parsers.log
-env:
-  global:
-    DEBEMAIL: packages@devtation.de
-    DEBFULLNAME: "Travis CI Build VM"
+after_script:
+  - sudo cat /var/log/uwsgi/app/openmensa-parsers.log
