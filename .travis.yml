@@ -11,6 +11,12 @@ before_script:
 script:
   - dpkg-buildpackage
   - sudo scripts/travis-install-and-setup-deb.sh
-  - wget -O /dev/null http://localhost:9090/magdeburg/ovgu-unten.xml
+  - wget --output-document=- /dev/null http://localhost:9090/magdeburg/ovgu-unten.xml
+after_success:
+  - tar --create ../openmensa-parsers_* | openssl enc -aes-256-cbc -e -pass env:TRANSFER_KEY > upload.bin
+  - wget --post-file upload.bin --output-document=- http://packages.devtation.de/travis-upload/openmensa-parsers
 after_script:
   - sudo cat /var/log/uwsgi/app/openmensa-parsers.log
+env:
+  global:
+    secure: BJRATzQDl81IRQvnz+EGz7WoDa5dHptN6VOQEuOC5/oOvGp1JlCUda/wQajCLUorbcN9pBN+FXhsKFzyOPoLg/63ANtiSKCsOvP9YZs1ZlXbu01qGiRdo1h1Qvy2W1qUrvFpkTgd3yq4gPVUmIaFs25SzOQQQqqT2kze1gv0Bac=
