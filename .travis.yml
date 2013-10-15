@@ -20,3 +20,7 @@ after_script:
 env:
   global:
     secure: BJRATzQDl81IRQvnz+EGz7WoDa5dHptN6VOQEuOC5/oOvGp1JlCUda/wQajCLUorbcN9pBN+FXhsKFzyOPoLg/63ANtiSKCsOvP9YZs1ZlXbu01qGiRdo1h1Qvy2W1qUrvFpkTgd3yq4gPVUmIaFs25SzOQQQqqT2kze1gv0Bac=
+notifications:
+  email:
+    on_success: always
+    on_failure: always
