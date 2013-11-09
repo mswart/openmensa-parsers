@@ -16,7 +16,7 @@ def parse_week(url, canteen, type):
             if not meal_tr.find('td'):  # z.B Headline
                 continue
             tds = meal_tr.find_all('td')
-            category = tds[0].text
+            category = tds[0].text.strip()
             name = tds[1].text
             if tds[1].find('a', href='http://www.stw-on.de/mensavital'):
                 notes = ['MensaVital']
