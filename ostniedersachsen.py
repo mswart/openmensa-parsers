@@ -30,7 +30,7 @@ def parse_week(url, canteen, type):
             canteen.addMeal(date, category, name, notes, prices)
 
 
-def parse_url(url, today=False, canteentype='Mittagsmensa', legend_url=None, next_week=True):
+def parse_url(url, today=False, canteentype='Mittagsmensa', this_week='', next_week=True, legend_url=None):
     canteen = LazyBuilder()
     canteen.legendKeyFunc = lambda v: v.lower()
     if not legend_url:
@@ -40,7 +40,7 @@ def parse_url(url, today=False, canteentype='Mittagsmensa', legend_url=None, nex
         text=legend_doc.find(id='artikel').text,
         regex=r'(?P<name>(\d+|[A-Z]+))\s+=\s+(?P<value>\w+( |\t|\w)*)'
     )
-    parse_week(url, canteen, canteentype)
+    parse_week(url + this_week, canteen, canteentype)
     if not today and next_week is True:
         parse_week(url + '-kommende-woche', canteen, canteentype)
     if not today and type(next_week) is str:
@@ -49,10 +49,10 @@ def parse_url(url, today=False, canteentype='Mittagsmensa', legend_url=None, nex
 
 
 def register_canteens(providers):
-    def city(name, prefix=None, legend_url=None, next_week=None, **canteens):
+    def city(name, prefix='menus/mensa-', legend_url=None, next_week=None, **canteens):
         city_definition = {
             'handler': parse_url,
-            'prefix': prefix or 'http://www.stw-on.de/{}/essen/menus/mensa-'.format(name),
+            'prefix': 'http://www.stw-on.de/{}/essen/'.format(name) + prefix,
             'canteens': {k.replace('_', '-'): v for k, v in canteens.items()}
         }
         if legend_url:
@@ -62,19 +62,20 @@ def register_canteens(providers):
             city_definition['options']['next_week'] = next_week
         providers[name] = city_definition
 
-    city('braunschweig',
-         mensa1_mittag=('1', 'Mittagsmensa'),
-         mensa1_abend=('1', 'Abendmensa'),
-         mensa2='2',
-         hbk='hbk',
+    city('braunschweig', prefix='menus/',
+         mensa1_mittag=('mensa-1', 'Mittagsmensa'),
+         mensa1_abend=('mensa-1', 'Abendmensa'),
+         mensa360=('360', 'Pizza', '-2', '-nachste-woche'),
+         mensa2='mensa-2',
+         hbk='mensa-hbk',
          legend_url='http://www.stw-on.de/braunschweig/essen/wissenswertes/lebensmittelkennzeichnung')
     city('clausthal', clausthal='clausthal', next_week='-kommend-woche')
-    city('hildesheim', prefix='http://www.stw-on.de/lueneburg/essen/menus/',
+    city('hildesheim', prefix='menus/',
          uni='mensa-uni',
          hohnsen='mensa-hohnsen',
          luebecker_strasse=('luebecker-strasse', 'Mittagsausgabe'))
     city('holzminden', hawk='hawk', next_week=False)
-    city('lueneburg', prefix='http://www.stw-on.de/lueneburg/essen/speiseplaene/',
+    city('lueneburg', prefix='speiseplaene/',
          campus='mensa-campus',
          rotes_feld='rotes-feld')
     city('suderburg', suderburg='suderburg')
