@@ -2,7 +2,7 @@
 from urllib.request import urlopen
 from bs4 import BeautifulSoup as parse
 import re
-import datetime
+from datetime import date
 
 from pyopenmensa.feed import LazyBuilder, extractWeekDates
 
@@ -11,9 +11,13 @@ strip_regex = re.compile('\s{2,}')
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€?')
 
 
-def parse_week(url, canteen):
+def parse_week(url, date, canteen):
+    url += '/{0}/{1:0>2}/'.format(*date.isocalendar())
     document = parse(urlopen(url).read())
     week_data = document.find('table', id='week-menu')
+    if week_data is None:
+        print('week not found')
+        return
     weekDays = extractWeekDates(week_data.thead.find_all('th')[0].text)
     for category_tr in week_data.find_all('tr'):
         category = category_tr.find('th').text
@@ -38,9 +42,7 @@ def parse_week(url, canteen):
 
 def parse_url(url, today=False):
     canteen = LazyBuilder()
-    parse_week(url + (datetime.date.today()
-               + datetime.date.resolution * 7).strftime('/%Y/%W/'), canteen)
+    parse_week(url, date.today(), canteen)
     if not today:
-        parse_week(url + (datetime.date.today()
-                       + datetime.date.resolution * 14).strftime('/%Y/%W/'), canteen)
+        parse_week(url, date.today() + date.resolution * 7, canteen)
     return canteen.toXMLFeed()
