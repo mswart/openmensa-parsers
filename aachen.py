@@ -35,7 +35,7 @@ def parse_week(url, data, canteen):
         return
     # iterator about all rows of the table
     rowIter = iter(document.find('table', 'wo_std').find_all('tr'))
-    # extra category names fro th's of first row
+    # extra category names from th's of first row
     headRow = next(rowIter)
     for br in headRow.find_all('br'):
         br.replace_with(document.new_string(' - '))
@@ -48,7 +48,11 @@ def parse_week(url, data, canteen):
             if tr.contents[0].get('rowspan') is None:
                 canteen.setDayClosed(date)
                 continue
-            extratr = next(rowIter)  # addition meal component row, ToDo
+
+            # extract information from addition meal component row
+            extratr = next(rowIter)
+            extras = extratr.text.replace('\xa0', ' ').replace('  ', ' ').strip().split(' – ');
+
             # build iterators for lists:
             categoriesIterator = iter(categories)
             colIter = iter(tr.find_all('td'))
@@ -56,17 +60,51 @@ def parse_week(url, data, canteen):
             # skip first row (date):
             next(colIter)
             next(extraIter)
+
+            # add meals
             try:
                 while True:
-                    name = next(colIter).text
-                    # extract notes from name
-                    notes = [legends[int(v)] for v in set(','.join(extra_regex.findall(name)).split(',')) if v and int(v) in legends]
-                    # from notes from name
-                    name = extra_regex.sub('', name).replace('\xa0', ' ').replace('  ', ' ').strip()
-                    # extract price
-                    canteen.addMeal(date, next(categoriesIterator), name, notes, next(colIter).text)
+                    category = next(categoriesIterator)
+                    mainMeals = next(colIter).text.split(' oder ')
+                    price = next(colIter).text
+
+                    for aMainMeal in mainMeals:
+                        # extract notes from name
+                        notes = [legends[int(v)] for v in set(','.join(extra_regex.findall(aMainMeal)).split(',')) if v and int(v) in legends]
+                        # remove notes from name
+                        aMainMeal = extra_regex.sub('', aMainMeal).replace('\xa0', ' ').replace('  ', ' ').strip()
+                        # add meal
+                        canteen.addMeal(date, category, aMainMeal, notes, price)
             except StopIteration:
                 pass
+
+            if len(extras) >= 1:
+                mainExtras = extras[0].replace('Hauptbeilage: ', ' ').split(' oder ')
+                # add main extra
+                try:
+                    for aMainExtra in mainExtras:
+                        # extract notes from name
+                        notes = [legends[int(v)] for v in set(','.join(extra_regex.findall(aMainExtra)).split(',')) if v and int(v) in legends]
+                        # remove notes from name
+                        aMainExtra = extra_regex.sub('', aMainExtra).replace('\xa0', ' ').replace('  ', ' ').strip()
+                        # add extra
+                        canteen.addMeal(date, 'Hauptbeilagen', aMainExtra, notes) 
+                except StopIteration:
+                    pass
+            
+            if len(extras) >= 2:
+                sideExtras = extras[1].replace('Gemüse/Salat: ', ' ').split(' oder ')
+                # add side extra
+                try:
+                    for aSideExtra in sideExtras:
+                        # extract notes from name
+                        notes = [legends[int(v)] for v in set(','.join(extra_regex.findall(aSideExtra)).split(',')) if v and int(v) in legends]
+                        # remove notes from name
+                        aSideExtra = extra_regex.sub('', aSideExtra).replace('\xa0', ' ').replace('  ', ' ').strip()
+                        # add extra
+                        canteen.addMeal(date, 'Gemüse/Salat', aSideExtra, notes) 
+                except StopIteration:
+                    pass
     except StopIteration:
         pass
 
