@@ -67,6 +67,8 @@ def parse_week(url, data, canteen):
                     category = next(categoriesIterator)
                     mainMeals = next(colIter).text.split(' oder ')
                     price = next(colIter).text
+                    if price.strip() == '€':  # no real price available
+                        price = None
 
                     for aMainMeal in mainMeals:
                         # extract notes from name
@@ -88,10 +90,10 @@ def parse_week(url, data, canteen):
                         # remove notes from name
                         aMainExtra = extra_regex.sub('', aMainExtra).replace('\xa0', ' ').replace('  ', ' ').strip()
                         # add extra
-                        canteen.addMeal(date, 'Hauptbeilagen', aMainExtra, notes) 
+                        canteen.addMeal(date, 'Hauptbeilagen', aMainExtra, notes)
                 except StopIteration:
                     pass
-            
+
             if len(extras) >= 2:
                 sideExtras = extras[1].replace('Gemüse/Salat: ', ' ').split(' oder ')
                 # add side extra
@@ -102,7 +104,7 @@ def parse_week(url, data, canteen):
                         # remove notes from name
                         aSideExtra = extra_regex.sub('', aSideExtra).replace('\xa0', ' ').replace('  ', ' ').strip()
                         # add extra
-                        canteen.addMeal(date, 'Gemüse/Salat', aSideExtra, notes) 
+                        canteen.addMeal(date, 'Gemüse/Salat', aSideExtra, notes)
                 except StopIteration:
                     pass
     except StopIteration:
