@@ -10,8 +10,8 @@ from pyopenmensa.feed import OpenMensaCanteen
 day_regex = re.compile('(?P<date>\d{2}\. ?\d{2}\. ?\d{4})')
 day_range_regex = re.compile('(?P<from>\d{2}\.\d{2}).* (?P<to>\d{2}\.\d{2}\.(?P<year>\d{4}))')
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
-extra_regex = re.compile('\((?P<extra>[0-9,]+)\)')
-legend_regex = re.compile('\((\d+)\) (\w+(\s|\w)*)')
+extra_regex = re.compile('\((?P<extra>[0-9,,*]+)\)')
+legend_regex = re.compile('\(([0-9,*]+)\) (\w+(\s|\w)*)')
 
 
 def parse_week(url, data, canteen):
@@ -20,7 +20,9 @@ def parse_week(url, data, canteen):
     legends = {}
     legendsData = document.find('table', 'zusatz_std')
     if legendsData:
-        legends = {int(v[0]): v[1] for v in legend_regex.findall(legendsData.text.replace('\xa0', ' '))}
+        legends = {v[0]: v[1] for v in legend_regex.findall(legendsData.text.replace('\xa0', ' '))}
+    print(legends)
+
     data = document.find('table', 'wo_std')
     if not data:
         message = document.find('div', 'Meldung_std')
@@ -83,7 +85,7 @@ def parse_week(url, data, canteen):
 
                     for aMainMeal in mainMeals:
                         # extract notes from name
-                        notes = [legends[int(v)] for v in set(','.join(extra_regex.findall(aMainMeal)).split(',')) if v and int(v) in legends]
+                        notes = [legends[v] for v in set(','.join(extra_regex.findall(aMainMeal)).split(',')) if v in legends]
                         # remove notes from name
                         aMainMeal = extra_regex.sub('', aMainMeal).replace('\xa0', ' ').replace('  ', ' ').strip()
                         # add meal
@@ -97,7 +99,7 @@ def parse_week(url, data, canteen):
                 try:
                     for aMainExtra in mainExtras:
                         # extract notes from name
-                        notes = [legends[int(v)] for v in set(','.join(extra_regex.findall(aMainExtra)).split(',')) if v and int(v) in legends]
+                        notes = [legends[v] for v in set(','.join(extra_regex.findall(aMainExtra)).split(',')) if v in legends]
                         # remove notes from name
                         aMainExtra = extra_regex.sub('', aMainExtra).replace('\xa0', ' ').replace('  ', ' ').strip()
                         # add extra
@@ -111,7 +113,7 @@ def parse_week(url, data, canteen):
                 try:
                     for aSideExtra in sideExtras:
                         # extract notes from name
-                        notes = [legends[int(v)] for v in set(','.join(extra_regex.findall(aSideExtra)).split(',')) if v and int(v) in legends]
+                        notes = [legends[v] for v in set(','.join(extra_regex.findall(aSideExtra)).split(',')) if v in legends]
                         # remove notes from name
                         aSideExtra = extra_regex.sub('', aSideExtra).replace('\xa0', ' ').replace('  ', ' ').strip()
                         # add extra
