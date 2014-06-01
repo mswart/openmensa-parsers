@@ -21,7 +21,6 @@ def parse_week(url, data, canteen):
     legendsData = document.find('table', 'zusatz_std')
     if legendsData:
         legends = {v[0]: v[1] for v in legend_regex.findall(legendsData.text.replace('\xa0', ' '))}
-    print(legends)
 
     data = document.find('table', 'wo_std')
     if not data:
