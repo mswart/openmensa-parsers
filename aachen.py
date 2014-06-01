@@ -85,8 +85,13 @@ def parse_week(url, data, canteen):
                     for aMainMeal in mainMeals:
                         # extract notes from name
                         notes = [legends[v] for v in set(','.join(extra_regex.findall(aMainMeal)).split(',')) if v in legends]
+                        notes.sort()
                         # remove notes from name
                         aMainMeal = extra_regex.sub('', aMainMeal).replace('\xa0', ' ').replace('  ', ' ').strip()
+                        # beautify the name
+                        aMainMeal = aMainMeal.replace(' , ', ', ').replace(' .', '.')
+                        if aMainMeal[-2:] == ' -':
+                            aMainMeal = aMainMeal[:-2]
                         # add meal
                         canteen.addMeal(date, category, aMainMeal, notes, price)
             except StopIteration:
@@ -99,8 +104,13 @@ def parse_week(url, data, canteen):
                     for aMainExtra in mainExtras:
                         # extract notes from name
                         notes = [legends[v] for v in set(','.join(extra_regex.findall(aMainExtra)).split(',')) if v in legends]
+                        notes.sort()
                         # remove notes from name
                         aMainExtra = extra_regex.sub('', aMainExtra).replace('\xa0', ' ').replace('  ', ' ').strip()
+                        # beautify the name
+                        aMainMeal = aMainMeal.replace(' , ', ', ').replace(' .', '.')
+                        if aMainMeal[-2:] == ' -':
+                            aMainMeal = aMainMeal[:-2]
                         # add extra
                         canteen.addMeal(date, 'Hauptbeilagen', aMainExtra, notes)
                 except StopIteration:
@@ -113,8 +123,13 @@ def parse_week(url, data, canteen):
                     for aSideExtra in sideExtras:
                         # extract notes from name
                         notes = [legends[v] for v in set(','.join(extra_regex.findall(aSideExtra)).split(',')) if v in legends]
+                        notes.sort()
                         # remove notes from name
                         aSideExtra = extra_regex.sub('', aSideExtra).replace('\xa0', ' ').replace('  ', ' ').strip()
+                        # beautify the name
+                        aMainMeal = aMainMeal.replace(' , ', ', ').replace(' .', '.')
+                        if aMainMeal[-2:] == ' -':
+                            aMainMeal = aMainMeal[:-2]
                         # add extra
                         canteen.addMeal(date, 'Gemüse/Salat', aSideExtra, notes)
                 except StopIteration:
