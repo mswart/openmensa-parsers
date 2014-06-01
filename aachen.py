@@ -46,7 +46,7 @@ def parse_week(url, data, canteen):
         if aCategory[-2:] == ' -':
             aCategory = aCategory[:-2]
 
-        if aCategory == '':
+        if aCategory == '-':
             categories.append('Spezialmenü')
         else:
             categories.append(aCategory)
