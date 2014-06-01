@@ -39,7 +39,18 @@ def parse_week(url, data, canteen):
     headRow = next(rowIter)
     for br in headRow.find_all('br'):
         br.replace_with(document.new_string(' - '))
-    categories = list(map(lambda v: (v.text.strip() + '#').replace(' -#', '#')[:-1], headRow.find_all('th')))[1:]
+
+    categories = list()
+    for aHeadRow in headRow.find_all('th')[1:]:
+        aCategory = aHeadRow.text.strip()
+        if aCategory[-2:] == ' -':
+            aCategory = aCategory[:-2]
+
+        if aCategory == '':
+            categories.append('Spezialmenü')
+        else:
+            categories.append(aCategory)
+
     try:
         while True:
             tr = next(rowIter)  # meal row
