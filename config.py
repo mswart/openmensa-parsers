@@ -4,6 +4,7 @@ from karlsruhe import parse_url as karlsruhe_parse
 from leipzig import parse_url as leipzig_parse
 from dresden import parse_url as dresden_parse
 from aachen import parse_url as aachen_parse
+from aachen import parse_url_academica as aachen_parse_academica
 from wuerzburg import parse_url as wuerzburg_parse
 from marburg import parse_url as marburg_parse
 from hamburg import parse_url as hamburg_parse
@@ -105,6 +106,13 @@ providers = {
             'eups': 'wo_mensa_eups.std.php',
             'goethe': 'wo_gastro_goethe.std.php',
             'juelich': 'wo_mensa4_juelich.std.php'
+        },
+    },
+    'aachen2': {
+        'handler': aachen_parse_academica,
+        'prefix': 'http://www.studentenwerk-aachen.de/essen/',
+        'canteens': {
+            'academica': 'speiseplan.html'
         },
     },
     'wuerzburg': {

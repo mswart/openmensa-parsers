@@ -20,7 +20,7 @@ def parse_week(url, data, canteen):
     legends = {}
     legendsData = document.find('table', 'zusatz_std')
     if legendsData:
-        legends = {v[0]: v[1] for v in legend_regex.findall(legendsData.text.replace('\xa0', ' '))}
+        legends = {v[0]: v[1] for v in legend_regex.findall(legendsData.text.replace('\xa0', ' ').replace('\n', ''))}
 
     data = document.find('table', 'wo_std')
     if not data:
@@ -43,7 +43,8 @@ def parse_week(url, data, canteen):
 
     categories = list()
     for aHeadRow in headRow.find_all('th')[1:]:
-        aCategory = aHeadRow.text.strip()
+        aCategory = aHeadRow.text.strip().replace('\n', '')
+
         if aCategory[-2:] == ' -':
             aCategory = aCategory[:-2]
 
@@ -55,6 +56,11 @@ def parse_week(url, data, canteen):
     try:
         while True:
             tr = next(rowIter)  # meal row
+            
+            # get rid of any unneccessary newlines
+            if '\n' in tr.contents:
+                tr.contents.remove('\n')
+
             # extract date from first column:
             date = day_regex.search(tr.contents[0].text).group('date')
             if tr.contents[0].get('rowspan') is None:
@@ -148,4 +154,11 @@ def parse_url(url, today=False):
         parse_week(url, urlencode({submit['name']: submit['value']}).encode('utf8'), canteen)
         if today:
             break
+    return canteen.toXMLFeed()
+
+def parse_url_academica(url, today=False):
+    canteen = OpenMensaCanteen()
+    canteen.setAdditionalCharges('student', {'other': 1.5})
+    document = parse(urlopen(url).read())
+    parse_week(url, None, canteen)
     return canteen.toXMLFeed()
