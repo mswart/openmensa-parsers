@@ -82,8 +82,17 @@ def parse_week(url, data, canteen):
             # add meals
             try:
                 while True:
+                    # get next category
                     category = next(categoriesIterator)
-                    mainMeals = next(colIter).text.split(' oder ')
+
+                    # get meal text
+                    rawMeals = next(colIter).text;
+                    rawMeals = ' '.join(rawMeals.split())
+
+                    # split meal text into multiple meals
+                    mainMeals = rawMeals.split(' oder ')
+
+                    # get price
                     price = next(colIter).text
                     if price.strip() == '€':  # no real price available
                         price = None
@@ -92,12 +101,15 @@ def parse_week(url, data, canteen):
                         # extract notes from name
                         notes = [legends[v] for v in set(','.join(extra_regex.findall(aMainMeal)).split(',')) if v in legends]
                         notes.sort()
+
                         # remove notes from name
                         aMainMeal = extra_regex.sub('', aMainMeal).replace('\xa0', ' ').replace('  ', ' ').strip()
+
                         # beautify the name
-                        aMainMeal = aMainMeal.replace(' , ', ', ').replace(' .', '.')
+                        aMainMeal = aMainMeal.replace(' , ', ', ').replace(' .', '.').replace('\n', '')
                         if aMainMeal[-2:] == ' -':
                             aMainMeal = aMainMeal[:-2]
+
                         # add meal
                         canteen.addMeal(date, category, aMainMeal, notes, price)
             except StopIteration:
