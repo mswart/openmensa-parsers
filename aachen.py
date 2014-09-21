@@ -111,7 +111,8 @@ def parse_week(url, data, canteen):
                             aMainMeal = aMainMeal[:-2]
 
                         # add meal
-                        canteen.addMeal(date, category, aMainMeal, notes, price)
+                        if len(aMainMeal) > 0:
+                            canteen.addMeal(date, category, aMainMeal, notes, price)
             except StopIteration:
                 pass
 
@@ -130,7 +131,8 @@ def parse_week(url, data, canteen):
                         if aMainMeal[-2:] == ' -':
                             aMainMeal = aMainMeal[:-2]
                         # add extra
-                        canteen.addMeal(date, 'Hauptbeilagen', aMainExtra, notes)
+                        if len(aMainMeal) > 0:
+                            canteen.addMeal(date, 'Hauptbeilagen', aMainExtra, notes)
                 except StopIteration:
                     pass
 
@@ -149,7 +151,8 @@ def parse_week(url, data, canteen):
                         if aMainMeal[-2:] == ' -':
                             aMainMeal = aMainMeal[:-2]
                         # add extra
-                        canteen.addMeal(date, 'Gemüse/Salat', aSideExtra, notes)
+                        if len(aMainMeal) > 0:
+                            canteen.addMeal(date, 'Gemüse/Salat', aSideExtra, notes)
                 except StopIteration:
                     pass
     except StopIteration:
