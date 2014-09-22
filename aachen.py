@@ -13,33 +13,13 @@ price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
 extra_regex = re.compile('\((?P<extra>[0-9,,*]+)\)')
 legend_regex = re.compile('\(([0-9,*]+)\) (\w+(\s|\w)*)')
 
-
-def parse_week(url, data, canteen):
-    document = parse(urlopen(url, data).read())
-    # parse extra/notes legend
-    legends = {}
-    legendsData = document.find('table', 'zusatz_std')
-    if legendsData:
-        legends = {v[0]: v[1] for v in legend_regex.findall(legendsData.text.replace('\xa0', ' ').replace('\n', ''))}
-
-    data = document.find('table', 'wo_std')
-    if not data:
-        message = document.find('div', 'Meldung_std')
-        if message:
-            m = day_range_regex.search(message.text)
-            if m:
-                fromDate = datetime.datetime.strptime(m.group('from') + '.' + m.group('year'), '%d.%m.%Y')
-                toDate = datetime.datetime.strptime(m.group('to'), '%d.%m.%Y')
-                while fromDate <= toDate:
-                    canteen.setDayClosed(fromDate.strftime('%Y-%m-%d'))
-                    fromDate += datetime.date.resolution
-        return
+def parse_table(table, canteen, legends):
     # iterator about all rows of the table
-    rowIter = iter(document.find('table', 'wo_std').find_all('tr'))
+    rowIter = iter(table.find_all('tr'))
     # extra category names from th's of first row
     headRow = next(rowIter)
     for br in headRow.find_all('br'):
-        br.replace_with(document.new_string(' - '))
+        br.replace_with(' - ')
 
     categories = list()
     for aHeadRow in headRow.find_all('th')[1:]:
@@ -49,13 +29,15 @@ def parse_week(url, data, canteen):
             aCategory = aCategory[:-2]
 
         if aCategory == '-':
-            categories.append('Spezialmenü')
-        else:
+            aCategory = 'Spezialmenü'
+
+        if not aCategory in categories:
             categories.append(aCategory)
 
     try:
         while True:
-            tr = next(rowIter)  # meal row
+            # meal row
+            tr = next(rowIter)
             
             # get rid of any unneccessary newlines
             if '\n' in tr.contents:
@@ -158,6 +140,29 @@ def parse_week(url, data, canteen):
     except StopIteration:
         pass
 
+def parse_week(url, data, canteen):
+    document = parse(urlopen(url, data).read())
+    # parse extra/notes legend
+    legends = {}
+    legendsData = document.find('table', 'zusatz_std')
+    if legendsData:
+        legends = {v[0]: v[1] for v in legend_regex.findall(legendsData.text.replace('\xa0', ' ').replace('\n', ''))}
+
+    data = document.find_all('table', 'wo_std')
+    if not data:
+        message = document.find('div', 'Meldung_std')
+        if message:
+            m = day_range_regex.search(message.text)
+            if m:
+                fromDate = datetime.datetime.strptime(m.group('from') + '.' + m.group('year'), '%d.%m.%Y')
+                toDate = datetime.datetime.strptime(m.group('to'), '%d.%m.%Y')
+                while fromDate <= toDate:
+                    canteen.setDayClosed(fromDate.strftime('%Y-%m-%d'))
+                    fromDate += datetime.date.resolution
+        return
+    
+    for aTable in data:
+        parse_table(aTable, canteen, legends)
 
 def parse_url(url, today=False):
     canteen = OpenMensaCanteen()
