@@ -10,14 +10,16 @@ from pyopenmensa.feed import LazyBuilder
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€?')
 otherPrice = re.compile('Gästezuschlag:? ?(?P<price>\d+[,.]\d{2}) ?€?')
 
+base = 'http://www.studentenwerk-muenchen.de/mensa'
+
 
 def parse_url(url, today=False):
     canteen = LazyBuilder()
     legend = {'f': 'fleischloses Gericht', 'v': 'veganes Gericht'}
-    document = parse(urlopen('http://www.studentenwerk-muenchen.de/mensa/speiseplan/zusatzstoffe-de.html').read())
+    document = parse(urlopen(base + '/speiseplan/zusatzstoffe-de.html').read())
     for td in document.find_all('td', 'beschreibung'):
         legend[td.previous_sibling.previous_sibling.text] = td.text
-    document = parse(urlopen('http://www.studentenwerk-muenchen.de/mensa/unsere-preise/').read())
+    document = parse(urlopen(base + '/unsere-preise/').read())
     prices = {}
     for tr in document.find('table', 'essenspreise').find_all('tr'):
         meal = tr.find('th')
@@ -25,11 +27,13 @@ def parse_url(url, today=False):
             continue
         if len(tr.find_all('td', 'betrag')) < 3:
             continue
+        if 'class' in meal.attrs and 'titel' in meal.attrs['class']:
+            continue
         meal = meal.text.strip()
         prices[meal] = {}
         for role, _id in [('student', 0), ('employee', 1), ('other', 2)]:
-            prices[meal][role] = price_regex.search(tr.find_all('td', 'betrag')[_id].text)\
-                .group('price')
+            prcie_html = tr.find_all('td', 'betrag')[_id].text
+            prices[meal][role] = price_regex.search(prcie_html).group('price')
     errorCount = 0
     date = datetime.date.today()
     while errorCount < 7:
@@ -45,8 +49,9 @@ def parse_url(url, today=False):
         else:
             errorCount = 0
         for tr in document.find('table', 'zusatzstoffe').find_all('tr'):
-            legend[tr.find_all('td')[0].text.strip().replace('(', '').replace(')', '')] \
-                = tr.find_all('td')[1].text.strip()
+            identifier = tr.find_all('td')[0].text \
+                           .replace('(', '').replace(')', '')
+            legend[identifier] = tr.find_all('td')[1].text.strip()
         canteen.setLegendData(legend)
         mensa_data = document.find('table', 'menu')
         category = None
