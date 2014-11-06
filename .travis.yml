@@ -9,7 +9,7 @@ install:
 before_script:
   - scripts/travis-prepare-packaging.sh
 script:
-  - dpkg-buildpackage
+  - dpkg-buildpackage -uc -us
   - sudo scripts/travis-install-and-setup-deb.sh
   - wget --output-document=/dev/null http://localhost:9090/magdeburg/ovgu-unten.xml
 after_success:
