@@ -13,7 +13,7 @@ otherPrice = re.compile('Gästezuschlag:? ?(?P<price>\d+[,.]\d{2}) ?€?')
 def parse_week(url, canteen, mensa):
     document = parse(urlopen(url).read())
     # extra legends information
-    canteen.setLegendData(text=document.find(text='Zusatzstoffe:').parent.parent.next_sibling.next_sibling.text.replace('&nbsp;', ' '))
+    canteen.setLegendData(text=document.find(text='Kennzeichnung: ').parent.next_sibling.get_text().replace('&nbsp;', ' '))
     # additional charges
     prices = {}
     for p in document.find_all('p'):
