@@ -38,7 +38,8 @@ def parse_url(url, today=False):
     canteen = LazyBuilder()
     day = datetime.date.today()
     emptyCount = 0
-    while emptyCount < 7:
+    totalCount = 0
+    while emptyCount < 7 and totalCount < 32:
         if not parse_day(canteen, '{}&day={}&month={}&year={}&limit=25'
                          .format(url, day.day, day.month, day.year),
                          day.strftime('%Y-%m-%d')):
@@ -47,5 +48,6 @@ def parse_url(url, today=False):
             emptyCount = 0
         if today:
             break
+        totalCount += 1
         day += datetime.date.resolution
     return canteen.toXMLFeed()
