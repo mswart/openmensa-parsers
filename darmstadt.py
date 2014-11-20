@@ -6,9 +6,9 @@ import re
 from bs4 import BeautifulSoup
 from functools import partial
 
-meal_regex = re.compile(r"""(?P<mealName>.+[^\s])\s*
+meal_regex = re.compile(r"""(?P<mealName>.+\S)\s*
                             (?P<mealType>\b[A-Z]+)\s*
-                            (?P<price>\d+,\d{2})""", re.VERBOSE)
+                            (?P<price>\d+,\d{2})?""", re.VERBOSE)
 
 typeLegend_regex = re.compile(r"""\(([A-Z])\)\s*
                                   ([^#]+)#?""", re.VERBOSE)
@@ -25,7 +25,7 @@ def parse_week(url, canteen):
 
     sp_table = soup.find("table", { "class" : "spk_table" } )
     if sp_table is None:
-        # call setDayClosed() on current dates ?
+        #TODO: call setDayClosed() on current dates ?
         return
 
     dates = []
@@ -40,7 +40,7 @@ def parse_week(url, canteen):
                     dates.append(datecell.string)
 
             if len(dates) == 0:
-                # call setDayClosed() on current dates ?
+                #TODO: call setDayClosed() on current dates ?
                 return
 
             dateRow = False
@@ -50,6 +50,10 @@ def parse_week(url, canteen):
         subCanteenColumn = True
         for mealCell in row.find_all("td"):
             dateIdx += 1
+
+            if dateIdx >= len(dates):
+                print('broken page: content cells without header')
+                break
 
             #TODO: setDayClosed()
 
@@ -68,7 +72,7 @@ def parse_week(url, canteen):
 
                 priceTypeMatch = meal_regex.match(mealCellText)
                 if priceTypeMatch is None:
-                    print('error in regex matching meal')
+                    print('regex not matching meal: "{}"'.format(mealCellText))
                     canteen.addMeal(date=dates[dateIdx], category=subCanteen, name=mealCellText)
                     continue
                 name, mealType, price = priceTypeMatch.group('mealName', 'mealType', 'price')
