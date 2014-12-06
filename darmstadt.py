@@ -18,10 +18,13 @@ def parse_week(url, canteen):
     soup = BeautifulSoup(urlopen(url).read())
 
     mealTypes = {}
-    for legendTag in soup.find_all('div', {'class' : 'legende'}):
-        for le in typeLegend_regex.findall(legendTag.string):
-            mealTypes[le[0]] = le[1].strip()
-        canteen.setLegendData(text=legendTag.string, legend=canteen.legendData)
+    try:
+        for legendTag in soup.find_all('div', {'class' : 'legende'}):
+            for le in typeLegend_regex.findall(legendTag.string):
+                mealTypes[le[0]] = le[1].strip()
+            canteen.setLegendData(text=legendTag.string, legend=canteen.legendData)
+    except:
+        pass
 
     sp_table = soup.find("table", { "class" : "spk_table" } )
     if sp_table is None:
@@ -79,9 +82,10 @@ def parse_week(url, canteen):
 
                 notes = []
 
-                for mealTypeChar in mealType.strip():
-                    if mealTypeChar in mealTypes:
-                        notes += [mealTypes[mealTypeChar]]
+                if mealType:
+                    for mealTypeChar in mealType.strip():
+                        if mealTypeChar in mealTypes:
+                            notes += [mealTypes[mealTypeChar]]
 
                 canteen.addMeal(date=dates[dateIdx], category=subCanteen, name=name, prices=price, notes=notes)
 
