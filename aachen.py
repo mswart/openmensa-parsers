@@ -77,10 +77,16 @@ def parse_table(table, canteen):
                 tr.contents.remove('\n')
 
             # extract date from first column:
-            date = day_regex.search(tr.contents[0].text).group('date')
-            if tr.contents[0].get('rowspan') is None:
-                canteen.setDayClosed(date)
+            print("Mäh: " + tr.contents[0].text)
+            print("Muh: " + str(day_regex.search(tr.contents[0].text)))
+            dateResults = day_regex.search(tr.contents[0].text)
+            if dateResults is None:
                 continue
+            else:
+                date = dateResults.group('date')
+                if tr.contents[0].get('rowspan') is None:
+                    canteen.setDayClosed(date)
+                    continue
 
             # extract information from addition meal component row
             extratr = next(rowIter)
