@@ -10,10 +10,43 @@ from pyopenmensa.feed import OpenMensaCanteen
 day_regex = re.compile('(?P<date>\d{2}\. ?\d{2}\. ?\d{4})')
 day_range_regex = re.compile('(?P<from>\d{2}\.\d{2}).* (?P<to>\d{2}\.\d{2}\.(?P<year>\d{4}))')
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
-extra_regex = re.compile('\((?P<extra>[0-9,,*]+)\)')
-legend_regex = re.compile('\(([0-9,*]+)\) (\w+(\s|\w)*)')
+extra_regex = re.compile('\(([0-9,A-N,.,,]+)\)')
+legend = {
+            "1": "mit Farbstoff",
+            "2": "mit Konservierungsstoff",
+            "3": "mit Antioxidationsmittel",
+            "4": "mit Geschmacksverstärker",
+            "5": "geschwefelt",
+            "6": "geschwärzt",
+            "7": "gewachst",
+            "8": "mit Phosphat",
+            "9": "mit Süßungsmittel",
+            "10": "enthält eine Phenylalaninquelle",
+            "A": "enthält glutenhaltiges Getreide",
+            "B": "enthält Sellerie",
+            "C": "enthält Krebstiere",
+            "D": "enthält Eier",
+            "E": "enthält Fisch",
+            "F": "enthält Erdnüsse",
+            "G": "enthält Sojabohnen",
+            "H": "enthält Milch (inkl. Lactose)",
+            "I": "enthält Schalenfrüchte (Nüsse)",
+            "J": "enthält Senf",
+            "K": "enthält Sesamsamen",
+            "L": "enthält Schwefeldioxid/Sulfite",
+            "M": "enthält Lupinen",
+            "N": "enthält Weichtiere",
+        }
 
-def parse_table(table, canteen, legends):
+def legendReferences(aMeal):
+    foundElements = extra_regex.findall(aMeal)
+    foundElements = ','.join(foundElements)
+    foundElements = foundElements.replace('.', ',')
+    foundElements = foundElements.split(',')
+
+    return sorted(set(foundElements))
+
+def parse_table(table, canteen):
     # iterator about all rows of the table
     rowIter = iter(table.find_all('tr'))
     # extra category names from th's of first row
@@ -81,7 +114,8 @@ def parse_table(table, canteen, legends):
 
                     for aMainMeal in mainMeals:
                         # extract notes from name
-                        notes = [legends[v] for v in set(','.join(extra_regex.findall(aMainMeal)).split(',')) if v in legends]
+                        legendRefs = legendReferences(aMainMeal)
+                        notes = [legend[v] for v in legendRefs if v in legend]
                         notes.sort()
 
                         # remove notes from name
@@ -104,8 +138,10 @@ def parse_table(table, canteen, legends):
                 try:
                     for aMainExtra in mainExtras:
                         # extract notes from name
-                        notes = [legends[v] for v in set(','.join(extra_regex.findall(aMainExtra)).split(',')) if v in legends]
+                        legendRefs = legendReferences(aMainExtra)
+                        notes = [legend[v] for v in legendRefs if v in legend]
                         notes.sort()
+
                         # remove notes from name
                         aMainExtra = extra_regex.sub('', aMainExtra).replace('\xa0', ' ').replace('  ', ' ').strip()
                         # beautify the name
@@ -124,8 +160,10 @@ def parse_table(table, canteen, legends):
                 try:
                     for aSideExtra in sideExtras:
                         # extract notes from name
-                        notes = [legends[v] for v in set(','.join(extra_regex.findall(aSideExtra)).split(',')) if v in legends]
+                        legendRefs = legendReferences(aSideExtra)
+                        notes = [legend[v] for v in legendRefs if v in legend]
                         notes.sort()
+                        
                         # remove notes from name
                         aSideExtra = extra_regex.sub('', aSideExtra).replace('\xa0', ' ').replace('  ', ' ').strip()
                         # beautify the name
@@ -142,11 +180,6 @@ def parse_table(table, canteen, legends):
 
 def parse_week(url, data, canteen):
     document = parse(urlopen(url, data).read())
-    # parse extra/notes legend
-    legends = {}
-    legendsData = document.find('table', 'zusatz_std')
-    if legendsData:
-        legends = {v[0]: v[1] for v in legend_regex.findall(legendsData.text.replace('\xa0', ' ').replace('\n', ''))}
 
     data = document.find_all('table', 'wo_std')
     if not data:
@@ -162,7 +195,7 @@ def parse_week(url, data, canteen):
         return
     
     for aTable in data:
-        parse_table(aTable, canteen, legends)
+        parse_table(aTable, canteen)
 
 def parse_url(url, today=False):
     canteen = OpenMensaCanteen()
