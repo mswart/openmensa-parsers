@@ -84,12 +84,20 @@ def parse_table(table, canteen):
 
             # extract information from addition meal component row
             extratr = next(rowIter)
-            extras = extratr.text.replace('\xa0', ' ').replace('  ', ' ').strip().split(' – ');
+            extratrtext = extratr.text
+            if "Kennzeichnung" in extratrtext:
+                extratrtext = extratrtext[:extratrtext.index("Kennzeichnung")]
+            extratrtext = extratrtext.replace('\xa0', ' ').replace('\n', '').replace('\r', '').replace('\t', '').replace('  ', ' ').strip();
+            if extratrtext == '–':
+                extras = [];
+            else:
+                extras = extratrtext.split(' – ')
 
             # build iterators for lists:
             categoriesIterator = iter(categories)
             colIter = iter(tr.find_all('td'))
             extraIter = iter(extratr.find_all('td'))
+
             # skip first row (date):
             next(colIter)
             next(extraIter)
