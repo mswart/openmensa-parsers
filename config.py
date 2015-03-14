@@ -145,7 +145,7 @@ providers = {
     },
     'hamburg': {
         'handler': hamburg_parse,
-        'prefix': 'http://speiseplan.studwerk.uptrade.de/index.php/de/',
+        'prefix': 'http://speiseplan.studierendenwerk-hamburg.de/de/',
         'canteens': {
             'armgartstrasse':       '590',
             'bergedorf':            '520',
