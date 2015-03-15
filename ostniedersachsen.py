@@ -42,9 +42,9 @@ def parse_week(url, canteen, type, allergene={}, zusatzstoffe={}):
                 else:
                     notes.append(title.replace('enthält ', ''))
             prices = {
-                'student':  tds[3].text,
-                'employee': tds[4].text,
-                'other':    tds[5].text
+                'student':  tds[3].text.strip(),
+                'employee': tds[4].text.strip(),
+                'other':    tds[5].text.strip()
             }
             if pos < len(meals) - 1:
                 nextTds = meals[pos+1].find_all('td')
@@ -60,16 +60,16 @@ def parse_url(url, today=False, canteentype='Mittagsmensa', this_week='', next_w
     canteen = LazyBuilder()
     canteen.legendKeyFunc = lambda v: v.lower()
     if not legend_url:
-        legend_url = url[:url.find('essen/') + 6] + 'lebensmittelkennzeichnung'
+        legend_url = url[:url.find('essen/') + 6] + 'wissenswertes/lebensmittelkennzeichnung'
     legend_doc = parse(urlopen(legend_url)).find(id='artikel').text
     allergene = buildLegend(
-        text=legend_doc.replace('\xa0', '_'),
-        regex=r'(?P<name>[A-Z]+)_{2,} enthält (?P<value>\w+( |\t|\w)*)'
+        text=legend_doc.replace('\xa0', ' '),
+        regex=r'(?P<name>[A-Z]+) {3,}enthält (?P<value>\w+( |\t|\w)*)'
     )
     allergene['EI'] = 'Ei'
     zusatzstoffe = buildLegend(
-        text=legend_doc.replace('\xa0', '_'),
-        regex=r'(?P<name>\d+)_{2,} (enthält )?(?P<value>\w+( |\t|\w)*)'
+        text=legend_doc.replace('\xa0', ' '),
+        regex=r'(?P<name>\d+) {3,} (enthält )?(?P<value>\w+( |\t|\w)*)'
     )
     parse_week(url + this_week, canteen, canteentype,
                allergene=allergene, zusatzstoffe=zusatzstoffe)
@@ -101,8 +101,7 @@ def register_canteens(providers):
          mensa1_abend=('mensa-1', 'Abendmensa'),
          mensa360=('360', 'Pizza', '-2', '-nachste-woche'),
          mensa2='mensa-2',
-         hbk='mensa-hbk',
-         legend_url='http://www.stw-on.de/braunschweig/essen/wissenswertes/lebensmittelkennzeichnung')
+         hbk='mensa-hbk')
     city('clausthal', clausthal='clausthal', next_week='-kommend-woche')
     city('hildesheim', prefix='menus/',
          uni='mensa-uni',
