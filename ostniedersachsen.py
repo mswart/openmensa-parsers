@@ -61,16 +61,30 @@ def parse_url(url, today=False, canteentype='Mittagsmensa', this_week='', next_w
     canteen.legendKeyFunc = lambda v: v.lower()
     if not legend_url:
         legend_url = url[:url.find('essen/') + 6] + 'wissenswertes/lebensmittelkennzeichnung'
-    legend_doc = parse(urlopen(legend_url)).find(id='artikel').text
+    legend_doc = parse(urlopen(legend_url)).find(id='artikel')
     allergene = buildLegend(
-        text=legend_doc.replace('\xa0', ' '),
+        text=legend_doc.text.replace('\xa0', ' '),
         regex=r'(?P<name>[A-Z]+) {3,}enthält (?P<value>\w+( |\t|\w)*)'
     )
     allergene['EI'] = 'Ei'
     zusatzstoffe = buildLegend(
-        text=legend_doc.replace('\xa0', ' '),
+        text=legend_doc.text.replace('\xa0', ' '),
         regex=r'(?P<name>\d+) {3,} (enthält )?(?P<value>\w+( |\t|\w)*)'
     )
+    for tr in legend_doc.find_all('tr'):
+        tds = tr.find_all('td')
+        if len(tds) != 2:
+            continue
+        title = tds[0].find('strong')
+        if title is None:
+            continue
+        else:
+            title = title.text
+        text = tds[1].text.replace('enthält', '').strip()
+        if title.isdigit():
+            zusatzstoffe[title] = text
+        else:
+            allergene[title] = text
     parse_week(url + this_week, canteen, canteentype,
                allergene=allergene, zusatzstoffe=zusatzstoffe)
     if not today and next_week is True:
