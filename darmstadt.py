@@ -4,29 +4,29 @@ from urllib.request import urlopen
 from pyopenmensa.feed import LazyBuilder
 import re
 from bs4 import BeautifulSoup
-from functools import partial
 
-meal_regex = re.compile(r"""(?P<mealName>.+\S)\s*
-                            (?P<mealType>\b[A-Z]+)\s*
-                            (?P<price>\d+,\d{2})?""", re.VERBOSE)
+meal_regex = re.compile(r"""^(?P<mealName>[^€]+?)\s*
+                            ((?P<price>\d+,\d{2})\s*€)?\s*
+                            (\((?P<mealType>\b[A-Z1-9,]+)\))?$
+                            """, re.VERBOSE)
 
 typeLegend_regex = re.compile(r"""\(([A-Z])\)\s*
                                   ([^#]+)#?""", re.VERBOSE)
 
-def parse_week(url, canteen):
 
+def parse_week(url, canteen):
     soup = BeautifulSoup(urlopen(url).read())
 
     mealTypes = {}
     try:
-        for legendTag in soup.find_all('div', {'class' : 'legende'}):
+        for legendTag in soup.find_all('div', {'class': 'legende'}):
             for le in typeLegend_regex.findall(legendTag.string):
                 mealTypes[le[0]] = le[1].strip()
             canteen.setLegendData(text=legendTag.string, legend=canteen.legendData)
     except:
         pass
 
-    sp_table = soup.find("table", { "class" : "spk_table" } )
+    sp_table = soup.find("table", {"class": "spk_table"})
     if sp_table is None:
         #TODO: call setDayClosed() on current dates ?
         return
@@ -92,12 +92,11 @@ def parse_week(url, canteen):
 
 def parse_url(url, today):
     canteen = LazyBuilder()
-    canteen.setAdditionalCharges('student', { })
+    canteen.setAdditionalCharges('student', {})
     if today:
-        parse_week(url, canteen) # base url only contains current day
+        parse_week(url, canteen)  # base url only contains current day
     else:
         parse_week(url + 'week', canteen)
         parse_week(url + 'nextweek', canteen)
-    
-    return canteen.toXMLFeed()
 
+    return canteen.toXMLFeed()
