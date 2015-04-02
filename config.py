@@ -157,7 +157,7 @@ providers = {
             'cafe-jungiusstrasse':  '610',
             'cafe-alexanderstrasse':'660',
             'campus':               '340',
-            'finkenau':             '620',
+            'finkenau':             '420',
             'geomatikum':           '540',
             'harburg':              '570',
             'hcu':                  '430',
