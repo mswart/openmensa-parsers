@@ -3,7 +3,7 @@
 #
 #  niederbayern_oberpfalz.py
 #  
-#  Copyright 2014 shad0w73 <shad0w73@maills.de>
+#  Copyright 2015 shad0w73 <shad0w73@vmail.me>
 #  
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,10 @@
 #
 #
 
+
+# TODO:
+# - update usable locations
+# - comment the code
 
 # Usable locations (urls) (based on http://www.stwno.de/joomla/de/gastronomie/speiseplan):
 # HS-DEG - TH Deggendorf
@@ -59,46 +63,61 @@ from pyopenmensa.feed import LazyBuilder
 def parse_url(url, today=False):
     canteen = LazyBuilder()
     legend = {
-        '1':   'mit Farbstoff',
-        '2':   'mit Konservierungsstoff',
-        '3':   'mit Antioxidationsmittel',
-        '4':   'mit Geschmacksverstärker',
-        '5':   'geschwefelt',
-        '6':   'geschwärzt',
-        '7':   'gewachst',
-        '8':   'mit Phosphat',
-        '9':   'mit Süssungsmittel Saccharin',
-        '10':  'mit Süssungsmittel Aspartam, enth. Phenylalaninquelle',
-        '11':  'mit Süssungsmittel Cyclamat',
-        '12':  'mit Süssungsmittel Acesulfam',
-        '13':  'chininhaltig',
-        '14':  'coffeinhaltig',
-        '15':  'gentechnisch verändert',
-        '16':  'enthält Sulfite',
-        '17':  'enthält Phenylalanin',
-        'A':   'Aktionsgericht',
-        'B':   'mit ausschließlich biologisch erzeugten Rohstoffen',
-        'F':   'Fisch',
-        'G':   'Geflügel',
-        'L':   'Lamm',
-        'MSC': 'zertifizierte nachhaltige Fischerei (MSC-C-53400)',
-        'MV':  'Mensa Vital',
-        'R':   'Rindfleisch',
-        'S':   'Schweinefleisch',
-        'V':   'vegetarisch',
-        'VG':  'vegan',
-        'W':   'Wild'
+        '1':     'mit Farbstoff',
+        '2':     'mit Konservierungsstoff',
+        '3':     'mit Antioxidationsmittel',
+        '4':     'mit Geschmacksverstärker',
+        '5':     'geschwefelt',
+        '6':     'geschwärzt',
+        '7':     'gewachst',
+        '8':     'mit Phosphat',
+        '9':     'mit Süssungsmittel Saccharin',
+        '10':    'mit Süssungsmittel Aspartam, enth. Phenylalaninquelle',
+        '11':    'mit Süssungsmittel Cyclamat',
+        '12':    'mit Süssungsmittel Acesulfam',
+        '13':    'chininhaltig',
+        '14':    'coffeinhaltig',
+        '15':    'gentechnisch verändert',
+        '16':    'enthält Sulfite',
+        '17':    'enthält Phenylalanin',
+        'A':     'Gluten',
+        'B':     'Krebstiere',
+        'C':     'Eier',
+        'D':     'Fisch',
+        'E':     'Erdnüsse',
+        'F':     'Soja',
+        'G':     'Milch und Milchprodukte',
+        'H':     'Schalenfrüchte',
+        'I':     'Sellerie',
+        'J':     'Senf',
+        'K':     'Sesamsamen',
+        'L':     'Schwefeldioxid und Sulfite',
+        'M':     'Lupinen',
+        'N':     'Weichtiere',
+        'ZTA':   'Aktionsgericht',
+        'ZTB':   'mit ausschließlich biologisch erzeugten Rohstoffen',
+        'ZTF':   'Fisch',
+        'ZTG':   'Geflügel',
+        'ZTL':   'Lamm',
+        'ZTMSC': 'zertifizierte nachhaltige Fischerei (MSC-C-53400)',
+        'ZTMV':  'Mensa Vital',
+        'ZTR':   'Rindfleisch',
+        'ZTS':   'Schweinefleisch',
+        'ZTV':   'vegetarisch',
+        'ZTVG':  'vegan',
+        'ZTW':   'Wild'
     }
-    canteen.setLegendData(legend)
+    #canteen.setLegendData(legend)
     
     hg = re.compile("^HG[1-9]$")
     b = re.compile("^B[1-9]$")
     n = re.compile("^N[1-9]$")
 
-    for w in 0, 1:
+    #for w in 0, 1:
+    for w in [0]:
         kw = (date.today() + timedelta(weeks=w)).isocalendar()[1]
         try:
-            f = urlopen('http://www.stwno.de/infomax/daten-extern/csv/%(location)s/%(isoweek)d.csv' %
+            f = urlopen('%(location)s/%(isoweek)d.csv' %
                         {'location': url, 'isoweek': kw})
         except HTTPError as e:
             if e.code == 404:
@@ -125,13 +144,37 @@ def parse_url(url, today=False):
                     category = 'Nachspeisen'
                 else:
                     raise RuntimeError('Unknown category: ' + str(row[2]))
-                
+
                 mdate = row[0]
-                name = row[3]
-                notes = row[4]
+                notes = []
+
+                mname = row[3]
+                bpos = mname.find(')')
+                while bpos != -1:
+                    apos = mname.find('(')
+                    for i in mname[apos+1:bpos].split(','):
+                        notes.append(i)
+                    if bpos == len(mname)-1:
+                        mname = mname[:apos] + mname[bpos+1:]
+                        bpos = -1
+                    else:
+                        mname = mname[:apos] + ' und ' + mname[bpos+1:]
+                        bpos = mname.find(')')
+                if mname.rfind(' ') == len(mname)-1:
+                    mname = mname[:len(mname)-1]
+
+                mtype = row[4]
+                if mtype != '':
+                    for i in mtype.split(','):
+                        notes.append('ZT' + i)
+
                 prices = [row[6], row[7], row[8]]
-                canteen.addMeal(mdate, category,
-                                (name + '(' + notes + ')'),
-                                [], prices, roles)
+
+                mnotes = []
+                for i in notes:
+                    mnotes.append(legend.get(i))
+
+                canteen.addMeal(mdate, category, mname,
+                                mnotes, prices, roles)
 
     return canteen.toXMLFeed()

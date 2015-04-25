@@ -10,6 +10,7 @@ from marburg import parse_url as marburg_parse
 from hamburg import parse_url as hamburg_parse
 from muenchen import parse_url as muenchen_parse
 from darmstadt import parse_url as darmstadt_parse
+from niederbayern_oberpfalz import parse_url as niederbayern_oberpfalz_parse
 
 
 providers = {
@@ -195,6 +196,17 @@ providers = {
             'schoefferstrasse': 'spk_Schoefferstrasse_print.php?ansicht=',
             'dieburg':          'spk_Dieburg_print.php?ansicht=',
             'haardtring':       'spk_Haardtring_print.php?ansicht=',
+        }
+    },
+    'niederbayern_oberpfalz': {
+        'handler': niederbayern_oberpfalz_parse,
+        'prefix': 'http://www.stwno.de/infomax/daten-extern/csv/',
+        'canteens': {
+            'th-deggendorf':  'HS-DEG',
+            'hs-landshut':    'HS-LA',
+            'uni-passau':     'UNI-P',
+            'oth-regensburg': 'HS-R-tag',
+            'uni-regensburg': 'UNI-R',
         }
     },
 }
