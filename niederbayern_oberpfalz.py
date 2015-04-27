@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 #
 #  niederbayern_oberpfalz.py
-#  
+#
 #  Copyright 2015 shad0w73 <shad0w73@vmail.me>
-#  
+#
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -108,7 +108,7 @@ def parse_url(url, today=False):
         'ZTW':   'Wild'
     }
     #canteen.setLegendData(legend)
-    
+
     hg = re.compile("^HG[1-9]$")
     b = re.compile("^B[1-9]$")
     n = re.compile("^N[1-9]$")
@@ -125,9 +125,9 @@ def parse_url(url, today=False):
             else:
                 raise e
         f = f.read().decode('iso8859-1')
-        
-        roles = ('student', 'employee', 'others')
-        
+
+        roles = ('student', 'employee', 'other')
+
         initline = True
         mealreader = reader(f.splitlines(), delimiter=';')
         for row in mealreader:
@@ -172,7 +172,7 @@ def parse_url(url, today=False):
 
                 mnotes = []
                 for i in notes:
-                    mnotes.append(legend.get(i))
+                    mnotes.append(legend.get(i, legend.get(i[2:], i)))
 
                 canteen.addMeal(mdate, category, mname,
                                 mnotes, prices, roles)
