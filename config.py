@@ -4,7 +4,6 @@ from karlsruhe import parse_url as karlsruhe_parse
 from leipzig import parse_url as leipzig_parse
 from dresden import parse_url as dresden_parse
 from aachen import parse_url as aachen_parse
-from aachen import parse_url_academica as aachen_parse_academica
 from wuerzburg import parse_url as wuerzburg_parse
 from marburg import parse_url as marburg_parse
 from hamburg import parse_url as hamburg_parse
@@ -96,23 +95,17 @@ providers = {
     },
     'aachen': {
         'handler': aachen_parse,
-        'prefix': 'http://speiseplan.studentenwerk-aachen.de/mensa/',
+        'prefix': 'http://www.studentenwerk-aachen.de/speiseplaene/',
         'canteens': {
-            'zeltmensa': 'wo_mensa1_turm.std.php',
-            'templergraben': 'wo_bistro_templer.std.php',
-            'ahorn': 'wo_mensa_ahorn.std.php',
-            'vita': 'wo_mensa_vita.std.php',
-            'bayernallee': 'wo_mensa3_bayern.std.php',
-            'eups': 'wo_mensa_eups.std.php',
-            'goethe': 'wo_gastro_goethe.std.php',
-            'juelich': 'wo_mensa4_juelich.std.php'
-        },
-    },
-    'aachen2': {
-        'handler': aachen_parse_academica,
-        'prefix': 'http://www.studentenwerk-aachen.de/essen/',
-        'canteens': {
-            'academica': 'speiseplan.html'
+            'academica': 'academica-w.html',
+            'ahorn': 'ahornstrasse-w.html',
+            'templergraben': 'templergraben-w.html',
+            'bayernallee': 'bayernallee-w.html',
+            'eups': 'eupenerstrasse-w.html',
+            'goethe': 'goethestrasse-w.html',
+            'vita': 'vita-w.html',
+            'zeltmensa': 'forum-w.html',
+            'juelich': 'juelich-w.html',
         },
     },
     'wuerzburg': {
