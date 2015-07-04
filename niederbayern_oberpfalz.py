@@ -58,7 +58,10 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 import re
 
+from utils import Parser
+
 from pyopenmensa.feed import LazyBuilder
+
 
 def parse_url(url, today=False):
     canteen = LazyBuilder()
@@ -178,3 +181,12 @@ def parse_url(url, today=False):
                                 mnotes, prices, roles)
 
     return canteen.toXMLFeed()
+
+
+parser = Parser('niederbayern_oberpfalz', handler=parse_url,
+                shared_prefix='http://www.stwno.de/infomax/daten-extern/csv/')
+parser.define('th-deggendorf', suffix='HS-DEG')
+parser.define('hs-landshut', suffix='HS-LA')
+parser.define('uni-passau', suffix='UNI-P')
+parser.define('oth-regensburg', suffix='HS-R-tag')
+parser.define('uni-regensburg', suffix='UNI-R')

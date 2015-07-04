@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup as parse
 import re
 import datetime
 
+from utils import Parser
+
 from pyopenmensa.feed import OpenMensaCanteen
 
 day_regex = re.compile('(?P<date>\d{4}-\d{2}-\d{2})')
@@ -56,7 +58,7 @@ def parse_week(canteen, url, place_class=None):
                                 price_regex.findall(meal_tr.contents[2].text), roles)
 
 
-def parse_url(url, today=False, place_class=None):
+def parse_url(url, place_class=None, today=False):
     canteen = OpenMensaCanteen()
     parse_week(canteen, url, place_class)
     day = datetime.date.today()
@@ -70,3 +72,13 @@ def parse_url(url, today=False, place_class=None):
         parse_week(canteen, '{}?kw={}'.format(url, day.isocalendar()[1]), place_class)
         day += datetime.date.resolution * 7
     return canteen.toXMLFeed()
+
+
+parser = Parser('karlsruhe', handler=parse_url,
+                shared_args=['http://www.studentenwerk-karlsruhe.de/de/essen/'])
+parser.define('adenauerring', args=['canteen_place_1'])
+parser.define('moltke', args=['canteen_place_2'])
+parser.define('erzbergerstrasse', args=['canteen_place_3'])
+parser.define('schloss-gottesaue', args=['canteen_place_4'])
+parser.define('tiefenbronner-strasse', args=['canteen_place_5'])
+parser.define('holzgartenstrasse', args=['canteen_place_6'])

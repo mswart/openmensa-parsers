@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup as parse
 import re
 from datetime import date
 
+from utils import Parser
+
 from pyopenmensa.feed import LazyBuilder, extractWeekDates
 
 extra_regex = re.compile('\(.*?\)')
@@ -46,3 +48,24 @@ def parse_url(url, today=False):
     if not today:
         parse_week(url, date.today() + date.resolution * 7, canteen)
     return canteen.toXMLFeed()
+
+
+parser = Parser('hamburg', handler=parse_url,
+                shared_prefix='http://speiseplan.studierendenwerk-hamburg.de/de/')
+parser.define('armgartstrasse', suffix='590')
+parser.define('bergedorf', suffix='520')
+parser.define('berliner-tor', suffix='530')
+parser.define('botanischer-garten', suffix='560')
+parser.define('bucerius-law-school', suffix='410')
+parser.define('cafe-mittelweg', suffix='690')
+parser.define('cafe-cfel', suffix='680')
+parser.define('cafe-jungiusstrasse', suffix='610')
+parser.define('cafe-alexanderstrasse', suffix='660')
+parser.define('campus', suffix='340')
+parser.define('finkenau', suffix='420')
+parser.define('geomatikum', suffix='540')
+parser.define('harburg', suffix='570')
+parser.define('hcu', suffix='430')
+parser.define('philosophenturm', suffix='350')
+parser.define('stellingen', suffix='580')
+parser.define('studierendenhaus', suffix='310')

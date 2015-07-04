@@ -6,6 +6,8 @@ import datetime
 
 from pyopenmensa.feed import LazyBuilder
 
+from utils import Parser
+
 day_regex = re.compile('(?P<date>\d{2}\.\d{2}\.\d{4})')
 day_range_regex = re.compile('(?P<from>\d{2}\.\d{2}\.\d{4}).* (?P<to>\d{2}\.\d{2}\.\d{4})')
 extra_regex = re.compile('\((?P<number>\d+)\)')
@@ -62,3 +64,13 @@ def parse_url(url, today=False):
                     notes.append(extraLegend[extra])
             canteen.addMeal(date, 'Hauptgerichte', name, notes, prices, roles if prices else None)
     return canteen.toXMLFeed()
+
+
+parser = Parser('magdeburg',
+                handler=parse_url,
+                shared_prefix='http://www.studentenwerk-magdeburg.de/')
+parser.define('ovgu-unten', suffix='mensa-unicampus/speiseplan-unten/')
+parser.define('ovgu-oben', suffix='mensa-unicampus/speiseplan-oben/')
+parser.define('herrenkrug', suffix='mensa-herrenkrug/speiseplan/')
+parser.define('stendal', suffix='mensa-stendal/speiseplan/')
+parser.define('wernigerode', suffix='mensa-wernigerode/speiseplan/')

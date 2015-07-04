@@ -3,6 +3,8 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup as parse
 from bs4.element import NavigableString, Tag
 
+from utils import Parser
+
 from pyopenmensa.feed import OpenMensaCanteen, buildLegend
 
 legend = None
@@ -28,7 +30,7 @@ def parse_day(canteen, day, data):
         name = name.strip()
         notes = [legend.get(n, n) for n in notes]
         # price:
-        price = menu.find('td', attrs={'class':'price'}).text.strip()
+        price = menu.find('td', attrs={'class': 'price'}).text.strip()
         # store data
         canteen.addMeal(day, category, name, notes, price)
 
@@ -52,3 +54,16 @@ def parse_url(url, today=False):
         headline = document.find('a', attrs={'data-anchor': '#' + day})
         parse_day(canteen, headline.text, data)
     return canteen.toXMLFeed()
+
+
+parser = Parser('aachen', handler=parse_url,
+                shared_prefix='http://www.studentenwerk-aachen.de/speiseplaene/')
+parser.define('academica', suffix='academica-w.html')
+parser.define('ahorn', suffix='ahornstrasse-w.html')
+parser.define('templergraben', suffix='templergraben-w.html')
+parser.define('bayernallee', suffix='bayernallee-w.html')
+parser.define('eups', suffix='eupenerstrasse-w.html')
+parser.define('goethe', suffix='goethestrasse-w.html')
+parser.define('vita', suffix='vita-w.html')
+parser.define('zeltmensa', suffix='forum-w.html')
+parser.define('juelich', suffix='juelich-w.html')

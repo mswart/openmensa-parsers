@@ -4,6 +4,7 @@ import traceback
 import re
 
 from config import providers, parse
+from utils import Request
 
 canteen_request = re.compile('/(?P<provider>\w+)/(?P<canteen>[-_a-zA-Z0-9]+)(?P<today>/today)?.xml')
 
@@ -11,6 +12,7 @@ canteen_request = re.compile('/(?P<provider>\w+)/(?P<canteen>[-_a-zA-Z0-9]+)(?P<
 def handler(eniron, start_response):
     prefix = eniron.get('PATH_PREFIX', None)
     uri = eniron['PATH_INFO']
+    request = Request(eniron, start_response)
     if prefix and uri.startswith(prefix):
         uri = uri[len(prefix):]
     match = canteen_request.match(uri)
