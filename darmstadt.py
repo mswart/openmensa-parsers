@@ -5,6 +5,8 @@ from pyopenmensa.feed import LazyBuilder
 import re
 from bs4 import BeautifulSoup
 
+from utils import Parser
+
 meal_regex = re.compile(r"""^(?P<mealName>[^€]+?)\s*
                             ((?P<price>\d+,\d{2})\s*€)?\s*
                             (\((?P<mealType>\b[A-Z1-9,]+)\))?$
@@ -100,3 +102,12 @@ def parse_url(url, today):
         parse_week(url + 'nextweek', canteen)
 
     return canteen.toXMLFeed()
+
+
+parser = Parser('darmstadt', handler=parse_url,
+                shared_prefix='http://www.stwda.de/components/com_spk/')
+parser.define('stadtmitte', suffix='spk_Stadtmitte_print.php?ansicht=')
+parser.define('lichtwiese', suffix='spk_Lichtwiese_print.php?ansicht=')
+parser.define('schoefferstrasse', suffix='spk_Schoefferstrasse_print.php?ansicht=')
+parser.define('dieburg', suffix='spk_Dieburg_print.php?ansicht=')
+parser.define('haardtring', suffix='spk_Haardtring_print.php?ansicht=')
