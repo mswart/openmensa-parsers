@@ -104,7 +104,7 @@ class NotFoundError(ParserError):
 
 class ParserNotFound(NotFoundError):
     def __init__(self, name):
-        super(SourceNotFound, self).__init__('Unknown parser "{}"'.format(name))
+        super(ParserNotFound, self).__init__('Unknown parser "{}"'.format(name))
 
 
 class SourceNotFound(NotFoundError):
