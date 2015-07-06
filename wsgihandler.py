@@ -6,7 +6,7 @@ import re
 from config import parse
 import utils
 
-canteen_request = re.compile('/(?P<dirs>(\w+/)*\w+)/(?P<file>\w+.(xml|json))')
+canteen_request = re.compile('/(?P<dirs>([\w-]+/)*[\w-]+)/(?P<file>[\w-]+.(xml|json))')
 
 
 def handler(eniron, start_response):

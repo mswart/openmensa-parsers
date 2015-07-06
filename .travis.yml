@@ -9,7 +9,7 @@ before_script:
 script:
   - dpkg-buildpackage -uc -us
   - sudo scripts/travis-install-and-setup-deb.sh
-  - wget --output-document=/dev/null http://localhost:9090/magdeburg/ovgu-unten.xml
+  - wget --output-document=/dev/null --input-file=test-urls.txt
 after_success:
   - 'test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && scripts/travis-publish-package.sh'
 after_script:
