@@ -1,8 +1,23 @@
 import importlib
 
-from utils import ParserNotFound
+from utils import ParserNotFound, CanteenPrefixer, ParserRenamer
 
-modules = [
+
+parsers = {}
+
+
+def register_parser(parser):
+    parsers[parser.name] = parser
+
+
+def parse(request, parser_name, *args):
+    if parser_name in parsers:
+        return parsers[parser_name].parse(request, *args)
+    else:
+        raise ParserNotFound(parser_name)
+
+
+for module in [
     'aachen',
     'dresden',
     'hamburg',
@@ -15,18 +30,13 @@ modules = [
     'niederbayern_oberpfalz',
     'ostniedersachsen',
     'wuerzburg',
-]
+]:
+    register_parser(importlib.import_module(module).parser)
 
 
-parsers = {}
-
-for module in modules:
-    parser = importlib.import_module(module).parser
-    parsers[parser.name] = parser
-
-
-def parse(request, parser_name, *args):
-    if parser_name in parsers:
-        return parsers[parser_name].parse(request, *args)
-    else:
-        raise ParserNotFound(parser_name)
+register_parser(CanteenPrefixer('braunschweig', 'ostniedersachsen'))
+register_parser(ParserRenamer('clausthal', 'ostniedersachsen'))
+register_parser(CanteenPrefixer('braunschweig', 'ostniedersachsen'))
+register_parser(ParserRenamer('suderburg', 'ostniedersachsen'))
+register_parser(CanteenPrefixer('wolfenbuettel', 'ostniedersachsen'))
+register_parser(CanteenPrefixer('holzminden', 'ostniedersachsen'))

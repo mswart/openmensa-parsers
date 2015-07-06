@@ -36,7 +36,7 @@ class Parser(object):
         elif source == 'index.json':
             return self.listSources(request)
         elif source[-4:] == '.xml' and source[:-4] in self.sources:
-            raise Redirect(code=301, location='/'.join([request.host, self.name, source,
+            raise Redirect(code=301, location='/'.join([request.host, self.name, source[:-4],
                                                         self.sources[source[:-4]].default_feed + '.xml']))
         else:
             raise SourceNotFound(self.name, source)
@@ -49,6 +49,24 @@ class Parser(object):
         for source in self.sources.values():
             metadatas.update(source.metadataList(request))
         return metadatas
+
+
+class CanteenPrefixer(object):
+    def __init__(self, name, prefix):
+        self.name = name
+        self.prefix = prefix
+
+    def parse(self, request, *args):
+        raise Redirect(code=301, location='/'.join([request.host, self.prefix, self.name] + list(args)))
+
+
+class ParserRenamer(object):
+    def __init__(self, name, newname):
+        self.name = name
+        self.newname = newname
+
+    def parse(self, request, source, *args):
+        raise Redirect(code=301, location='/'.join([request.host, self.name, source] + list(args)))
 
 
 class Source(object):

@@ -103,23 +103,25 @@ parser = Parser('ostniedersachsen', handler=parse_url,
 
 sub = parser.sub('braunschweig',
                  shared_prefix='/braunschweig/essen/menus/')
-sub.define('mensa1_mittag', suffix='mensa-1', extra_args={'canteentype': 'Mittagsmensa'})
-sub.define('mensa1_abend', suffix='mensa-1', extra_args={'canteentype': 'Abendmensa'})
+sub.define('mensa1-mittag', suffix='mensa-1', extra_args={'canteentype': 'Mittagsmensa'})
+sub.define('mensa1-abend', suffix='mensa-1', extra_args={'canteentype': 'Abendmensa'})
 sub.define('mensa360', suffix='360', extra_args={'canteentype': 'Pizza', 'this_week': '-2', 'next_week': '-nachste-woche'})
 sub.define('mensa2', suffix='mensa-2')
 sub.define('hbk', suffix='mensa-hbk')
 
-parser.define('clausthal', suffix='/clausthal/essen/')
+parser.define('clausthal', suffix='/clausthal/essen/menus/mensa-clausthal',
+              extra_args={'next_week': '-kommend-woche'})
 
 sub = parser.sub('hildesheim', shared_prefix='/hildesheim/essen/menus/')
 sub.define('uni', suffix='mensa-uni')
 sub.define('hohnsen', suffix='mensa-hohnsen')
-sub.define('luebecker_strasse', suffix='luebecker-strasse', extra_args={'canteentype': 'Mittagsausgabe'})
+sub.define('luebecker-strasse', suffix='luebecker-strasse', extra_args={'canteentype': 'Mittagsausgabe'})
 
-parser.define('suderburg', suffix='/suderburg/essen/')
-parser.define('wolfenbuettel', suffix='/wolfenbuettel/essen/ostfalia')
-parser.define('holzminden', suffix='/holzminden/essen/hawk', extra_args={'next_week': False})
+parser.define('suderburg', suffix='/suderburg/essen/menus/mensa-suderburg')
+parser.sub('wolfenbuettel').define('ostfalia', suffix='/wolfenbuettel/essen/menus/menus-ostfalia')
+parser.sub('holzminden', shared_prefix='/holzminden/essen/menus/') \
+    .define('hawk', suffix='mensa-hawk', extra_args={'next_week': False})
 
 sub = parser.sub('lueneburg', shared_prefix='/lueneburg/essen/speiseplaene/')
 sub.define('campus', suffix='mensa-campus')
-sub.define('rotes_feld', suffix='rotes-feld')
+sub.define('rotes-feld', suffix='rotes-feld')
