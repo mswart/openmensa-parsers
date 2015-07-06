@@ -3,7 +3,11 @@ import json
 
 
 class Request(object):
-    pass
+    def __init__(self, eniron):
+        self.host = eniron.get('wsgi.url_scheme', 'http') \
+            + '://' \
+            + eniron.get('HTTP_HOST', 'omfeeds.devtation.de') \
+            + eniron.get('PATH_PREFIX', '')
 
 
 class Parser(object):
@@ -66,7 +70,7 @@ class ParserRenamer(object):
         self.newname = newname
 
     def parse(self, request, source, *args):
-        raise Redirect(code=301, location='/'.join([request.host, self.name, source] + list(args)))
+        raise Redirect(code=301, location='/'.join([request.host, self.newname, source] + list(args)))
 
 
 class Source(object):
@@ -93,17 +97,19 @@ class ParserError(Exception):
 
 
 class NotFoundError(ParserError):
-    pass
+    def __init__(self, reason):
+        self.reason = reason
+        super(NotFoundError, self).__init__(reason)
 
 
 class ParserNotFound(NotFoundError):
     def __init__(self, name):
-        NotFoundError.__init__(self, 'Unknown parser "{}"'.format(name))
+        super(SourceNotFound, self).__init__('Unknown parser "{}"'.format(name))
 
 
 class SourceNotFound(NotFoundError):
     def __init__(self, parser, name):
-        NotFoundError.__init__(self, 'Unknown source "{}" for parser "{}"'.format(name, parser))
+        super(SourceNotFound, self).__init__('Unknown source "{}" for parser "{}"'.format(name, parser))
 
 
 class Redirect(Exception):

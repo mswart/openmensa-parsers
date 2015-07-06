@@ -3,35 +3,38 @@ import sys
 import traceback
 import re
 
-from config import providers, parse
-from utils import Request
+from config import parse
+import utils
 
-canteen_request = re.compile('/(?P<provider>\w+)/(?P<canteen>[-_a-zA-Z0-9]+)(?P<today>/today)?.xml')
+canteen_request = re.compile('/(?P<dirs>(\w+/)*\w+)/(?P<file>\w+.(xml|json))')
 
 
 def handler(eniron, start_response):
     prefix = eniron.get('PATH_PREFIX', None)
     uri = eniron['PATH_INFO']
-    request = Request(eniron, start_response)
     if prefix and uri.startswith(prefix):
         uri = uri[len(prefix):]
     match = canteen_request.match(uri)
     if not match:
         start_response("404 Wrong Path", [("Content-type", 'application/xml; charset=utf-8')])
-        return ['<xml version="1.0"><info>{provider}/{canteen}.xml</info></xml>']
-    elif match.group('provider') not in providers:
-        start_response('404 Provider not found', [])
-    elif match.group('canteen') not in providers[match.group('provider')]['canteens']:
-        start_response('404 Canteen not found', [])
-    else:
-        try:
-            content = parse(match.group('provider'), match.group('canteen'),
-                            bool(match.group('today')))
-        except Exception:
-            traceback.print_exception(*sys.exc_info())
-            start_response('500 Internal Server Error', [])
-            return
+        return ['<xml version="1.0"><info>{provider}/{canteen}/{feed}.xml</info></xml>']
+    request = utils.Request(eniron)
+    try:
+        content = parse(request, *(match.group('dirs').split('/') + [match.group('file')]))
         content = content.encode('utf8')
         start_response('200 OK', [('Content-Type', 'application/xml; charset=utf-8'),
-                                  ('Content-length', str(len(content)))])
+                                  ('Content-Length', str(len(content)))])
         return (content,)
+    except utils.Redirect as e:
+        start_response('301 Permanent Redirect', [('Location', e.location)])
+        return ('',)
+    except utils.ParserNotFound as e:
+        start_response('404 Parser not found', [('Content-Type', 'text/plain; charset=utf-8')])
+        return (e.reason,)
+    except utils.SourceNotFound as e:
+        start_response('404 Source not found', [('Content-Type', 'text/plain; charset=utf-8')])
+        return (e.reason,)
+    except Exception:
+        traceback.print_exception(*sys.exc_info())
+        start_response('500 Internal Server Error', [])
+        return
