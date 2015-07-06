@@ -52,7 +52,6 @@ def parse_url(url, today=False):
             name = strings[0]
             # prices:
             prices = strings[-1].split('|')
-            print(prices)
             if '-' in map(lambda v: v.strip(), prices):
                 prices = {}
             # notes:

@@ -83,7 +83,6 @@ class Source(object):
         self.default_feed = default_feed
 
     def parse(self, request, feed):
-        print(self.args)
         return self.handler(*self.args, today=feed == 'today.xml', **self.kwargs)
 
     def metadataList(self, request):
