@@ -37,10 +37,10 @@ def handler(eniron, start_response):
     except utils.FeedNotFound as e:
         start_response('404 Feed not found', [('Content-Type', 'text/plain; charset=utf-8')])
         return (e.reason,)
-    except utils.NotFound as e:
+    except utils.NotFoundError as e:
         start_response('404 Unknown file format', [('Content-Type', 'text/plain; charset=utf-8')])
         return (e.reason,)
     except Exception:
         traceback.print_exception(*sys.exc_info())
         start_response('500 Internal Server Error', [])
-        return
+        return ('', )
