@@ -29,7 +29,7 @@ def parse_url(url, today=False):
             continue
         if len(tr.find_all('td', 'betrag')) < 3:
             continue
-        if 'class' in meal.attrs and 'titel' in meal.attrs['class']:
+        if 'titel' in meal.attrs.get('class', []) or 'zeilentitel' in meal.attrs.get('class', []):
             continue
         meal = meal.text.strip()
         prices[meal] = {}
