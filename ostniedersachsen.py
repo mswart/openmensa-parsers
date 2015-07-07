@@ -117,7 +117,7 @@ sub.define('uni', suffix='mensa-uni')
 sub.define('hohnsen', suffix='mensa-hohnsen')
 sub.define('luebecker-strasse', suffix='luebecker-strasse', extra_args={'canteentype': 'Mittagsausgabe'})
 
-parser.define('suderburg', suffix='/suderburg/essen/menus/mensa-suderburg')
+parser.sub('suderburg').define('campus', suffix='/suderburg/essen/menus/mensa-suderburg')
 parser.sub('wolfenbuettel').define('ostfalia', suffix='/wolfenbuettel/essen/menus/menus-ostfalia')
 parser.sub('holzminden', shared_prefix='/holzminden/essen/menus/') \
     .define('hawk', suffix='mensa-hawk', extra_args={'next_week': False})

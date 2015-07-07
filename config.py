@@ -37,7 +37,7 @@ for module in [
 
 register_parser(CanteenPrefixer('braunschweig', 'ostniedersachsen'))
 register_parser(ParserRenamer('clausthal', 'ostniedersachsen'))
-register_parser(CanteenPrefixer('braunschweig', 'ostniedersachsen'))
-register_parser(ParserRenamer('suderburg', 'ostniedersachsen'))
+register_parser(CanteenPrefixer('hildesheim', 'ostniedersachsen'))
+register_parser(CanteenPrefixer('suderburg', 'ostniedersachsen'))
 register_parser(CanteenPrefixer('wolfenbuettel', 'ostniedersachsen'))
 register_parser(CanteenPrefixer('holzminden', 'ostniedersachsen'))
