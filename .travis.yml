@@ -14,6 +14,7 @@ after_success:
   - 'test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && scripts/travis-publish-package.sh'
 after_script:
   - sudo cat /var/log/uwsgi/app/openmensa-parsers.log
+  - cat /tmp/buildlog.txt
 env:
   global:
     secure: BJRATzQDl81IRQvnz+EGz7WoDa5dHptN6VOQEuOC5/oOvGp1JlCUda/wQajCLUorbcN9pBN+FXhsKFzyOPoLg/63ANtiSKCsOvP9YZs1ZlXbu01qGiRdo1h1Qvy2W1qUrvFpkTgd3yq4gPVUmIaFs25SzOQQQqqT2kze1gv0Bac=
