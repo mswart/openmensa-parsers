@@ -16,7 +16,9 @@ class Canteen(EsaySource):
         kwargs['selected_locations[]'] = self.location
         data = self.parse_remote('https://www.meine-mensa.de/speiseplan_iframe',
                                  args=kwargs)
-        table = data.find(attrs={'class': 'speiseplan'})
+        table = data.find('table', 'speiseplan')
+        if not table:
+            print(data)
 
         date = None
         pos = 0
