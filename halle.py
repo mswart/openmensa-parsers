@@ -16,17 +16,7 @@ class Canteen(EsaySource):
         kwargs['selected_locations[]'] = self.location
         data = self.parse_remote('https://www.meine-mensa.de/speiseplan_iframe',
                                  args=kwargs)
-        table = data.find('table', 'dspeiseplan')
-        if not table:
-            test = open('/tmp/buildlog.txt', 'w')
-            for t in data.find_all('table'):
-                print(t.attrs.get('class', []), file=test)
-                print('#'*100, file=test)
-                print(t, file=test)
-                if 'speiseplan' in t.attrs.get('class', []) or 'speiseplan' == t.attrs.get('class', ''):
-                    table = t
-                    break
-            print(data, file=test)
+        table = data.find('table', 'speiseplan')
 
         date = None
         pos = 0
