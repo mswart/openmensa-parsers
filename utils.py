@@ -1,5 +1,12 @@
 #!python3
+import os.path
+from urllib.request import urlopen
+from urllib.parse import urlencode
 import json
+
+from bs4 import BeautifulSoup as parse
+
+from pyopenmensa.feed import LazyBuilder
 
 
 class Request(object):
@@ -11,8 +18,14 @@ class Request(object):
 
 
 class Parser(object):
-    def __init__(self, name, handler=None, shared_prefix=None, shared_args=[], parent=None):
+    def __init__(self, name, handler=None, shared_prefix=None, shared_args=[], parent=None, version=None):
+        self.local_name = name
         self.name = name
+        self.version = version
+        if parent:
+            parent.sources[name] = self
+            self.name = parent.name + '/' + self.name
+            self.version = self.version or parent.version
         self.handler = handler or (parent and parent.handler)
 
         self.shared_prefix = (parent and parent.shared_prefix)
@@ -26,13 +39,11 @@ class Parser(object):
             source_args = self.shared_args + args
         else:
             source_args = [self.shared_prefix + suffix]
-        self.sources[name] = Source(name, parser=self, handler=self.handler,
-                                    args=source_args, kwargs=extra_args)
+        HandlerSource(name, parser=self, handler=self.handler,
+                      args=source_args, kwargs=extra_args)
 
     def sub(self, name, *args, **kwargs):
-        parser = Parser(self.name + '/' + name, *args, parent=self, **kwargs)
-        self.sources[name] = parser
-        return parser
+        return Parser(name, *args, parent=self, **kwargs)
 
     def parse(self, request, source, *args):
         if source in self.sources:
@@ -74,19 +85,92 @@ class ParserRenamer(object):
 
 
 class Source(object):
-    def __init__(self, name, parser, handler, args=[], kwargs={}, default_feed='full'):
+    def __init__(self, name, parser, default_feed='full'):
         self.name = name
         self.parser = parser
-        self.handler = handler
-        self.args = args
-        self.kwargs = kwargs
         self.default_feed = default_feed
+        parser.sources[name] = self
 
     def parse(self, request, feed):
-        return self.handler(*self.args, today=feed == 'today.xml', **self.kwargs)
+        raise NotImplementedError('Needs to be done by parser')
 
     def metadataList(self, request):
         return {self.name: '/'.join([request.host, self.parser.name, self.name, 'metadata.xml'])}
+
+    @classmethod
+    def feed(cls, name, hour, url=None, priority=0, source=None, dayOfMonth='*', dayOfWeek='*', minute='0', retry=None):
+        def decorator(fnc):
+            fnc.name = name
+            fnc.url = url or cls.buildFeedUrl
+            fnc.priority = priority
+            fnc.source = source
+            fnc.hour = hour
+            fnc.minute = minute
+            fnc.dayOfMonth = dayOfMonth
+            fnc.dayOfWeek = dayOfWeek
+            fnc.retry = retry
+            return fnc
+        return decorator
+
+    @staticmethod
+    def today_feed(fnc):
+        return Source.feed(name='today', hour='8-14')(fnc)
+
+    @staticmethod
+    def buildFeedUrl(name, source, request):
+        return '/'.join([request.host, source.parser.name, source.name, name + '.xml'])
+
+
+class EsaySource(Source):
+    @property
+    def feed(self):
+        if not hasattr(self, '_feed'):
+            self._feed = LazyBuilder(version=str(self.parser.version))
+        return self._feed
+
+    def parse(self, request, feed):
+        if feed == 'metadata.xml':
+            return self.metadata(request)
+        elif os.path.splitext(feed)[1] != '.xml':
+            raise NotFoundError('unknown file')
+        feedname = os.path.splitext(feed)[0]
+        for feed in self.feeds():
+            if feed.name == feedname:
+                return feed(self, request)
+        raise FeedNotFound(feedname, self.name, self.parser.name)
+
+    def parse_remote(self, url, args=None):
+        if args is not None:
+            args = urlencode(args).encode('utf-8')
+        return parse(urlopen(url, data=args).read())
+
+    def metadata(self, request):
+        self.extract_metadata()
+        self.define_feeds(request)
+        return self.feed.toXMLFeed()
+
+    def feeds(self):
+        for obj in type(self).__dict__.values():
+            if hasattr(obj, 'name') and hasattr(obj, 'url'):
+                yield obj
+
+    def define_feeds(self, request):
+        for feed in self.feeds():
+            args = dict(feed.__dict__)
+            if callable(args['url']):
+                args['url'] = args['url'](args['name'], self, request)
+            self.feed.define(**args)
+
+
+class HandlerSource(Source):
+    def __init__(self, name, parser, handler, args=[], kwargs={}, default_feed='full'):
+        super(HandlerSource, self).__init__(name, parser, default_feed=default_feed)
+        self.handler = handler
+        self.args = args
+        self.kwargs = kwargs
+
+    def parse(self, request, feed):
+        return self.handler(*self.args, today=feed == 'today.xml', **self.kwargs)
 
 
 # exceptions:
@@ -109,6 +193,11 @@ class ParserNotFound(NotFoundError):
 class SourceNotFound(NotFoundError):
     def __init__(self, parser, name):
         super(SourceNotFound, self).__init__('Unknown source "{}" for parser "{}"'.format(name, parser))
+
+
+class FeedNotFound(NotFoundError):
+    def __init__(self, name, source, parser):
+        super(FeedNotFound, self).__init__('Unknown feed "{}" for "{}" of "{}"'.format(name, source, parser))
 
 
 class Redirect(Exception):
