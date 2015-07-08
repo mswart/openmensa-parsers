@@ -50,7 +50,7 @@ class Canteen(EsaySource):
             name = self.name
             if 'mensa' not in name:
                 name = 'mensa-' + name
-            url = url_template.format(self.parser.name, name)
+            url = url_template.format(self.parser.local_name, name)
         document = self.parse_remote(url)
         attachment = document.find(id='attachContact')
 
@@ -91,7 +91,7 @@ parser = Parser(name='halle', version=1.0)
 Canteen('harzmensa', parser, location=3, needed_title='Harzmensa')
 Canteen('weinbergmensa', parser, location=5, needed_title='Weinbergmensa')
 #Canteen('cafebar-weinberg', parser, location=, needed_title='')
-Canteen('tuple', parser, location=10, needed_title='Mensa Tuple')
+Canteen('tulpe', parser, location=10, needed_title='Mensa Tulpe')
 Canteen('heidemensa', parser, location=17, needed_title='Heidemensa')
 Canteen('burg', parser, location=12, needed_title='Mensa Burg')
 Canteen('neuwerk', parser, location=9, needed_title='Neuwerk')
