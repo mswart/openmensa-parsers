@@ -51,20 +51,20 @@ class Canteen(EsaySource):
             if 'mensa' not in name:
                 name = 'mensa-' + name
             url = url_template.format(self.parser.name, name)
-        print(url)
         document = self.parse_remote(url)
         attachment = document.find(id='attachContact')
 
         canteen = self.feed
         canteen.availability = 'public'
         canteen.address = attachment.find(attrs={'class': 'address'}).text + ', ' + attachment.find(attrs={'class': 'city'}).text
+        canteen.city = re.search('\d{5}\s+(?P<city>.+)', canteen.address).group('city')
         canteen.phone = attachment.find(attrs={'class': 'fon'}).text.split(':')[1].strip()
-        email_span = attachment.find(attrs={'class': 'email'})
-        if email_span:
-            canteen.email = email_span.text
+        #email_span = attachment.find(attrs={'class': 'email'})
+        #if email_span:
+        #    canteen.email = email_span.text
 
         script = document.find(id='attachMap').find('script').find_all(text=True)[0]
-        match = re.search('\[\s*(?P<lat>\d+\.\d+)\s*,\s*(?P<long>\d+\.\d+)\s*]', script)
+        match = re.search('\[\s*(?P<long>\d+\.\d+)\s*,\s*(?P<lat>\d+\.\d+)\s*]', script)
         canteen.location(match.group('lat'), match.group('long'))
 
     @Source.today_feed
