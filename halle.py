@@ -55,6 +55,7 @@ class Canteen(EsaySource):
         attachment = document.find(id='attachContact')
 
         canteen = self.feed
+        canteen.name = document.find('li', attrs={'class': 'current'}).text
         canteen.availability = 'public'
         canteen.address = attachment.find(attrs={'class': 'address'}).text + ', ' + attachment.find(attrs={'class': 'city'}).text
         canteen.city = re.search('\d{5}\s+(?P<city>.+)', canteen.address).group('city')
