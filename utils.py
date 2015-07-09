@@ -4,7 +4,7 @@ from urllib.request import urlopen
 from urllib.parse import urlencode
 import json
 
-from bs4 import BeautifulSoup as parse
+from bs4 import BeautifulSoup
 
 from pyopenmensa.feed import LazyBuilder
 
@@ -142,7 +142,7 @@ class EsaySource(Source):
     def parse_remote(self, url, args=None):
         if args is not None:
             args = urlencode(args).encode('utf-8')
-        return parse(urlopen(url, data=args).read())
+        return BeautifulSoup(urlopen(url, data=args).read(), 'lxml')
 
     def metadata(self, request):
         self.extract_metadata()
