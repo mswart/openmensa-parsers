@@ -37,7 +37,7 @@ class Canteen(EsaySource):
             if 'empty_cell' in tr.attrs.get('class', []):
                 continue
             tds = list(tr.find_all('td', recursive=False))
-            category = tds[1].find('span', attrs={'class': 'npsble'}).text or 'Hauptessen'
+            category = tds[1].find('span', attrs={'class': 'npsble'}).text.strip() or 'Hauptessen'
             name = tds[2].find('img').attrs['alt']
             prices = {'student': tds[3].text, 'employee': tds[4].text, 'other': tds[5].text}
             self.feed.addMeal(date, category, name, prices=prices)
@@ -74,7 +74,7 @@ class Canteen(EsaySource):
         self.parse_data(day=day.day, month=day.month, year=day.year)
         return self.feed.toXMLFeed()
 
-    @Source.feed(name='thisWeek', priority=1, hour='8', retry='2 3600')
+    @Source.feed(name='thisWeek', priority=1, hour='8', retry='2 60')
     def thisWeek(self, request):
         day = datetime.datetime.now().isocalendar()
         self.parse_data(week=day[1], year=day[0])
@@ -95,7 +95,7 @@ Canteen('tulpe', parser, location=10, needed_title='Mensa Tulpe')
 Canteen('heidemensa', parser, location=17, needed_title='Heidemensa')
 Canteen('burg', parser, location=12, needed_title='Mensa Burg')
 Canteen('neuwerk', parser, location=9, needed_title='Neuwerk')
-Canteen('franckesche-stiftungen', parser, location=14, needed_title='')
+Canteen('franckesche-stiftungen', parser, location=14, needed_title='Franckesche Stiftungen')
 
 #merseburg = parser.sub('merseburg')
 Canteen('merseburg', parser, location=16, needed_title='Mensa Merseburg', not_halle=True)
