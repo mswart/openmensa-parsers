@@ -1,0 +1,2 @@
+http://localhost:9090/halle/heidemensa/thisWeek.xml
+http://localhost:9090/ostniedersachsen/braunschweig/mensa1-mittag/full.xml
