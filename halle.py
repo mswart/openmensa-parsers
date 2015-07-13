@@ -38,7 +38,9 @@ class Canteen(EsaySource):
                 continue
             tds = list(tr.find_all('td', recursive=False))
             category = tds[1].find('span', attrs={'class': 'npsble'}).text.strip() or 'Hauptessen'
-            name = tds[2].find('img').attrs['alt']
+            name = tds[2].find('img').attrs['alt'].strip()
+            if not name:
+                continue
             prices = {'student': tds[3].text, 'employee': tds[4].text, 'other': tds[5].text}
             self.feed.addMeal(date, category, name, prices=prices)
 
