@@ -34,8 +34,10 @@ def parse_url(url, today=False):
         meal = meal.text.strip()
         prices[meal] = {}
         for role, _id in [('student', 0), ('employee', 1), ('other', 2)]:
-            prcie_html = tr.find_all('td', 'betrag')[_id].text
-            prices[meal][role] = price_regex.search(prcie_html).group('price')
+            price_html = tr.find_all('td', 'betrag')[_id].text
+            price_search = price_regex.search(price_html)
+            if price_search:
+                prices[meal][role] = price_search.group('price')
     errorCount = 0
     date = datetime.date.today()
     while errorCount < 7:
