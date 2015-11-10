@@ -1,3 +1,9 @@
+openmensa-parsers (1.1) trusty; urgency=medium
+
+  * Upgrade to trusty
+
+ -- Malte Swart <packagestdevtation.de>  Tue, 10 Nov 2015 13:57:15 +0100
+
 openmensa-parsers (1.0) precise; urgency=low
 
   * Create debian package to improve deploy steps
