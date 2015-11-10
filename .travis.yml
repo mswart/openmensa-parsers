@@ -10,6 +10,8 @@ before_script:
   - scripts/travis-prepare-packaging.sh
 script:
   - dpkg-buildpackage -uc -us
+  - dpkg --info *.deb
+  - dpkg --contents *.deb
   - sudo scripts/travis-install-and-setup-deb.sh
   - wget --output-document=/dev/null --input-file=test-urls.txt
 after_success:
