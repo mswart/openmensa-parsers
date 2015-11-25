@@ -82,7 +82,11 @@ def parse_week(url, canteen):
                 name = mealCellText
                 price = None
 
-            canteen.addMeal(date=dates[dateIdx], category=subCanteen, name=name, prices=price)
+            try:
+                date=dates[dateIdx]
+                canteen.addMeal(date, category=subCanteen, name=name, prices=price)
+            except ValueError as e:
+                print('Error adding meal {} on {}: {}'.format(name, date, e))
 
 
 def parse_url(url, today):
