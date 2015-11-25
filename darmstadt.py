@@ -55,8 +55,6 @@ def parse_week(url, canteen):
                 print('broken page: content cells without header')
                 break
 
-            #TODO: setDayClosed()
-
             mealCellText = mealCell.find(text=True).strip()
 
             # heading column for subCanteen/"Essensausgabe"
@@ -70,6 +68,9 @@ def parse_week(url, canteen):
 
             if not len(mealCellText):
                 continue
+
+            if "geschlossen" in mealCellText:
+                setDayClosed(dates[dateIdx])
 
             # extract price tag
             _prices = price_regex.split(mealCellText)
