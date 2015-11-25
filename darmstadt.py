@@ -7,48 +7,43 @@ from bs4 import BeautifulSoup
 
 from utils import Parser
 
-meal_regex = re.compile(r"""^(?P<mealName>[^€]+?)\s*
-                            ((?P<price>\d+,\d{2})\s*€)?\s*
-                            (\((?P<mealType>\b[A-Z1-9,]+)\))?$
-                            """, re.VERBOSE)
-
-typeLegend_regex = re.compile(r"""\(([A-Z])\)\s*
-                                  ([^#]+)#?""", re.VERBOSE)
+price_regex = re.compile(r"""(\d+,\d{2}\s*€)""")
+legend_tag_regex = r'(?P<name>(\d|[a-zA-Z])+)\)\s*' + \
+                   r'(?P<value>\w+((\s+\w+)*[^0-9)]))'
 
 
 def parse_week(url, canteen):
     soup = BeautifulSoup(urlopen(url).read())
 
-    mealTypes = {}
     try:
         for legendTag in soup.find_all('div', {'class': 'legende'}):
-            for le in typeLegend_regex.findall(legendTag.string):
-                mealTypes[le[0]] = le[1].strip()
-            canteen.setLegendData(text=legendTag.string, legend=canteen.legendData)
-    except:
-        pass
+            canteen.setLegendData(text=legendTag.string,
+                    legend=canteen.legendData,
+                    regex=legend_tag_regex)
+    except Exception as e:
+        print('Error in parsing legend ' + e)
 
     sp_table = soup.find("table", {"class": "spk_table"})
     if sp_table is None:
-        #TODO: call setDayClosed() on current dates ?
+        print("No meal data on this page")
         return
 
     dates = []
     subCanteen = None
 
-    dateRow = True
+    is_date_row = True
     for row in sp_table.find_all("tr"):
 
-        if dateRow:
+        if is_date_row:
             for datecell in row.find_all(["td", "th"]):
-                if len(datecell.string.strip()) > 0:
+                if len(datecell.string.strip()):
                     dates.append(datecell.string)
 
             if len(dates) == 0:
-                #TODO: call setDayClosed() on current dates ?
+                print("No dates for meal data on this page")
                 return
 
-            dateRow = False
+            is_date_row = False
             continue
         dateIdx = -2
 
@@ -62,10 +57,10 @@ def parse_week(url, canteen):
 
             #TODO: setDayClosed()
 
-            mealCellText = mealCell.find(text=True)
-            mealCellText = mealCellText.strip()
+            mealCellText = mealCell.find(text=True).strip()
 
-            if subCanteenColumn and len(mealCellText) > 0:
+            # heading column for subCanteen/"Essensausgabe"
+            if subCanteenColumn and len(mealCellText):
                 subCanteen = mealCellText
                 if subCanteen == "Marktrest.":
                     subCanteen = "Marktrestaurant"
@@ -73,23 +68,20 @@ def parse_week(url, canteen):
                 continue
             subCanteenColumn = False
 
-            if len(mealCellText) > 0:
+            if not len(mealCellText):
+                continue
 
-                priceTypeMatch = meal_regex.match(mealCellText)
-                if priceTypeMatch is None:
-                    print('regex not matching meal: "{}"'.format(mealCellText))
-                    canteen.addMeal(date=dates[dateIdx], category=subCanteen, name=mealCellText)
-                    continue
-                name, mealType, price = priceTypeMatch.group('mealName', 'mealType', 'price')
+            # extract price tag
+            _prices = price_regex.split(mealCellText)
+            if len(_prices) == 3:
+                name, price, n2 = _prices
+                name = name + n2
+            else:
+                # multiple prices for a meal - keep all of them literally
+                name = mealCellText
+                price = None
 
-                notes = []
-
-                if mealType:
-                    for mealTypeChar in mealType.strip():
-                        if mealTypeChar in mealTypes:
-                            notes += [mealTypes[mealTypeChar]]
-
-                canteen.addMeal(date=dates[dateIdx], category=subCanteen, name=name, prices=price, notes=notes)
+            canteen.addMeal(date=dates[dateIdx], category=subCanteen, name=name, prices=price)
 
 
 def parse_url(url, today):
@@ -105,7 +97,7 @@ def parse_url(url, today):
 
 
 parser = Parser('darmstadt', handler=parse_url,
-                shared_prefix='http://www.stwda.de/components/com_spk/')
+                shared_prefix='https://www.stwda.de/components/com_spk/')
 parser.define('stadtmitte', suffix='spk_Stadtmitte_print.php?ansicht=')
 parser.define('lichtwiese', suffix='spk_Lichtwiese_print.php?ansicht=')
 parser.define('schoefferstrasse', suffix='spk_Schoefferstrasse_print.php?ansicht=')
