@@ -16,13 +16,13 @@ def parse_day(canteen, day, data):
     if note:
         canteen.setDayClosed(day)
         return
-    for menu in data.find(attrs={'class':'menues'}).find_all('tr'):
+    for menu in data.find(attrs={'class': 'menues'}).find_all('tr'):
         # category:
-        category = menu.find('td', attrs={'class':'category'}).text.strip()
+        category = menu.find('td', attrs={'class': 'category'}).text.strip()
         # split name and notes:
         name = ''
         notes = set()
-        for namePart in menu.find('td', attrs={'class':'menue'}).children:
+        for namePart in menu.find('td', attrs={'class': 'menue'}).children:
             if type(namePart) is NavigableString:
                 name += namePart.string
             elif type(namePart) is Tag:
