@@ -70,7 +70,9 @@ def parse_week(url, canteen):
                 continue
 
             if "geschlossen" in mealCellText:
-                setDayClosed(dates[dateIdx])
+                pass
+                #TODO: might also be only the subCanteen that is closed, disable for now
+                #canteen.setDayClosed(dates[dateIdx])
 
             # extract price tag
             _prices = price_regex.split(mealCellText)
