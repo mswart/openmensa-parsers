@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup as parse
 import re
 import datetime
 
+from utils import Parser
+
 from pyopenmensa.feed import LazyBuilder
 
 day_regex = re.compile('(?P<day>\d{2})\.(?P<month>\d{2})\.')
@@ -56,3 +58,17 @@ def parse_url(url, today=False):
         if closed_candidate and not canteen.hasMealsFor(date):
             canteen.setDayClosed(date)
     return canteen.toXMLFeed()
+
+
+parser = Parser('wuerzburg', handler=parse_url,
+                shared_prefix='http://www.studentenwerk-wuerzburg.de/essen-trinken/speiseplaene/plan/show/')
+parser.define('austrasse', suffix='austrasse-bamberg.html')
+parser.define('burse', suffix='burse-wuerzburg.html')
+parser.define('feldkirchenstrasse', suffix='feldkirchenstrasse-bamberg.html')
+parser.define('frankenstube', suffix='frankenstube-wuerzburg.html')
+parser.define('hubland', suffix='mensa-am-hubland-wuerzburg.html')
+parser.define('studentenhaus', suffix='mensa-am-studentenhaus.html')
+parser.define('aschaffenburg', suffix='mensa-aschaffenburg')
+parser.define('augenklinik', suffix='mensa-augenklinik-wuerzburg.html')
+parser.define('josef-schneider', suffix='mensa-josef-schneider-strasse-wuerzburg.html')
+parser.define('schweinfurt', suffix='mensa-schweinfurt.html')

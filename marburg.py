@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup as parse
 from bs4.element import Tag
 import re
 
+from utils import Parser
+
 from pyopenmensa.feed import LazyBuilder, extractWeekDates
 
 employeePrice = re.compile('Unibedienstetenzuschlag:? ?(?P<price>\d+[,.]\d{2}) ?€?')
@@ -41,10 +43,20 @@ def parse_week(url, canteen, mensa):
             canteen.addMeal(date, category, name, [], tr_menu.find_all('td')[2].text)
 
 
-def parse_url(url, today, mensa, *weeks):
+def parse_url(url, mensa, *weeks, today):
     canteen = LazyBuilder()
     for week in weeks:
         parse_week(url + week, canteen, mensa)
         if today:
             break
     return canteen.toXMLFeed()
+
+
+parser = Parser('marburg', handler=parse_url,
+                shared_args=['http://www.studentenwerk-marburg.de/essen-trinken/speiseplan/'])
+parser.define('bistro', args=['Speiseplan.*Bistro', 'diese-woche-bistro.html', 'naechste-woche-bistro.html'])
+parser.define('mos-diner', args=['Speiseplan.*Diner', 'diese-woche-mos-diner.html'])
+parser.define('erlenring', args=['Mensa Erlenring', 'diese-woche-mensa-erlenring-und-lahnberge.html',
+              'naechste-woche-mensa-erlenring-und-lahnberge.html'])
+parser.define('lahnberge', args=['Mensa Lahnberge', 'diese-woche-mensa-erlenring-und-lahnberge.html',
+              'naechste-woche-mensa-erlenring-und-lahnberge.html'])

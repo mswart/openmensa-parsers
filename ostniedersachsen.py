@@ -3,6 +3,8 @@ import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup as parse
 
+from utils import Parser
+
 from pyopenmensa.feed import LazyBuilder, extractDate, buildLegend
 
 
@@ -96,34 +98,30 @@ def parse_url(url, today=False, canteentype='Mittagsmensa', this_week='', next_w
     return canteen.toXMLFeed()
 
 
-def register_canteens(providers):
-    def city(name, prefix='menus/mensa-', legend_url=None, next_week=None, **canteens):
-        city_definition = {
-            'handler': parse_url,
-            'prefix': 'http://www.stw-on.de/{}/essen/'.format(name) + prefix,
-            'canteens': {k.replace('_', '-'): v for k, v in canteens.items()}
-        }
-        if legend_url:
-            city_definition['options'] = {'legend_url': legend_url}
-        if next_week is not None:
-            city_definition.setdefault('options', {})
-            city_definition['options']['next_week'] = next_week
-        providers[name] = city_definition
+parser = Parser('ostniedersachsen', handler=parse_url,
+                shared_prefix='http://www.stw-on.de')
 
-    city('braunschweig', prefix='menus/',
-         mensa1_mittag=('mensa-1', 'Mittagsmensa'),
-         mensa1_abend=('mensa-1', 'Abendmensa'),
-         mensa360=('360', 'Pizza', '-2', '-nachste-woche'),
-         mensa2='mensa-2',
-         hbk='mensa-hbk')
-    city('clausthal', clausthal='clausthal', next_week='-kommend-woche')
-    city('hildesheim', prefix='menus/',
-         uni='mensa-uni',
-         hohnsen='mensa-hohnsen',
-         luebecker_strasse=('luebecker-strasse', 'Mittagsausgabe'))
-    city('holzminden', hawk='hawk', next_week=False)
-    city('lueneburg', prefix='speiseplaene/',
-         campus='mensa-campus',
-         rotes_feld='rotes-feld')
-    city('suderburg', suderburg='suderburg')
-    city('wolfenbuettel', ostfalia='ostfalia')
+sub = parser.sub('braunschweig',
+                 shared_prefix='/braunschweig/essen/menus/')
+sub.define('mensa1-mittag', suffix='mensa-1', extra_args={'canteentype': 'Mittagsmensa'})
+sub.define('mensa1-abend', suffix='mensa-1', extra_args={'canteentype': 'Abendmensa'})
+sub.define('mensa360', suffix='360', extra_args={'canteentype': 'Pizza', 'this_week': '-2', 'next_week': '-nachste-woche'})
+sub.define('mensa2', suffix='mensa-2')
+sub.define('hbk', suffix='mensa-hbk')
+
+parser.define('clausthal', suffix='/clausthal/essen/menus/mensa-clausthal',
+              extra_args={'next_week': '-kommend-woche'})
+
+sub = parser.sub('hildesheim', shared_prefix='/hildesheim/essen/menus/')
+sub.define('uni', suffix='mensa-uni')
+sub.define('hohnsen', suffix='mensa-hohnsen')
+sub.define('luebecker-strasse', suffix='luebecker-strasse', extra_args={'canteentype': 'Mittagsausgabe'})
+
+parser.sub('suderburg').define('campus', suffix='/suderburg/essen/menus/mensa-suderburg')
+parser.sub('wolfenbuettel').define('ostfalia', suffix='/wolfenbuettel/essen/menus/mensa-ostfalia')
+parser.sub('holzminden', shared_prefix='/holzminden/essen/menus/') \
+    .define('hawk', suffix='mensa-hawk', extra_args={'next_week': False})
+
+sub = parser.sub('lueneburg', shared_prefix='/lueneburg/essen/speiseplaene/')
+sub.define('campus', suffix='mensa-campus')
+sub.define('rotes-feld', suffix='rotes-feld')

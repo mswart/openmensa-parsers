@@ -3,6 +3,8 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup as parse
 import re
 
+from utils import Parser
+
 from pyopenmensa.feed import LazyBuilder, extractDate
 
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
@@ -41,3 +43,23 @@ def parse_url(url, today=False):
         parse_week(url + '-w1.html', canteen)
         parse_week(url + '-w2.html', canteen)
     return canteen.toXMLFeed()
+
+
+parser = Parser('dresden', handler=parse_url,
+                shared_prefix='http://www.studentenwerk-dresden.de/mensen/speiseplan/')
+parser.define('reichenbachstrasse', suffix='mensa-reichenbachstrasse')
+parser.define('zeltschloesschen', suffix='zeltschloesschen')
+parser.define('alte-mensa', suffix='alte-mensa')
+parser.define('mensologie', suffix='mensologie')
+parser.define('siedepunkt', suffix='mensa-siedepunkt')
+parser.define('johannstadt', suffix='mensa-johannstadt')
+parser.define('wueins', suffix='mensa-wueins')
+parser.define('bruehl', suffix='mensa-bruehl')
+parser.define('u-boot', suffix='u-boot')
+parser.define('tellerrandt', suffix='mensa-tellerrandt')
+parser.define('zittau', suffix='mensa-zittau')
+parser.define('stimm-gabel', suffix='mensa-stimm-gabel')
+parser.define('palucca-schule', suffix='mensa-palucca-schule')
+parser.define('goerlitz', suffix='mensa-goerlitz')
+parser.define('sport', suffix='mensa-sport')
+parser.define('kreuzgymnasium', suffix='mensa-kreuzgymnasium')

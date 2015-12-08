@@ -3,6 +3,8 @@ from urllib.request import urlopen
 import json
 import datetime
 
+from utils import Parser
+
 from pyopenmensa.feed import LazyBuilder
 
 
@@ -51,3 +53,18 @@ def parse_url(url, today=False):
         totalCount += 1
         day += datetime.date.resolution
     return canteen.toXMLFeed()
+
+
+parser = Parser('leipzig', handler=parse_url,
+                shared_prefix='http://www.studentenwerk-leipzig.de/mensen-und-cafeterien/speiseplan/m/meals.php?canteen=')
+parser.define('dittrichring', suffix='153')
+parser.define('koburger-strasse', suffix='121')
+parser.define('philipp-rosenthal-strasse', suffix='127')
+parser.define('waechterstrasse', suffix='129')
+parser.define('academica', suffix='118')
+parser.define('am-park', suffix='106')
+parser.define('am-elsterbecken', suffix='115')
+parser.define('liebigstrasse', suffix='162')
+parser.define('peterssteinweg', suffix='111')
+parser.define('schoenauer-strasse', suffix='140')
+parser.define('tierklinik', suffix='170')

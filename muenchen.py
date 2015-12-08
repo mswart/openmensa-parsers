@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup as parse
 import re
 import datetime
 
+from utils import Parser
+
 from pyopenmensa.feed import LazyBuilder
 
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€?')
@@ -27,13 +29,15 @@ def parse_url(url, today=False):
             continue
         if len(tr.find_all('td', 'betrag')) < 3:
             continue
-        if 'class' in meal.attrs and 'titel' in meal.attrs['class']:
+        if 'titel' in meal.attrs.get('class', []) or 'zeilentitel' in meal.attrs.get('class', []):
             continue
         meal = meal.text.strip()
         prices[meal] = {}
         for role, _id in [('student', 0), ('employee', 1), ('other', 2)]:
-            prcie_html = tr.find_all('td', 'betrag')[_id].text
-            prices[meal][role] = price_regex.search(prcie_html).group('price')
+            price_html = tr.find_all('td', 'betrag')[_id].text
+            price_search = price_regex.search(price_html)
+            if price_search:
+                prices[meal][role] = price_search.group('price')
     errorCount = 0
     date = datetime.date.today()
     while errorCount < 7:
@@ -71,3 +75,23 @@ def parse_url(url, today=False):
         if today:
             break
     return canteen.toXMLFeed()
+
+
+parser = Parser('muenchen', handler=parse_url,
+                shared_prefix='http://www.studentenwerk-muenchen.de/mensa/speiseplan/')
+parser.define('leopoldstrasse', suffix='speiseplan_{}_411_-de.html')
+parser.define('martinsried', suffix='speiseplan_{}_412_-de.html')
+parser.define('grosshadern', suffix='speiseplan_{}_414_-de.html')
+parser.define('schellingstrasse', suffix='speiseplan_{}_416_-de.html')
+parser.define('archisstrasse', suffix='speiseplan_{}_421_-de.html')
+parser.define('garching', suffix='speiseplan_{}_422_-de.html')
+parser.define('weihenstephan', suffix='speiseplan_{}_423_-de.html')
+parser.define('lothstrasse', suffix='speiseplan_{}_431_-de.html')
+parser.define('pasing', suffix='speiseplan_{}_432_-de.html')
+parser.define('rosenheim', suffix='speiseplan_{}_441_-de.html')
+parser.define('adalbertstrasse', suffix='speiseplan_{}_512_-de.html')
+parser.define('cafeteria-garching', suffix='speiseplan_{}_524_-de.html')
+parser.define('wst', suffix='speiseplan_{}_525_-de.html')
+parser.define('akademie', suffix='speiseplan_{}_526_-de.html')
+parser.define('boltzmannstrasse', suffix='speiseplan_{}_527_-de.html')
+parser.define('karlstrasse', suffix='speiseplan_{}_532_-de.html')

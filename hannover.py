@@ -3,6 +3,8 @@ from urllib.request import urlopen
 import re
 from xml.dom.minidom import Document
 
+from utils import Parser
+
 from pyopenmensa.feed import LazyBuilder
 
 day_regex = re.compile('(?P<date>\d{2}\.\d{2}\.\d{4})')
@@ -51,3 +53,19 @@ def parse_url(url, today=False):
     if not today:
         parse_week(url + '&wann=3', canteen)
     return canteen.toXMLFeed()
+
+
+parser = Parser('hannover', handler=parse_url,
+                shared_prefix='http://www.stwh-portal.de/mensa/index.php?format=txt&wo=')
+parser.define('hauptmensa', suffix='2')
+parser.define('hauptmensa-marktstand', suffix='9')
+parser.define('restaurant-ct', suffix='10')
+parser.define('contine', suffix='3')
+parser.define('pzh', suffix='13')
+parser.define('caballus', suffix='1')
+parser.define('tiho-tower', suffix='0')
+parser.define('hmtmh', suffix='8')
+parser.define('ricklinger-stadtweg', suffix='6')
+parser.define('kurt-schwitters-forum', suffix='7')
+parser.define('blumhardtstrasse', suffix='14')
+parser.define('herrenhausen', suffix='12')
