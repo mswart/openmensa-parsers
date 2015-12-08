@@ -117,8 +117,8 @@ def parse_url(url, today=False):
     b = re.compile("^B[1-9]$")
     n = re.compile("^N[1-9]$")
 
-    #for w in 0, 1:
-    for w in [0]:
+    #for w in [0]:
+    for w in -1, 0:
         kw = (date.today() + timedelta(weeks=w)).isocalendar()[1]
         try:
             f = urlopen('%(location)s/%(isoweek)d.csv' %
