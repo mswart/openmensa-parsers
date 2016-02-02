@@ -38,7 +38,7 @@ def parse_url(url, today=False):
             if 'geschlossen' in name:
                 closed_candidate = True
                 continue
-            category = meal_article.find('div', 'desc').text
+            category = meal_article.find('div')['title']
             notes = [v['title'] for v in meal_article.find_all('div', 'theicon') if v['title']]
             if meal_article.find('div', 'additive'):
                 notes += [v[0] for v in extra_regex.findall(meal_article.find('div', 'additive').text)]
