@@ -35,7 +35,7 @@ def parse_week(url, canteen, type, allergene={}, zusatzstoffe={}):
                     kind, value = title.split(':')
                     if kind == 'Allergene':
                         for allergen in value.split(','):
-                            notes.append(allergene[allergen.strip()])
+                            notes.append(allergene.get(allergen.strip()) or allergene[allergen.strip()[:-1]])
                     elif kind == 'Zusatzstoffe':
                         for zusatzstoff in value.split(','):
                             notes.append(zusatzstoffe[zusatzstoff.strip()])
