@@ -52,6 +52,7 @@
 # 8 - bed
 # 9 - gast
 
+import sys
 from csv import reader
 from datetime import date, timedelta
 from urllib.request import urlopen
@@ -177,8 +178,13 @@ def parse_url(url, today=False):
                 for i in notes:
                     mnotes.append(legend.get(i, legend.get(i[2:], i)))
 
-                canteen.addMeal(mdate, category, mname,
-                                mnotes, prices, roles)
+                try:
+                    canteen.addMeal(mdate, category, mname,
+                                    mnotes, prices, roles)
+                except ValueError as e:
+                    print('could not add meal {}/{} "{}" due to "{}"'.format(mdate, category, mname, e), file=sys.stderr)
+                    # empty meal ...
+                    pass
 
     return canteen.toXMLFeed()
 
