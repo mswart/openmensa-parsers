@@ -21,6 +21,7 @@ for module in [
     'aachen',
     'darmstadt',
     'dresden',
+    'erlangen_nuernberg',
     'halle',
     'hamburg',
     'hannover',
