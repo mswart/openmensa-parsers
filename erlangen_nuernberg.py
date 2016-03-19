@@ -30,7 +30,7 @@ def parse_url(url, today=False):
 
     def is_new_entry(tds):
         td = tds[0]
-        return date_regex.search(td.string) is not None
+        return td.string is not None and date_regex.search(td.string) is not None
 
     def is_end_of_entry(tds):
         for td in tds:
@@ -136,3 +136,14 @@ parser = Parser('erlangen_nuernberg',
                 handler=parse_url,
                 shared_prefix='http://www.studentenwerk.uni-erlangen.de/verpflegung/de/')
 parser.define('er-langemarck', suffix='sp-er-langemarck.shtml')
+parser.define('er-sued', suffix='sp-er-sued.shtml')
+parser.define('n-schuett', suffix='sp-n-schuett.shtml')
+parser.define('n-regens', suffix='sp-n-regens.shtml')
+parser.define('n-stpaul', suffix='sp-n-stpaul.shtml')
+parser.define('n-mensateria', suffix='sp-n-mensateria.shtml')
+parser.define('n-hohfederstr', suffix='sp-n-hohfederstr.shtml')
+parser.define('n-baerenschanzstr', suffix='sp-n-baerenschanzstr.shtml')
+parser.define('eichstaett', suffix='sp-eichstaett.shtml')
+parser.define('ingolstadt', suffix='sp-ingolstadt.shtml')
+parser.define('ansbach', suffix='sp-ansbach.shtml')
+parser.define('triesdorf', suffix='sp-triesdorf.shtml')
