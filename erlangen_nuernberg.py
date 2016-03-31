@@ -174,7 +174,7 @@ def parse_url(url, today=False):
             del nl[len(nl)-1]
             nl[len(nl)-1] = '.'
             notes = ''.join(nl)
-        return [notes]
+        return notes
 
     def get_pricing(tds, f, t):
         priceing = []
@@ -203,18 +203,23 @@ def parse_url(url, today=False):
         if(is_end_of_entry(tds)):
             inside_valide_entry = False
         elif inside_valide_entry:
+            notes = []
             if is_action_entry(tds[0]):
                 food_type = parse_foot_type(tds[1])
                 food_description = get_foot_description(tds[2])
                 notes_string = build_notes_string(tds[2])
+                if(notes_string != ""):
+                    notes.append(notes_string)
                 prices = get_pricing(tds, 3, 6)
-                canteen.addMeal(date, 'Aktion: '+food_type, food_description, notes_string, prices, roles if prices else None)
+                canteen.addMeal(date, 'Aktion: '+food_type, food_description, notes, prices, roles if prices else None)
             else:
                 food_type = parse_foot_type(tds[2])
                 food_description = get_foot_description(tds[3])
                 notes_string = build_notes_string(tds[3])
+                if(notes_string != ""):
+                    notes.append(notes_string)
                 prices = get_pricing(tds, 4, 7)
-                canteen.addMeal(date, food_type, food_description, notes_string, prices, roles if prices else None)
+                canteen.addMeal(date, food_type, food_description, notes, prices, roles if prices else None)
     return canteen.toXMLFeed()
 
 
