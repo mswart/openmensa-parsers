@@ -8,14 +8,14 @@ from pyopenmensa.feed import LazyBuilder
 
 from utils import Parser
 
-date_regex = re.compile('(?P<week_day>[A-Z][a-z])\ (?P<day>[0-9].)\.(?P<month>[0-9].)\.')
+date_regex = re.compile('(?P<week_day>[A-Z][a-z])\ (?P<day>[0-9].)\.(?P<month>[0-9].)')
 price_regex = re.compile('(?P<val>[0-9]*,[0-9].)')
 
 roles = ('student', 'employee', 'other')
 
 def parse_url(url, today=False):
     content = urlopen(url).read()
-    document = parse(content)
+    document = parse(content, "lxml")
     canteen = LazyBuilder()
     table = document.find_all('table')[0]
 
@@ -66,6 +66,10 @@ def parse_url(url, today=False):
                 type += 'Fish MSC '
             elif('vegan' in src):
                 type += 'Vegan '
+        #Sometimes none categorized food is possible, therfore we need to cover this,
+        #otherwhise openmensa.org will faile dueto an empty tag.
+        elif(td.string.strip() == ''):
+            type += 'Tipp '
         else:
             if('R' in td.string):
                 type += 'Rind '
