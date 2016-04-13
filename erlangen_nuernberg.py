@@ -81,8 +81,7 @@ def parse_url(url, today=False):
                 type += 'Lamm '
             if('W' in td.string):
                 type += 'Wild '
-        tl = list(type)
-        del tl[len(tl)-1]
+        tl = list(type)[:-1]
         return ''.join(tl)
 
     def get_refs(td):
