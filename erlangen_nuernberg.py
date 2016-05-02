@@ -186,6 +186,7 @@ def parse_url(url, today=False):
         if len(tds) < 7:
             return None
         for i in range(f, t):
+            print(len(tds))
             raw_price = tds[i].string.strip()
             if raw_price == '':
                 return None
