@@ -182,7 +182,11 @@ def parse_url(url, today=False):
 
     def get_pricing(tds, f, t):
         priceing = []
+        #sometimes we dont don't get 7 elements, than this might be a special day
+        if len(tds) < 7:
+            return None
         for i in range(f, t):
+            print(len(tds))
             raw_price = tds[i].string.strip()
             if raw_price == '':
                 return None
