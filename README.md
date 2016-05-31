@@ -1,6 +1,8 @@
 OpenMensa Parsers
 =================
 
+[![Build Status](https://api.travis-ci.org/mswart/openmensa-parsers.svg)](https://travis-ci.org/mswart/openmensa-parsers)
+
 [OpenMensa](http://openmensa.org) is a free canteen database. It depends on external parsers that provide the meal information for the specific canteens.
 
 This repository contains a large collection of parsers for different canteens all over Germany - mostly university canteens provided by student unions.
