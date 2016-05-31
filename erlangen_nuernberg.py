@@ -3,6 +3,8 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup as parse
 import re
 import datetime
+import traceback
+import sys
 
 from pyopenmensa.feed import LazyBuilder
 
@@ -201,32 +203,42 @@ def parse_url(url, today=False):
     for tr in table.find_all('tr'):
         tds = tr.find_all('td')
         if(is_new_entry(tds)):
-            raw_date = tds[0].string
-            date = refactor_date(raw_date)
-            if(is_closed(tds)):
-                canteen.setDayClosed(date)
-            else:
-                inside_valide_entry = True
+            try:
+                raw_date = tds[0].string
+                date = refactor_date(raw_date)
+                if(is_closed(tds)):
+                    canteen.setDayClosed(date)
+                else:
+                    inside_valide_entry = True
+            except Exception as e:
+                traceback.print_exception(*sys.exc_info())
         if(is_end_of_entry(tds)):
-            inside_valide_entry = False
+            try:
+                inside_valide_entry = False
+            except Exception as e:
+                traceback.print_exception(*sys.exc_info())
         elif inside_valide_entry:
-            notes = []
-            if is_action_entry(tds[0]):
-                food_type = parse_foot_type(tds[1])
-                food_description = get_foot_description(tds[2])
-                notes_string = build_notes_string(tds[2])
-                if(notes_string != ""):
-                    notes.append(notes_string)
-                prices = get_pricing(tds, 3, 6)
-                canteen.addMeal(date, 'Aktion: '+food_type, food_description, notes, prices, roles if prices else None)
-            else:
-                food_type = parse_foot_type(tds[2])
-                food_description = get_foot_description(tds[3])
-                notes_string = build_notes_string(tds[3])
-                if(notes_string != ""):
-                    notes.append(notes_string)
-                prices = get_pricing(tds, 4, 7)
-                canteen.addMeal(date, food_type, food_description, notes, prices, roles if prices else None)
+            try:
+                notes = []
+                if is_action_entry(tds[0]):
+                    food_type = parse_foot_type(tds[1])
+                    food_description = get_foot_description(tds[2])
+                    notes_string = build_notes_string(tds[2])
+                    if(notes_string != ""):
+                        notes.append(notes_string)
+                    prices = get_pricing(tds, 3, 6)
+                    canteen.addMeal(date, 'Aktion: '+food_type, food_description, notes, prices, roles if prices else None)
+                else:
+                        food_type = parse_foot_type(tds[2])
+                        food_description = get_foot_description(tds[3])
+                        notes_string = build_notes_string(tds[3])
+                        if(notes_string != ""):
+                            notes.append(notes_string)
+                        prices = get_pricing(tds, 4, 7)
+                        canteen.addMeal(date, food_type, food_description, notes, prices, roles if prices else None)
+            except Exception as e:
+                traceback.print_exception(*sys.exc_info())
+
     return canteen.toXMLFeed()
 
 
