@@ -194,7 +194,6 @@ def parse_url(url, today=False):
                 priceing.append(price_regex.search(raw_price).group('val'))
         return priceing
 
-
     # state helper
     inside_valide_entry = False
     date = ''
@@ -206,16 +205,17 @@ def parse_url(url, today=False):
                 raw_date = tds[0].string
                 date = refactor_date(raw_date)
                 if(is_closed(tds)):
-                    canteen.setDayClosed(date)
+                    # sometismes a canteen might look closed but actually its spargeltage
+                    if "Spargeltage" in tds[3].text:
+                        canteen.addMeal(date, "Spargel", "Spargel Tag", ["Spargel und andere Gerichte."], None, None)
+                    else:
+                        canteen.setDayClosed(date)
                 else:
                     inside_valide_entry = True
             except Exception as e:
                 traceback.print_exception(*sys.exc_info())
         if(is_end_of_entry(tds)):
-            try:
-                inside_valide_entry = False
-            except Exception as e:
-                traceback.print_exception(*sys.exc_info())
+            inside_valide_entry = False
         elif inside_valide_entry:
             try:
                 notes = []
