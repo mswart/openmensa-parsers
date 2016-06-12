@@ -62,12 +62,15 @@ def parse_url(url, today=False):
     def parse_foot_type(td):
         type = ''
         if td.string is None:
-            img = td.find_all('img')[0]
-            src = img.get('src')
-            if('msc' in src):
-                type += 'Fish MSC '
-            elif('vegan' in src):
-                type += 'Vegan '
+            if len(td.find_all('img')) == 0:
+                return None
+            else:
+                img = td.find_all('img')[0]
+                src = img.get('src')
+                if('msc' in src):
+                    type += 'Fish MSC '
+                elif('vegan' in src):
+                    type += 'Vegan '
         #Sometimes none categorized food is possible, therfore we need to cover this,
         #otherwhise openmensa.org will faile dueto an empty tag.
         elif(td.string.strip() == ''):
@@ -227,6 +230,8 @@ def parse_url(url, today=False):
                     if(notes_string != ""):
                         notes.append(notes_string)
                     prices = get_pricing(tds, 3, 6)
+
+
                     canteen.addMeal(date, 'Aktion: '+food_type, food_description, notes, prices, roles if prices else None)
                 else:
                         food_type = parse_foot_type(tds[2])
@@ -235,7 +240,8 @@ def parse_url(url, today=False):
                         if(notes_string != ""):
                             notes.append(notes_string)
                         prices = get_pricing(tds, 4, 7)
-                        canteen.addMeal(date, food_type, food_description, notes, prices, roles if prices else None)
+                        if food_type is not None:
+                            canteen.addMeal(date, food_type, food_description, notes, prices, roles if prices else None)
             except Exception as e:
                 traceback.print_exception(*sys.exc_info())
 
