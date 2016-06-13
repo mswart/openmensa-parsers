@@ -64,18 +64,30 @@ def parse_day(canteen, url, date):
 
     soup = BeautifulSoup(content, 'xml')
 
+    rolesDict = {"S": "student", "M": "employee", "G": "other"}
+
     for essen in soup.find_all('essen'):
-        category = essen['kategorie']
+        category = essen['kategorie'] if essen.has_attr('kategorie') else ""
+        if not essen.deutsch:
+            continue
         name = essen.deutsch.string
+
         notes = []
-        if essen['vegetarisch'] == 'true':
+        if essen.has_attr('vegetarisch') and essen['vegetarisch'] == 'true':
             notes = ['vegetarisch']
-        prices = []
-        for role in ["S", "M", "G"]:
-            price = essen.find('pr', gruppe=role).string
-            if (price):
-                prices.append(price)
-        roles = ('student', 'employee', 'other')
+
+        price = essen.find('pr', gruppe="Preis")
+        if price and price.string:
+            prices = [price.string, price.string, price.string]
+            roles = rolesDict.values()
+        else:
+            prices = []
+            roles = []
+            for group, role in rolesDict.items():
+                price = essen.find('pr', gruppe=group)
+                if (price and price.string):
+                    prices.append(price.string)
+                    roles.append(role)
         canteen.addMeal(date, category, name, notes, prices, roles)
 
 
