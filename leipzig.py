@@ -1,38 +1,55 @@
 #!python3
 from urllib.request import urlopen
-import json
+from bs4 import BeautifulSoup
 import datetime
 
 from utils import Parser
 
 from pyopenmensa.feed import LazyBuilder
 
+def parse_prices(prices):
+    price_map = {}
+    for price in prices:
+        if '0' == price['consumerID']:
+            price_map['student'] = price.getText()
+        elif '1' == price['consumerID']:
+            price_map['employee'] = price.getText()
+        elif '2' == price['consumerID']:
+            price_map['other'] = price.getText()
+    return price_map
 
-def correct_prices(v):
-    if 'employe' in v:
-        v['employee'] = v.pop('employe')
-    if 'guest' in v:
-        v['other'] = v.pop('guest')
-    return v
-
-
-def parse_day(canteen, url, date):
+def parse_day(canteen, url):
     content = urlopen(url).read()
-    data = json.loads(content.decode('utf-8'))
+    data = BeautifulSoup(content.decode('utf-8'), 'xml')
 
-    for category in data:
-        for meal in category['components']:
-            notes = filter(lambda v: v, map(lambda v: v.strip(),
-                           category['ingredients'].split(',') +
-                           category['additives'].split(',')))
-            if type(meal) is str:
-                canteen.addMeal(date, category['name'], meal, notes,
-                                correct_prices(category['prices']))
-            elif type(meal) is dict:
-                canteen.addMeal(date, category['name'], meal['name'], notes,
-                                correct_prices(meal['prices']))
-            else:
-                print('unknown meal type: {}'.format(type(meal)))
+    for group in data.findChildren('group'):
+        date = group['productiondate']
+        category = group.findChild('name').getText()
+        prices = parse_prices(group.findChild('prices').findChildren('price'))
+
+        components = group.findChild('components').findChildren('component')
+        components = list(map(lambda c: c.findChild("name1").getText(), components))
+
+        tags = group.findChild('taggings').findChildren('tagging')
+        tags = list(map(lambda t: t.getText(), tags))
+
+        if '1' == group['type']:
+            # meal consisting of multiple parts, use first component as name
+
+            if len(components) < 1:
+                print("meal without component: {}".format(group))
+                continue
+
+            notes = components[1:] + tags
+            canteen.addMeal(date, category, components[0], notes, prices)
+        elif '2' == group['type']:
+            # multiple components to choose from
+
+            for component in components:
+                canteen.addMeal(date, category, component, tags, prices)
+        else:
+            print('unknown meal type: {}'.format(group['type']))
+
     return len(data) > 0
 
 
@@ -42,21 +59,19 @@ def parse_url(url, today=False):
     emptyCount = 0
     totalCount = 0
     while emptyCount < 7 and totalCount < 32:
-        if not parse_day(canteen, '{}&day={}&month={}&year={}&limit=25'
-                         .format(url, day.day, day.month, day.year),
-                         day.strftime('%Y-%m-%d')):
+        if not parse_day(canteen, '{}&date={}'.format(url, day.strftime('%Y-%m-%d'))):
             emptyCount += 1
         else:
             emptyCount = 0
         if today:
             break
         totalCount += 1
-        day += datetime.date.resolution
+        day += datetime.timedelta(days=1)
     return canteen.toXMLFeed()
 
 
 parser = Parser('leipzig', handler=parse_url,
-                shared_prefix='http://www.studentenwerk-leipzig.de/mensen-und-cafeterien/speiseplan/m/meals.php?canteen=')
+                shared_prefix='https://www.studentenwerk-leipzig.de/XMLInterface/request?location=')
 parser.define('dittrichring', suffix='153')
 parser.define('koburger-strasse', suffix='121')
 parser.define('philipp-rosenthal-strasse', suffix='127')
