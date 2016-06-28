@@ -10,11 +10,12 @@ from pyopenmensa.feed import LazyBuilder
 def parse_prices(prices):
     price_map = {}
     for price in prices:
-        if '0' == price['consumerID']:
+        id = price.get('consumerID')
+        if '0' == id:
             price_map['student'] = price.getText()
-        elif '1' == price['consumerID']:
+        elif '1' == id:
             price_map['employee'] = price.getText()
-        elif '2' == price['consumerID']:
+        elif '2' == id:
             price_map['other'] = price.getText()
     return price_map
 
