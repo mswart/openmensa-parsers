@@ -29,10 +29,10 @@ def parse_day(canteen, url):
         prices = parse_prices(group.findChild('prices').findChildren('price'))
 
         components = group.findChild('components').findChildren('component')
-        components = list(map(lambda c: c.findChild("name1").getText(), components))
+        components = [ c.findChild("name1").getText() for c in components ]
 
         tags = group.findChild('taggings').findChildren('tagging')
-        tags = list(map(lambda t: t.getText(), tags))
+        tags = [ t.getText() for t in tags if not t.is_empty_element ]
 
         if '1' == group['type']:
             # meal consisting of multiple parts, use first component as name
