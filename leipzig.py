@@ -10,11 +10,12 @@ from pyopenmensa.feed import LazyBuilder
 def parse_prices(prices):
     price_map = {}
     for price in prices:
-        if '0' == price['consumerID']:
+        id = price.get('consumerID')
+        if '0' == id:
             price_map['student'] = price.getText()
-        elif '1' == price['consumerID']:
+        elif '1' == id:
             price_map['employee'] = price.getText()
-        elif '2' == price['consumerID']:
+        elif '2' == id:
             price_map['other'] = price.getText()
     return price_map
 
@@ -28,10 +29,10 @@ def parse_day(canteen, url):
         prices = parse_prices(group.findChild('prices').findChildren('price'))
 
         components = group.findChild('components').findChildren('component')
-        components = list(map(lambda c: c.findChild("name1").getText(), components))
+        components = [ c.findChild("name1").getText() for c in components ]
 
         tags = group.findChild('taggings').findChildren('tagging')
-        tags = list(map(lambda t: t.getText(), tags))
+        tags = [ t.getText() for t in tags if not t.is_empty_element ]
 
         if '1' == group['type']:
             # meal consisting of multiple parts, use first component as name
@@ -50,22 +51,14 @@ def parse_day(canteen, url):
         else:
             print('unknown meal type: {}'.format(group['type']))
 
-    return len(data) > 0
-
 
 def parse_url(url, today=False):
     canteen = LazyBuilder()
     day = datetime.date.today()
-    emptyCount = 0
-    totalCount = 0
-    while emptyCount < 7 and totalCount < 32:
-        if not parse_day(canteen, '{}&date={}'.format(url, day.strftime('%Y-%m-%d'))):
-            emptyCount += 1
-        else:
-            emptyCount = 0
+    for _ in range(21):
+        parse_day(canteen, '{}&date={}'.format(url, day.strftime('%Y-%m-%d')))
         if today:
             break
-        totalCount += 1
         day += datetime.timedelta(days=1)
     return canteen.toXMLFeed()
 
