@@ -51,22 +51,14 @@ def parse_day(canteen, url):
         else:
             print('unknown meal type: {}'.format(group['type']))
 
-    return len(data) > 0
-
 
 def parse_url(url, today=False):
     canteen = LazyBuilder()
     day = datetime.date.today()
-    emptyCount = 0
-    totalCount = 0
-    while emptyCount < 7 and totalCount < 32:
-        if not parse_day(canteen, '{}&date={}'.format(url, day.strftime('%Y-%m-%d'))):
-            emptyCount += 1
-        else:
-            emptyCount = 0
+    for _ in range(21):
+        parse_day(canteen, '{}&date={}'.format(url, day.strftime('%Y-%m-%d')))
         if today:
             break
-        totalCount += 1
         day += datetime.timedelta(days=1)
     return canteen.toXMLFeed()
 
