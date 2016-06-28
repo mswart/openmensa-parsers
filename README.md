@@ -42,14 +42,17 @@ As many meal information are only available online as HTML, [Beautiful Soup 4](h
 2. Install the dependecies:
    * [Python 3](https://www.python.org/)
    * [Beautiful Soup 4](http://www.crummy.com/software/BeautifulSoup/) - needed for most parsers/providers.
+   * [python-lxml](http://lxml.de/) Some parsers using the `lxml` backend of Beautiful Soup, so you might need the Python `lxml` module/extension.
 
 3. Try some parsers
 
-        python3 parse.py magdeburg ovgu-unten
+        python3 parse.py magdeburg ovgu-unten full.xml
 
    general:
 
-        python3 parse.py <provider name> <canteen name>
+        python3 parse.py <provider name> <canteen name> <feed name>.xml
+
+   Almost all parsers implement a feed called `full` including all available menu information. Most parsers implement also a `today` feed returning primarily the menu for today.
 
 
 ## Tips for adding a new provider
