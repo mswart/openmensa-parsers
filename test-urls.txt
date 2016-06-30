@@ -1,4 +1,5 @@
 http://localhost:9090/aachen/academica/full.xml
+http://localhost:9090/darmstadt/stadtmitte/full.xml
 http://localhost:9090/dresden/reichenbachstrasse/full.xml
 http://localhost:9090/hamburg/hcu/full.xml
 http://localhost:9090/hannover/hauptmensa/full.xml
