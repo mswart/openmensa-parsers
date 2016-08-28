@@ -117,8 +117,8 @@ def parse_url(url, today=False):
     b = re.compile("^B[1-9]$")
     n = re.compile("^N[1-9]$")
 
-    #for w in [0]:
-    for w in -1, 0:
+    #for w in 0, 1:
+    for w in [0]:
         kw = (date.today() + timedelta(weeks=w)).isocalendar()[1]
         try:
             f = urlopen('%(location)s/%(isoweek)d.csv' %
@@ -157,7 +157,8 @@ def parse_url(url, today=False):
                 while bpos != -1:
                     apos = mname.find('(')
                     for i in mname[apos+1:bpos].split(','):
-                        notes.append(i)
+                        if i:
+                            notes.append(i)
                     if bpos == len(mname)-1:
                         mname = mname[:apos] + mname[bpos+1:]
                         bpos = -1
@@ -170,7 +171,8 @@ def parse_url(url, today=False):
                 mtype = row[4]
                 if mtype != '':
                     for i in mtype.split(','):
-                        notes.append('ZT' + i)
+                        if i:
+                            notes.append('ZT' + i)
 
                 prices = [row[6], row[7], row[8]]
 
