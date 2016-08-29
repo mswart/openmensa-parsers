@@ -54,7 +54,7 @@
 
 import sys
 from csv import reader
-from datetime import date, timedelta
+from datetime import date
 from urllib.request import urlopen
 from urllib.error import HTTPError
 import re
@@ -111,82 +111,75 @@ def parse_url(url, today=False):
         'ZTVG':  'vegan',
         'ZTW':   'Wild'
     }
-    #canteen.setLegendData(legend)
 
     hg = re.compile("^HG[1-9]$")
     b = re.compile("^B[1-9]$")
     n = re.compile("^N[1-9]$")
 
-    #for w in 0, 1:
-    for w in [0]:
-        kw = (date.today() + timedelta(weeks=w)).isocalendar()[1]
-        try:
-            f = urlopen('%(location)s/%(isoweek)d.csv' %
-                        {'location': url, 'isoweek': kw})
-        except HTTPError as e:
-            if e.code == 404:
-                continue
+    kw = date.today().isocalendar()[1]
+    try:
+        f = urlopen('%(location)s/%(isoweek)d.csv' %
+                    {'location': url, 'isoweek': kw})
+    except HTTPError as e:
+        if e.code == 404:
+            return canteen.toXMLFeed()
+        else:
+            raise e
+
+    f = f.read().decode('iso8859-1')
+
+    roles = ('student', 'employee', 'other')
+
+    mealreader = reader(f.splitlines(), delimiter=';')
+    next(mealreader)
+    for row in mealreader:
+        mdate = row[0]
+        category = row[2]
+        mname = row[3]
+        mtype = row[4]
+        prices = [row[6], row[7], row[8]]
+
+        if category == 'Suppe':
+            pass
+        elif hg.match(category):
+            category = 'Hauptgerichte'
+        elif b.match(category):
+            category = 'Beilagen'
+        elif n.match(category):
+            category = 'Nachspeisen'
+        else:
+            raise RuntimeError('Unknown category: ' + str(category))
+
+        notes = []
+        bpos = mname.find(')')
+        while bpos != -1:
+            apos = mname.find('(')
+            for i in mname[apos+1:bpos].split(','):
+                if i:
+                    notes.append(i)
+            if bpos == len(mname)-1:
+                mname = mname[:apos] + mname[bpos+1:]
+                bpos = -1
             else:
-                raise e
-        f = f.read().decode('iso8859-1')
-
-        roles = ('student', 'employee', 'other')
-
-        initline = True
-        mealreader = reader(f.splitlines(), delimiter=';')
-        for row in mealreader:
-            if initline:
-                initline = False
-            else:
-                if row[2] == 'Suppe':
-                    category = 'Suppe'
-                elif hg.match(row[2]):
-                    category = 'Hauptgerichte'
-                elif b.match(row[2]):
-                    category = 'Beilagen'
-                elif n.match(row[2]):
-                    category = 'Nachspeisen'
-                else:
-                    raise RuntimeError('Unknown category: ' + str(row[2]))
-
-                mdate = row[0]
-                notes = []
-
-                mname = row[3]
+                mname = mname[:apos] + ' und ' + mname[bpos+1:]
                 bpos = mname.find(')')
-                while bpos != -1:
-                    apos = mname.find('(')
-                    for i in mname[apos+1:bpos].split(','):
-                        if i:
-                            notes.append(i)
-                    if bpos == len(mname)-1:
-                        mname = mname[:apos] + mname[bpos+1:]
-                        bpos = -1
-                    else:
-                        mname = mname[:apos] + ' und ' + mname[bpos+1:]
-                        bpos = mname.find(')')
-                if mname.rfind(' ') == len(mname)-1:
-                    mname = mname[:len(mname)-1]
+        mname = mname.rstrip()
 
-                mtype = row[4]
-                if mtype != '':
-                    for i in mtype.split(','):
-                        if i:
-                            notes.append('ZT' + i)
+        for i in mtype.split(','):
+            if i:
+                notes.append('ZT' + i)
 
-                prices = [row[6], row[7], row[8]]
+        mnotes = []
+        for i in notes:
+            mnotes.append(legend.get(i, legend.get(i[2:], i)))
 
-                mnotes = []
-                for i in notes:
-                    mnotes.append(legend.get(i, legend.get(i[2:], i)))
-
-                try:
-                    canteen.addMeal(mdate, category, mname,
-                                    mnotes, prices, roles)
-                except ValueError as e:
-                    print('could not add meal {}/{} "{}" due to "{}"'.format(mdate, category, mname, e), file=sys.stderr)
-                    # empty meal ...
-                    pass
+        try:
+            canteen.addMeal( mdate, category, mname,
+                            mnotes, prices, roles)
+        except ValueError as e:
+            print('could not add meal {}/{} "{}" due to "{}"'.format(mdate, category, mname, e), file=sys.stderr)
+            # empty meal ...
+            pass
 
     return canteen.toXMLFeed()
 
