@@ -169,7 +169,7 @@ def parse_url(url, today=False):
             # Check if brackets are at the end of the meal name
             if bpos == len(mname)-1:
                 # Remove brackets and break bracket loop
-                mname = mname[:apos] + mname[bpos+1:]
+                mname = mname[:apos]
                 bpos = -1
             else:
                 # Remove current brackets, improve readability
