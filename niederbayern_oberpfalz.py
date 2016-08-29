@@ -3,7 +3,7 @@
 #
 #  niederbayern_oberpfalz.py
 #
-#  Copyright 2015 shad0w73 <shad0w73@vmail.me>
+#  Copyright 2016 Alex Flierl <shad0w73@vmail.me>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 
 # TODO:
 # - update usable locations
-# - comment the code
 
 # Usable locations (urls) (based on http://www.stwno.de/joomla/de/gastronomie/speiseplan):
 # HS-DEG - TH Deggendorf
@@ -112,10 +111,13 @@ def parse_url(url, today=False):
         'ZTW':   'Wild'
     }
 
+    # Create regular expressions for categories
     hg = re.compile("^HG[1-9]$")
     b = re.compile("^B[1-9]$")
     n = re.compile("^N[1-9]$")
 
+    # Get current isoweek and try to get the data
+    # On error 404 return empty feed
     kw = date.today().isocalendar()[1]
     try:
         f = urlopen('%(location)s/%(isoweek)d.csv' %
@@ -126,10 +128,13 @@ def parse_url(url, today=False):
         else:
             raise e
 
+    # Decode data from German charset
     f = f.read().decode('iso8859-1')
 
+    # Set roles for prices
     roles = ('student', 'employee', 'other')
 
+    # Read csv data and skip the csv header
     mealreader = reader(f.splitlines(), delimiter=';')
     next(mealreader)
     for row in mealreader:
@@ -139,6 +144,7 @@ def parse_url(url, today=False):
         mtype = row[4]
         prices = [row[6], row[7], row[8]]
 
+        # determine category for the current meal
         if category == 'Suppe':
             pass
         elif hg.match(category):
@@ -150,29 +156,41 @@ def parse_url(url, today=False):
         else:
             raise RuntimeError('Unknown category: ' + str(category))
 
+        # Extract the notes from brackets in the meal name
+        # Remove the brackets, notes and improve readability
         notes = []
         bpos = mname.find(')')
         while bpos != -1:
             apos = mname.find('(')
+            # Extract notes from current brackets and avoid empty notes
             for i in mname[apos+1:bpos].split(','):
                 if i:
                     notes.append(i)
+            # Check if brackets are at the end of the meal name
             if bpos == len(mname)-1:
+                # Remove brackets and break bracket loop
                 mname = mname[:apos] + mname[bpos+1:]
                 bpos = -1
             else:
+                # Remove current brackets, improve readability
+                # and find the next brackets
                 mname = mname[:apos] + ' und ' + mname[bpos+1:]
                 bpos = mname.find(')')
+
+        # Remove trailing whitespaces in the meal name
         mname = mname.rstrip()
 
+        # Add meal type notes to notes list and avoid empty notes
         for i in mtype.split(','):
             if i:
                 notes.append('ZT' + i)
 
+        # Translate notes via legend to human readable information
         mnotes = []
         for i in notes:
             mnotes.append(legend.get(i, legend.get(i[2:], i)))
 
+        # Try to add the meal
         try:
             canteen.addMeal( mdate, category, mname,
                             mnotes, prices, roles)
@@ -181,6 +199,7 @@ def parse_url(url, today=False):
             # empty meal ...
             pass
 
+    # return xml data
     return canteen.toXMLFeed()
 
 
