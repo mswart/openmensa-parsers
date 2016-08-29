@@ -128,7 +128,7 @@ def parse_url(url, today=False):
         else:
             raise e
 
-    # Decode data from German charset
+    # Decode data from ISO charset
     f = f.read().decode('iso8859-1')
 
     # Set roles for prices
