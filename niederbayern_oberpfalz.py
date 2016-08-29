@@ -21,24 +21,24 @@
 #
 
 
-# TODO:
-# - update usable locations
-
 # Usable locations (urls) (based on http://www.stwno.de/joomla/de/gastronomie/speiseplan):
 # HS-DEG - TH Deggendorf
 # HS-LA - HS Landshut
-# UNI-P - Uni Passau
+# HS-SR - WZ Straubing
+# Uni Passau:
+#   UNI-P - Uni Passau
+#   Cafeteria-Nikolakloster - Cafeteria Nikolakloster
 # OTH Regensburg:
 #   HS-R-tag - Seybothstraße (mittags)
-#   HS-R-abend - Seybothstraße (abends) (currently no data)
-#   Cafeteria-Pruefening - Prüfeningerstr. (mittags) (currently no data)
+#   HS-R-abend - Seybothstraße (abends)
+#   Cafeteria-Pruefening - Prüfeningerstr. (mittags)
 # Uni Regensburg:
 #   UNI-R - Mensa (mittags)
-#   Cafeteria-PT - Cafeteria PT (mittags) (currently no data)
-#   Cafeteria-Chemie - Cafeteria Chemie (currently no data)
-#   Cafeteria-Milchbar - Cafeteria Milchbar (currently no data)
-#   Cafeteria-Sammelgebaeude - Cafeteria Sammelgebäude (currently no data)
-#   Cafeteria-Sport - Cafeteria Sport (currently no data)
+#   Cafeteria-PT - Cafeteria PT (mittags)
+#   Cafeteria-Chemie - Cafeteria Chemie
+#   Cafeteria-Milchbar - Cafeteria Milchbar
+#   Cafeteria-Sammelgebaeude - Cafeteria Sammelgebäude
+#   Cafeteria-Sport - Cafeteria Sport
 
 # header:
 # 1 - datum
@@ -118,6 +118,7 @@ def parse_url(url, today=False):
 
     # Get current isoweek and try to get the data
     # On error 404 return empty feed
+    # At most locations the data doesn't exist on term break
     kw = date.today().isocalendar()[1]
     try:
         f = urlopen('%(location)s/%(isoweek)d.csv' %
@@ -207,6 +208,15 @@ parser = Parser('niederbayern_oberpfalz', handler=parse_url,
                 shared_prefix='http://www.stwno.de/infomax/daten-extern/csv/')
 parser.define('th-deggendorf', suffix='HS-DEG')
 parser.define('hs-landshut', suffix='HS-LA')
+parser.define('wz-straubing', suffix='HS-SR')
 parser.define('uni-passau', suffix='UNI-P')
+parser.define('unip-cafeteria-nikolakloster', suffix='Cafeteria-Nikolakloster')
 parser.define('oth-regensburg', suffix='HS-R-tag')
+parser.define('oth-regensburg-abends', suffix='HS-R-abend')
+parser.define('othr-cafeteria-pruefening', suffix='Cafeteria-Pruefening')
 parser.define('uni-regensburg', suffix='UNI-R')
+parser.define('unir-cafeteria-pt', suffix='Cafeteria-PT')
+parser.define('unir-cafeteria-chemie', suffix='Cafeteria-Chemie')
+parser.define('unir-cafeteria-milchbar', suffix='Cafeteria-Milchbar')
+parser.define('unir-cafeteria-sammelgebaeude', suffix='Cafeteria-Sammelgebaeude')
+parser.define('unir-cafeteria-sport', suffix='Cafeteria-Sport')
