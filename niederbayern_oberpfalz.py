@@ -116,11 +116,12 @@ def parse_url(url, today=False):
     b = re.compile("^B[1-9]$")
     n = re.compile("^N[1-9]$")
 
-    # Get current and next isoweek and try to get the data
+    # Get two weeks for full.xml and only the current one for today.xml
     # On error 404 continue with next isoweek
     # Returns an empty feed if both isoweeks result in error 404
     # At most locations the data doesn't exist on term break
-    for w in 0, 1:
+    weeks = 1 if today else 2
+    for w in range(0, weeks):
         kw = (date.today() + timedelta(weeks=w)).isocalendar()[1]
         try:
             f = urlopen('%(location)s/%(isoweek)d.csv' %
