@@ -53,7 +53,7 @@
 
 import sys
 from csv import reader
-from datetime import date
+from datetime import date, timedelta
 from urllib.request import urlopen
 from urllib.error import HTTPError
 import re
@@ -116,89 +116,91 @@ def parse_url(url, today=False):
     b = re.compile("^B[1-9]$")
     n = re.compile("^N[1-9]$")
 
-    # Get current isoweek and try to get the data
-    # On error 404 return empty feed
+    # Get current and next isoweek and try to get the data
+    # On error 404 continue with next isoweek
+    # Returns an empty feed if both isoweeks result in error 404
     # At most locations the data doesn't exist on term break
-    kw = date.today().isocalendar()[1]
-    try:
-        f = urlopen('%(location)s/%(isoweek)d.csv' %
-                    {'location': url, 'isoweek': kw})
-    except HTTPError as e:
-        if e.code == 404:
-            return canteen.toXMLFeed()
-        else:
-            raise e
-
-    # Decode data from ISO charset
-    f = f.read().decode('iso8859-1')
-
-    # Set roles for prices
-    roles = ('student', 'employee', 'other')
-
-    # Read csv data and skip the csv header
-    mealreader = reader(f.splitlines(), delimiter=';')
-    next(mealreader)
-    for row in mealreader:
-        mdate = row[0]
-        category = row[2]
-        mname = row[3]
-        mtype = row[4]
-        prices = [row[6], row[7], row[8]]
-
-        # determine category for the current meal
-        if category == 'Suppe':
-            pass
-        elif hg.match(category):
-            category = 'Hauptgerichte'
-        elif b.match(category):
-            category = 'Beilagen'
-        elif n.match(category):
-            category = 'Nachspeisen'
-        else:
-            raise RuntimeError('Unknown category: ' + str(category))
-
-        # Extract the notes from brackets in the meal name
-        # Remove the brackets, notes and improve readability
-        notes = []
-        bpos = mname.find(')')
-        while bpos != -1:
-            apos = mname.find('(')
-            # Extract notes from current brackets and avoid empty notes
-            for i in mname[apos+1:bpos].split(','):
-                if i:
-                    notes.append(i)
-            # Check if brackets are at the end of the meal name
-            if bpos == len(mname)-1:
-                # Remove brackets and break bracket loop
-                mname = mname[:apos]
-                bpos = -1
-            else:
-                # Remove current brackets, improve readability
-                # and find the next brackets
-                mname = mname[:apos] + ' und ' + mname[bpos+1:]
-                bpos = mname.find(')')
-
-        # Remove trailing whitespaces in the meal name
-        mname = mname.rstrip()
-
-        # Add meal type notes to notes list and avoid empty notes
-        for i in mtype.split(','):
-            if i:
-                notes.append('ZT' + i)
-
-        # Translate notes via legend to human readable information
-        mnotes = []
-        for i in notes:
-            mnotes.append(legend.get(i, legend.get(i[2:], i)))
-
-        # Try to add the meal
+    for w in 0, 1:
+        kw = (date.today() + timedelta(weeks=w)).isocalendar()[1]
         try:
-            canteen.addMeal( mdate, category, mname,
-                            mnotes, prices, roles)
-        except ValueError as e:
-            print('could not add meal {}/{} "{}" due to "{}"'.format(mdate, category, mname, e), file=sys.stderr)
-            # empty meal ...
-            pass
+            f = urlopen('%(location)s/%(isoweek)d.csv' %
+                        {'location': url, 'isoweek': kw})
+        except HTTPError as e:
+            if e.code == 404:
+                continue
+            else:
+                raise e
+
+        # Decode data from ISO charset
+        f = f.read().decode('iso8859-1')
+
+        # Set roles for prices
+        roles = ('student', 'employee', 'other')
+
+        # Read csv data and skip the csv header
+        mealreader = reader(f.splitlines(), delimiter=';')
+        next(mealreader)
+        for row in mealreader:
+            mdate = row[0]
+            category = row[2]
+            mname = row[3]
+            mtype = row[4]
+            prices = [row[6], row[7], row[8]]
+
+            # determine category for the current meal
+            if category == 'Suppe':
+                pass
+            elif hg.match(category):
+                category = 'Hauptgerichte'
+            elif b.match(category):
+                category = 'Beilagen'
+            elif n.match(category):
+                category = 'Nachspeisen'
+            else:
+                raise RuntimeError('Unknown category: ' + str(category))
+
+            # Extract the notes from brackets in the meal name
+            # Remove the brackets, notes and improve readability
+            notes = []
+            bpos = mname.find(')')
+            while bpos != -1:
+                apos = mname.find('(')
+                # Extract notes from current brackets and avoid empty notes
+                for i in mname[apos+1:bpos].split(','):
+                    if i:
+                        notes.append(i)
+                # Check if brackets are at the end of the meal name
+                if bpos == len(mname)-1:
+                    # Remove brackets and break bracket loop
+                    mname = mname[:apos]
+                    bpos = -1
+                else:
+                    # Remove current brackets, improve readability
+                    # and find the next brackets
+                    mname = mname[:apos] + ' und ' + mname[bpos+1:]
+                    bpos = mname.find(')')
+
+            # Remove trailing whitespaces in the meal name
+            mname = mname.rstrip()
+
+            # Add meal type notes to notes list and avoid empty notes
+            for i in mtype.split(','):
+                if i:
+                    notes.append('ZT' + i)
+
+            # Translate notes via legend to human readable information
+            mnotes = []
+            for i in notes:
+                mnotes.append(legend.get(i, legend.get(i[2:], i)))
+
+            # Try to add the meal
+            try:
+                canteen.addMeal( mdate, category, mname,
+                                mnotes, prices, roles)
+            except ValueError as e:
+                print('could not add meal {}/{} "{}" due to "{}"'.format(mdate, category, mname, e), file=sys.stderr)
+                # empty meal ...
+                pass
 
     # return xml data
     return canteen.toXMLFeed()
