@@ -177,7 +177,7 @@ def parse_url(url, today=False):
                 else:
                     # Remove current brackets, improve readability
                     # and find the next brackets
-                    mname = mname[:apos] + ' und ' + mname[bpos+1:]
+                    mname = mname[:apos].rstrip() + ' und ' + mname[bpos+1:].lstrip()
                     bpos = mname.find(')')
 
             # Remove trailing whitespaces in the meal name
