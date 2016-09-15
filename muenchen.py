@@ -21,9 +21,9 @@ def parse_url(url, today=False):
     document = parse(urlopen(base + '/speiseplan/zusatzstoffe-de.html').read())
     for td in document.find_all('td', 'beschreibung'):
         legend[td.previous_sibling.previous_sibling.text] = td.text
-    document = parse(urlopen(base + '/unsere-preise/').read())
+    document = parse(urlopen(base + '/mensa-preise/').read())
     prices = {}
-    for tr in document.find('table', 'essenspreise').find_all('tr'):
+    for tr in document.find('div', 'ce-bodytext').find_all('tr'):
         meal = tr.find('th')
         if not meal or not meal.text.strip():
             continue
