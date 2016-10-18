@@ -20,7 +20,7 @@ def parse_url(url, today=False):
     legend = {'f': 'fleischloses Gericht', 'v': 'veganes Gericht'}
     document = parse(urlopen(base + '/speiseplan/zusatzstoffe-de.html').read())
     for td in document.find_all('td', 'beschreibung'):
-        legend[td.previous_sibling.previous_sibling.text] = td.text
+        legend[td.parent.find('td', 'gericht').text] = td.text
     document = parse(urlopen(base + '/mensa-preise/').read())
     prices = {}
     for tr in document.find('div', 'ce-bodytext').find_all('tr'):
@@ -66,6 +66,8 @@ def parse_url(url, today=False):
                 category = menu_tr.find('td', 'gericht').text
             data = menu_tr.find('td', 'beschreibung')
             name = data.find('span').text.strip()
+            if not name:
+                continue
             notes = [span['title'] for span in data.find_all('span', title=True)]
             canteen.addMeal(
                 date, category, name, notes,
