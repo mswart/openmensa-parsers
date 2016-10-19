@@ -20,7 +20,7 @@ def get_food_types(piktogramme):
     fs = piktogramme
     food_types = ''
     if fs is None:
-        return ''
+        return 'Sonstiges'
     if 'R.png' in fs:
         food_types += 'Rind '
     if 'S.png' in fs:
@@ -39,7 +39,7 @@ def get_food_types(piktogramme):
         food_types += 'Vegan '
     if 'MSC.png' in fs:
         food_types += 'MSC Fisch '
-    return food_types
+    return food_types.strip()
 
 def get_refs(title):
     raw = ''.join(refs_regex.findall(title))
