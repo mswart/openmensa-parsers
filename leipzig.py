@@ -66,9 +66,7 @@ def parse_url(url, today=False):
 parser = Parser('leipzig', handler=parse_url,
                 shared_prefix='https://www.studentenwerk-leipzig.de/XMLInterface/request?location=')
 parser.define('dittrichring', suffix='153')
-parser.define('koburger-strasse', suffix='121')
 parser.define('philipp-rosenthal-strasse', suffix='127')
-parser.define('waechterstrasse', suffix='129')
 parser.define('academica', suffix='118')
 parser.define('am-park', suffix='106')
 parser.define('am-elsterbecken', suffix='115')
