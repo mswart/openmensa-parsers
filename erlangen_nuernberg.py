@@ -113,8 +113,9 @@ def build_notes_string(title):
         nl = list(notes)
         del nl[len(nl) - 1]
         nl[len(nl) - 1] = '.'
-        notes = ''.join(nl)
-    return notes
+        return [''.join(nl)]
+    else:
+        return []
 
 def get_description(title):
     raw = remove_refs_regex.split(title)
@@ -135,7 +136,7 @@ def parse_url(url, today=False):
             notes = build_notes_string(title)
             plist = [item.find('preis1').text, item.find('preis2').text, item.find('preis3').text]
             food_type = get_food_types(item.find('piktogramme').text)
-            canteen.addMeal(date, food_type, description, [notes], plist, roles)
+            canteen.addMeal(date, food_type, description, notes, plist, roles)
     return canteen.toXMLFeed()
 
 
