@@ -1,4 +1,3 @@
-#!python3
 from urllib.request import urlopen
 import re
 from xml.dom.minidom import Document
