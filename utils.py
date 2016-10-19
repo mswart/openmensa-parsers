@@ -1,4 +1,3 @@
-#!python3
 import os.path
 from urllib.request import urlopen
 from urllib.parse import urlencode
