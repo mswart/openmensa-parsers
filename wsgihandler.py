@@ -1,4 +1,3 @@
-#!python3
 import sys
 import traceback
 import re
