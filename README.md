@@ -42,7 +42,7 @@ As many meal information are only available online as HTML, [Beautiful Soup 4](h
 2. Install the dependecies:
    * [Python 3](https://www.python.org/)
    * [Beautiful Soup 4](http://www.crummy.com/software/BeautifulSoup/) - needed for most parsers/providers.
-   * [python-lxml](http://lxml.de/) Some parsers using the `lxml` backend of Beautiful Soup, so you might need the Python `lxml` module/extension.
+   * [lxml](http://lxml.de/) - validating the generated documents and (as a bs4 backend) consuming xml APIs
 
 3. Try some parsers
 
