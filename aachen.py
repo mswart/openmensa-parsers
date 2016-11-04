@@ -33,6 +33,25 @@ def parse_day(canteen, day, data):
         # store data
         canteen.addMeal(day, category, name, notes, price)
 
+    # 2. extras:
+    if not data.find(attrs={'class': 'extras'}):
+        return
+    for extra in data.find(attrs={'class': 'extras'}).find_all('tr'):
+        category = extra.find('span', attrs={'class': 'menue-category'}).text.strip()
+        name = ''
+        notes = set()
+        for namePart in extra.find('span', attrs={'class': 'menue-desc'}).children:
+            if type(namePart) is NavigableString:
+                name += namePart.string
+            elif type(namePart) is Tag:
+                if 'or' in namePart.get('class', []):
+                    name += namePart.string
+                else:
+                    notes.update(namePart.text.strip().split(','))
+        name = name.strip()
+        notes = [legend.get(n, n) for n in notes]
+        canteen.addMeal(day, category, name, notes)
+
 
 def parse_url(url, today=False):
     canteen = OpenMensaCanteen()
