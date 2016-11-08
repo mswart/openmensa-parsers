@@ -9,48 +9,44 @@ from pyopenmensa.feed import OpenMensaCanteen, buildLegend
 legend = None
 
 
+def add_meals_from_table(canteen, table, day):
+    for item in table.find_all('tr'):
+        # category
+        category = item.find('span', attrs={'class': 'menue-category'}).text.strip()
+        # split names and notes
+        name = ''
+        notes = set()
+        for namePart in item.find('span', attrs={'class': 'menue-desc'}).children:
+            if type(namePart) is NavigableString:
+                name += namePart.string
+            elif type(namePart) is Tag:
+                if namePart.name == 'sup':
+                    notes.update(namePart.text.strip().split(','))
+                else:
+                    name += namePart.string
+        name = name.strip()
+        notes = [legend.get(n, n) for n in notes]
+        price_tag = item.find('span', attrs={'class': 'menue-price'})
+        if not price_tag:
+            canteen.addMeal(day, category, name, notes)
+        else:
+            canteen.addMeal(day, category, name, notes, price_tag.text.strip())
+
+
 def parse_day(canteen, day, data):
     # 1. menues
     note = data.find(id='note')
     if note:
         canteen.setDayClosed(day)
         return
-    for menu in data.find(attrs={'class': 'menues'}).find_all('tr'):
-        # category:
-        category = menu.find('span', attrs={'class': 'menue-category'}).text.strip()
-        # split name and notes:
-        name = ''
-        notes = set()
-        for namePart in menu.find('span', attrs={'class': 'menue-desc'}).children:
-            if type(namePart) is NavigableString:
-                name += namePart.string
-            elif type(namePart) is Tag:
-                notes.update(namePart.text.strip().split(','))
-        name = name.strip()
-        notes = [legend.get(n, n) for n in notes]
-        # price:
-        price = menu.find('span', attrs={'class': 'menue-price'}).text.strip()
-        # store data
-        canteen.addMeal(day, category, name, notes, price)
+    add_meals_from_table(canteen, data.find(attrs={'class': 'menues'}), day)
 
     # 2. extras:
-    if not data.find(attrs={'class': 'extras'}):
+    extras_table = data.find(attrs={'class': 'extras'})
+
+    if not extras_table:
         return
-    for extra in data.find(attrs={'class': 'extras'}).find_all('tr'):
-        category = extra.find('span', attrs={'class': 'menue-category'}).text.strip()
-        name = ''
-        notes = set()
-        for namePart in extra.find('span', attrs={'class': 'menue-desc'}).children:
-            if type(namePart) is NavigableString:
-                name += namePart.string
-            elif type(namePart) is Tag:
-                if 'or' in namePart.get('class', []):
-                    name += namePart.string
-                else:
-                    notes.update(namePart.text.strip().split(','))
-        name = name.strip()
-        notes = [legend.get(n, n) for n in notes]
-        canteen.addMeal(day, category, name, notes)
+    add_meals_from_table(canteen, extras_table, day)
 
 
 def parse_url(url, today=False):
