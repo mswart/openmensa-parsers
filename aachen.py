@@ -57,8 +57,7 @@ def parse_url(url, today=False):
     document = parse(urlopen(url).read())
 
     global legend
-    regex = '(?P<name>(\d|[A-Z])+)\)\s*' + \
-            '(?P<value>\w+((\s+\w+)*[^0-9)]))'
+    regex = '\((?P<name>[\dA-Z]+)\)\s*(?P<value>[\w\s]+)'
     legend = buildLegend(legend, document.find(id='additives').text, regex=regex)
 
     days = ('montag', 'dienstag', 'mittwoch', 'donnerstag', 'freitag',
