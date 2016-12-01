@@ -14,7 +14,14 @@ roles = ('student', 'employee')
 def parse_week(url, canteen):
     document = parse(urlopen(url).read())
     for day_table in document.find_all('table', 'speiseplan'):
-        date = extractDate(day_table.thead.tr.th.text)
+        try:
+            date = extractDate(day_table.thead.tr.th.text)
+        except ValueError:
+            # There was no valid date in the table header, which happens eg
+            # for special "Aktionswoche" tables.
+            # TODO: check if this table contains any meals, which was not the
+            #       case when it was used for the first time.
+            continue
         if day_table.find('td', 'keinangebot'):
             canteen.setDayClosed(date)
             continue
