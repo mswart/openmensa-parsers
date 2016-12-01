@@ -19,6 +19,8 @@
 #
 #
 
+# TODO:
+#   - find out new legend for "Aktionsgericht"
 
 # Usable locations (urls) (based on http://www.stwno.de/joomla/de/gastronomie/speiseplan):
 # HS-DEG - TH Deggendorf
@@ -83,6 +85,12 @@ def parse_url(url, today=False):
         '16':    'enthält Sulfite',
         '17':    'enthält Phenylalanin',
         'A':     'Gluten',
+        'AA':    'Weizen',
+        'AB':    'Roggen',
+        'AC':    'Gerste',
+        'AD':    'Hafer',
+        'AE':    'Dinkel',
+        'AF':    'Kamut',
         'B':     'Krebstiere',
         'C':     'Eier',
         'D':     'Fisch',
@@ -90,13 +98,24 @@ def parse_url(url, today=False):
         'F':     'Soja',
         'G':     'Milch und Milchprodukte',
         'H':     'Schalenfrüchte',
+        'HA':    'Mandel',
+        'HB':    'Haselnuss',
+        'HC':    'Walnuss',
+        'HD':    'Cashew',
+        'HE':    'Pecannuss',
+        'HF':    'Paranuss',
+        'HG':    'Pistazie',
+        'HH':    'Macadamianuss',
+        'HI':    'Queenslandnuss',
         'I':     'Sellerie',
         'J':     'Senf',
         'K':     'Sesamsamen',
         'L':     'Schwefeldioxid und Sulfite',
         'M':     'Lupinen',
         'N':     'Weichtiere',
-        'ZTA':   'Aktionsgericht',
+        'O':     'Nitrat',
+        'P':     'Nitritpökelsalz',
+        'ZTA':   'Alkohol',
         'ZTB':   'mit ausschließlich biologisch erzeugten Rohstoffen',
         'ZTF':   'Fisch',
         'ZTG':   'Geflügel',
