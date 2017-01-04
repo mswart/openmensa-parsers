@@ -22,6 +22,7 @@ for module in [
     'chemnitz_zwickau',
     'darmstadt',
     'dresden',
+    'duesseldorf',
     'erlangen_nuernberg',
     'halle',
     'hamburg',
