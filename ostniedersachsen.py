@@ -8,7 +8,7 @@ from pyopenmensa.feed import LazyBuilder, extractDate, buildLegend
 
 
 def parse_week(url, canteen, type, allergene={}, zusatzstoffe={}):
-    document = parse(urlopen(url).read())
+    document = parse(urlopen(url).read(), 'lxml')
     for day_table in document.find_all('table', 'swbs_speiseplan'):
         caption = day_table.find('th', 'swbs_speiseplan_head').text
         if type not in caption:
@@ -62,7 +62,7 @@ def parse_url(url, today=False, canteentype='Mittagsmensa', this_week='', next_w
     canteen.legendKeyFunc = lambda v: v.lower()
     if not legend_url:
         legend_url = url[:url.find('essen/') + 6] + 'wissenswertes/lebensmittelkennzeichnung'
-    legend_doc = parse(urlopen(legend_url)).find(id='artikel')
+    legend_doc = parse(urlopen(legend_url), 'lxml').find(id='artikel')
     allergene = buildLegend(
         text=legend_doc.text.replace('\xa0', ' '),
         regex=r'(?P<name>[A-Z]+) {3,}enthält (?P<value>\w+( |\t|\w)*)'
@@ -72,6 +72,7 @@ def parse_url(url, today=False, canteentype='Mittagsmensa', this_week='', next_w
         text=legend_doc.text.replace('\xa0', ' '),
         regex=r'(?P<name>\d+) {3,} (enthält )?(?P<value>\w+( |\t|\w)*)'
     )
+    suballergene = re.compile(r'(?P<name>[0-9A-Z]+)[^a-zA-Z]*enthält (?P<value>\w+( |\t|\w)*)')
     for tr in legend_doc.find_all('tr'):
         tds = tr.find_all('td')
         if len(tds) != 2:
@@ -81,7 +82,13 @@ def parse_url(url, today=False, canteentype='Mittagsmensa', this_week='', next_w
             continue
         else:
             title = title.text
-        text = tds[1].text.replace('enthält', '').strip()
+        lines = tds[1].text.split('\n')
+        for line in lines[1:]:
+            print('"{}"'.format(line))
+            try_allergine = suballergene.match(line)
+            if try_allergine:
+                allergene[try_allergine.group('name')] = try_allergine.group('value')
+        text = lines[0].replace('enthält', '').strip()
         if title.isdigit():
             zusatzstoffe[title] = text
         else:
@@ -94,7 +101,6 @@ def parse_url(url, today=False, canteentype='Mittagsmensa', this_week='', next_w
     if not today and type(next_week) is str:
         parse_week(url + next_week, canteen, canteentype,
                    allergene=allergene, zusatzstoffe=zusatzstoffe)
-    print(canteen.toXMLFeed())
     return canteen.toXMLFeed()
 
 
