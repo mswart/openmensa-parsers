@@ -84,7 +84,6 @@ def parse_url(url, today=False, canteentype='Mittagsmensa', this_week='', next_w
             title = title.text
         lines = tds[1].text.split('\n')
         for line in lines[1:]:
-            print('"{}"'.format(line))
             try_allergine = suballergene.match(line)
             if try_allergine:
                 allergene[try_allergine.group('name')] = try_allergine.group('value')
