@@ -100,6 +100,7 @@ def parse_url(url, today=False, canteentype='Mittagsmensa', this_week='', next_w
     if not today and type(next_week) is str:
         parse_week(url + next_week, canteen, canteentype,
                    allergene=allergene, zusatzstoffe=zusatzstoffe)
+    print(canteen.toXMLFeed())
     return canteen.toXMLFeed()
 
 
