@@ -8,9 +8,9 @@ from pyopenmensa.feed import LazyBuilder
 
 from utils import Parser
 
-refs_regex = re.compile('(\([,vegaGS0-9]*\))')
-split_refs_regex = re.compile('[\(,]([vegaGS0-9]*)')
-remove_refs_regex = re.compile(' \([,vegaGS0-9]*\)')
+refs_regex = re.compile('(\([ ,a-zA-Z0-9]*\))')
+split_refs_regex = re.compile('[\(,]([ a-zA-Z0-9]*)')
+remove_refs_regex = re.compile(' \([ ,a-zA-Z0-9]*\)')
 
 
 roles = ('student', 'employee', 'other')
@@ -52,8 +52,10 @@ def build_notes_string(title):
         # parse food is footnotes
         if r == '1':
             food_is += 'mit Farbstoffen, '
+        elif r == '2':
+            food_is += 'mit Coffein '
         elif r == '4':
-            food_is += 'geschwärzt, '
+            food_is += 'mit Konservierungsstoff, '
         elif r == '5':
             food_is += 'mit Süßungsmittel, '
         elif r == '7':
@@ -68,26 +70,30 @@ def build_notes_string(title):
             food_is += 'gewachst, '
         elif r == '12':
             food_is += 'mit Phosphat, '
+        elif r == '13':
+            food_is += 'mit einer Phenylalaninquelle'
+        elif r == '30':
+            food_is += 'mit Fettglasur'
         # parse allergic footnotes
         elif r == 'a1':
             food_contains += 'Gluten, '
         elif r == 'a2':
             food_contains += 'Krebstiere, '
-        elif r == 'a3':
+        elif r == 'a3' or r == 'Ei':
             food_contains += 'Eier, '
         elif r == 'a4':
             food_contains += 'Fisch, '
         elif r == 'a5':
             food_contains += 'Erdnüsse, '
-        elif r == 'a6':
+        elif r == 'a6' or r == 'So':
             food_contains += 'Soja, '
-        elif r == 'a7':
+        elif r == 'a7' or r == 'Mi':
             food_contains += 'Milch/Laktose, '
         elif r == 'a8':
             food_contains += 'Schalenfrüchte, '
         elif r == 'a9':
             food_contains += 'Sellerie, '
-        elif r == 'a10':
+        elif r == 'a10' or r == 'Sen':
             food_contains += 'Senf, '
         elif r == 'a11':
             food_contains += 'Sesam, '
@@ -98,7 +104,7 @@ def build_notes_string(title):
         elif r == 'a14':
             food_contains += 'Weichtiere, '
         else:
-            food_contains += 'undefinierte Chemikalien:' + r + ', '
+            food_contains += 'undefinierte Chemikalie ' + r + ', '
     notes = ''
     if food_is != '':
         notes += 'Gericht ist ' + food_is
