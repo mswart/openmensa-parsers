@@ -16,11 +16,62 @@ base = 'http://www.studentenwerk-muenchen.de/mensa'
 
 def parse_url(url, today=False):
     canteen = LazyBuilder()
-    legend = {'f': 'fleischloses Gericht', 'v': 'veganes Gericht'}
-    document = parse(urlopen(base + '/speiseplan/zusatzstoffe-de.html').read())
-    for td in document.find_all('td', 'beschreibung'):
-        legend[td.parent.find('td', 'gericht').text] = td.text
-    document = parse(urlopen(base + '/mensa-preise/').read())
+    #: Default compiled regex for :func:`extractNotes`
+    canteen.extra_regex = re.compile('(?:\(|\[)(?P<extra>[0-9a-zA-Z]{1,3}'
+                                     '(?:,[0-9a-zA-Z]{1,3})*)(?:\)|])', re.UNICODE)
+
+    # manual extracted from
+    # http://www.studentenwerk-muenchen.de/fileadmin/studentenwerk-muenchen/
+    # bereiche/hochschulgastronomie/speisepl%C3%A4ne/Zusatzstoffe/
+    # kennzeichnungen-a4-buchstaben-ziffern-mensen-stucafes-stubistros.pdf
+    legend = {
+        'f': 'fleischloses Gericht',
+        'v': 'veganes Gericht',
+        'R': 'Rindfleisch',
+        'S': 'Schweinefleisch',
+
+        'Ei': 'Hühnerei',
+        'En': 'Erdnuss',
+        'Fi': 'Fisch',
+        'Gl': 'Glutenhaltiges Getreide',
+        'GlW': 'Weizen',
+        'GlR': 'Roggen',
+        'GlG': 'Gerste',
+        'GlH': 'Hafer',
+        'GlD': 'Dinkel',
+        'Kr': 'Krebstiere',
+        'Lu': 'Lupinen',
+        'Mi': 'Milch und Laktose',
+        'Sc': 'Schalenfrüchte',
+        'ScM': 'Mandeln',
+        'ScH': 'Haselnüsse',
+        'ScW': 'Walnüsse',
+        'SnC': 'Cashewnüsse',
+        'Se': 'Sesamsamen',
+        'Sf': 'Senf',
+        'Sl': 'Sellerie',
+        'So': 'Soja',
+        'Sw': 'Schwefeloxid und Sulfite',
+        'Wt': 'Weichtiere',
+
+        '1': 'mit Farbstoff',
+        '2': 'mit Konservierungsstoffe',
+        '3': 'mit Antioxidationsmittel',
+        '4': 'mit Geschmacksverstärker',
+        '5': 'geschwefelt',
+        '6': 'geschwärzt',
+        '7': 'gewachst',
+        '8': 'mit Phosphat',
+        '9': 'mit Süßungsmittel',
+        '10': 'enthält eine Phenylalaninquelle',
+        '11': 'mit einer Zuckerart und Süßungsmittel',
+
+        '13': 'kakaohaltige Fettglasur',
+        '14': 'Gelatine',
+        'Kn': 'Knoblauch',
+        '99': 'Alkohol',
+    }
+    document = parse(urlopen(base + '/mensa-preise/').read(), 'lxml')
     prices = {}
     for tr in document.find('div', 'ce-bodytext').find_all('tr'):
         meal = tr.find('th')
@@ -41,7 +92,7 @@ def parse_url(url, today=False):
     date = datetime.date.today()
     while errorCount < 7:
         try:
-            document = parse(urlopen(url.format(date)).read())
+            document = parse(urlopen(url.format(date)).read(), 'lxml')
         except HTTPError as e:
             if e.code == 404:
                 errorCount += 1
