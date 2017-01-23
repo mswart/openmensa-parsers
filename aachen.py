@@ -16,7 +16,10 @@ def add_meals_from_table(canteen, table, day):
         # split names and notes
         name = ''
         notes = set()
-        for namePart in item.find('span', attrs={'class': 'menue-desc'}).children:
+        descs = item.find('span', attrs={'class': 'menue-desc'})
+        if not descs:
+            return
+        for namePart in descs.children:
             if type(namePart) is NavigableString:
                 name += namePart.string
             elif type(namePart) is Tag:
@@ -54,7 +57,7 @@ def parse_url(url, today=False):
     # todo only for: Tellergericht, vegetarisch, Klassiker, Empfehlung des Tages:
     canteen.setAdditionalCharges('student', {'other': 1.5})
 
-    document = parse(urlopen(url).read())
+    document = parse(urlopen(url).read(), 'lxml')
 
     global legend
     regex = '\((?P<name>[\dA-Z]+)\)\s*(?P<value>[\w\s]+)'
