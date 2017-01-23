@@ -54,7 +54,7 @@ def parse_week(url, canteen, type, allergene={}, zusatzstoffe={}):
                     for img in nextTds[1].find_all('img'):
                         notes.append(img['title'])
             pos += 1
-            canteen.addMeal(date, category, name, notes, prices)
+            canteen.addMeal(date, category or 'Sonstiges', name, notes, prices)
 
 
 def parse_url(url, today=False, canteentype='Mittagsmensa', this_week='', next_week=True, legend_url=None):
