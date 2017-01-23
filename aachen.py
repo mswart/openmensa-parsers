@@ -28,7 +28,7 @@ def add_meals_from_table(canteen, table, day):
                 else:
                     name += namePart.string
         name = name.strip()
-        notes = [legend.get(n, n) for n in notes]
+        notes = [legend.get(n, n) for n in notes if n]
         price_tag = item.find('span', attrs={'class': 'menue-price'})
         if not price_tag:
             canteen.addMeal(day, category, name, notes)
