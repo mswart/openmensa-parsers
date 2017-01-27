@@ -84,6 +84,8 @@ def add_meals_from_counter(canteen, counters, date):
             items = menu.find_all('li')
             # parse menu items
             meal, raw_legend = parse_menu_items(items)
+            if not meal:
+                continue
             # Studentenwerk Düsseldorf does not maintain a easily readable list of additives etc.
             # need to do our own parsing against a static list
             legend = parse_legend(raw_legend)
