@@ -10,7 +10,7 @@ from utils import Parser
 
 refs_regex = re.compile('(\([ ,a-zA-Z0-9]*\))')
 split_refs_regex = re.compile('[\(,]([ a-zA-Z0-9]*)')
-remove_refs_regex = re.compile(' \([ ,a-zA-Z0-9]*\)')
+remove_refs_regex = re.compile('\([ ,a-zA-Z0-9]*\)')
 
 
 roles = ('student', 'employee', 'other')
@@ -74,6 +74,8 @@ def build_notes_string(title):
             food_is += 'mit einer Phenylalaninquelle'
         elif r == '30':
             food_is += 'mit Fettglasur'
+        elif r == 'Veg' or r == ' Veg':
+            food_is += 'vegetarisch, '
         # parse allergic footnotes
         elif r == 'a1':
             food_contains += 'Gluten, '
@@ -91,11 +93,11 @@ def build_notes_string(title):
             food_contains += 'Milch/Laktose, '
         elif r == 'a8':
             food_contains += 'Schalenfrüchte, '
-        elif r == 'a9':
+        elif r == 'a9' or r == 'Sel':
             food_contains += 'Sellerie, '
         elif r == 'a10' or r == 'Sen':
             food_contains += 'Senf, '
-        elif r == 'a11':
+        elif r == 'a11' or r == 'Ses':
             food_contains += 'Sesam, '
         elif r == 'a12':
             food_contains += 'Schwefeldioxid/Sulfite, '
@@ -103,6 +105,10 @@ def build_notes_string(title):
             food_contains += 'Lupinen, '
         elif r == 'a14':
             food_contains += 'Weichtiere, '
+        elif r == 'Wz':
+            food_contains += 'Weizen, '
+        elif r == 'Man':
+            food_contains += 'Mandeln, '
         else:
             food_contains += 'undefinierte Chemikalie ' + r + ', '
     notes = ''
