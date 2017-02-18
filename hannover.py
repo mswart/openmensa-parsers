@@ -1,10 +1,11 @@
-from urllib.request import urlopen
 import re
-from xml.dom.minidom import Document
-
-from utils import Parser
+import socket
+from urllib.parse import urlparse, urlunparse, ParseResult
+from urllib.request import Request, urlopen
 
 from pyopenmensa.feed import LazyBuilder
+
+from utils import Parser
 
 day_regex = re.compile('(?P<date>\d{2}\.\d{2}\.\d{4})')
 price_regex = re.compile('(?P<price>\d+[,.]\d{2})€')
@@ -15,8 +16,27 @@ meal_regex = re.compile('(?P<category>(\w|\s|\(|\))+):\s*(?P<meal>([^0-9\(]|[0-9
 roles = ('student', 'employee', 'other')
 
 
+def urlopen_via_ipv4(url):
+    """ IPv6 request to www.stwh-portal.de timeout, so we
+        disable them to skip the timeout.
+        The easiest approach is to pass an IPv4 IP directly,
+        there is no parameter to define the address family.
+    """
+    parts = urlparse(url)
+    host = socket.gethostbyname(parts.netloc)
+    newparts = ParseResult(scheme=parts.scheme,
+                           netloc=host,
+                           path=parts.path,
+                           params=parts.params,
+                           fragment=parts.fragment,
+                           query=parts.query)
+    request = Request(urlunparse(newparts),
+                      headers={'Host': parts.netloc})
+    return urlopen(request)
+
+
 def parse_week(url, canteen):
-    document = urlopen(url).read().decode('utf8').split('\n')
+    document = urlopen_via_ipv4(url).read().decode('utf8').split('\n')
     legends = {v.group('number'): v.group('value') for v in map(lambda v: legend_regex.match(v), document) if v}
     date = None
     for line in document:
