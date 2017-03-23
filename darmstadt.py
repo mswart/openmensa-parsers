@@ -15,13 +15,35 @@ legend_tag_regex = r'\((?P<name>(\d|[a-zA-Z])+)\)\s*' + \
 def parse_week(url, canteen):
     soup = BeautifulSoup(urlopen(url).read(), 'html.parser')
 
-    try:
-        for legend_tag in soup.select('section.fmc-info p'):
-            canteen.setLegendData(text=' '.join(legend_tag.strings),
+    # TODO: vegetarisch, vegan, Schwein, ... -- indicated via inline SVGs only
+    # legend is a .jpg nowadays, fill it manually
+    canteen.setLegendData(text="""
+        (A) Glutenhaltiges Getreide
+        (B) Krebstiere und Krebstiererzeugnisse
+        (C) Eier und Eierzeugnisse
+        (D) Fisch und Fischerzeugnisse
+        (E) Erdnüsse und Erdnusserzeugnisse
+        (F) Soja und Sojaerzeugnisse
+        (G) Milch und Milcherzeugnisse
+        (H) Schalenfrüchte
+        (I) Sellerie und Sellerieerzeugnisse
+        (J) Senf und Senferzeugnisse
+        (K) Sesamsamen und Sesamsamenerzeugnisse
+        (L) Schwefeldioxid und Sulfite
+        (M) Lupine und Lupinenerzeugnisse
+        (N) Weichtiere (Mollusken)
+        (1) Lebensmittelfarbe
+        (2) Konservierungsstoff
+        (3) Antioxidationsmittel
+        (4) Geschmacksverstärker
+        (5) geschwefelt
+        (6) geschwärzt
+        (7) gewachst
+        (8) Phosphat
+        (9) Süßungsmittel
+        (10) Phenylalaninquelle""",
                     legend=canteen.legendData,
                     regex=legend_tag_regex)
-    except Exception as e:
-        print('Error in parsing legend ' + str(e))
 
     # TODO: "geschlossen" - need sample how they do/break it
     for day_section in soup.find_all('section', {'class': 'fmc-day'}):
