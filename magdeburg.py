@@ -45,7 +45,7 @@ def parse_url(url, today=False):
                         canteen.setDayClosed(fromDate.strftime('%Y-%m-%d'))
                         fromDate += datetime.date.resolution
                 continue
-            if len(tr) != 3:
+            if len(tr) != 2:
                 continue  # no meal
             strings = list(tr.contents[0].strings)
             name = strings[0]
