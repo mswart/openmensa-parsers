@@ -9,68 +9,14 @@ from utils import Parser
 from pyopenmensa.feed import LazyBuilder
 
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€?')
-otherPrice = re.compile('Gästezuschlag:? ?(?P<price>\d+[,.]\d{2}) ?€?')
 
 base = 'http://www.studentenwerk-muenchen.de/mensa'
 
 
 def parse_url(url, today=False):
     canteen = LazyBuilder()
-    #: Default compiled regex for :func:`extractNotes`
-    canteen.extra_regex = re.compile('(?:\(|\[)(?P<extra>[0-9a-zA-Z]{1,3}'
-                                     '(?:,[0-9a-zA-Z]{1,3})*)(?:\)|])', re.UNICODE)
 
-    # manual extracted from
-    # http://www.studentenwerk-muenchen.de/fileadmin/studentenwerk-muenchen/
-    # bereiche/hochschulgastronomie/speisepl%C3%A4ne/Zusatzstoffe/
-    # kennzeichnungen-a4-buchstaben-ziffern-mensen-stucafes-stubistros.pdf
-    legend = {
-        'f': 'fleischloses Gericht',
-        'v': 'veganes Gericht',
-        'R': 'Rindfleisch',
-        'S': 'Schweinefleisch',
-
-        'Ei': 'Hühnerei',
-        'En': 'Erdnuss',
-        'Fi': 'Fisch',
-        'Gl': 'Glutenhaltiges Getreide',
-        'GlW': 'Weizen',
-        'GlR': 'Roggen',
-        'GlG': 'Gerste',
-        'GlH': 'Hafer',
-        'GlD': 'Dinkel',
-        'Kr': 'Krebstiere',
-        'Lu': 'Lupinen',
-        'Mi': 'Milch und Laktose',
-        'Sc': 'Schalenfrüchte',
-        'ScM': 'Mandeln',
-        'ScH': 'Haselnüsse',
-        'ScW': 'Walnüsse',
-        'SnC': 'Cashewnüsse',
-        'Se': 'Sesamsamen',
-        'Sf': 'Senf',
-        'Sl': 'Sellerie',
-        'So': 'Soja',
-        'Sw': 'Schwefeloxid und Sulfite',
-        'Wt': 'Weichtiere',
-
-        '1': 'mit Farbstoff',
-        '2': 'mit Konservierungsstoffe',
-        '3': 'mit Antioxidationsmittel',
-        '4': 'mit Geschmacksverstärker',
-        '5': 'geschwefelt',
-        '6': 'geschwärzt',
-        '7': 'gewachst',
-        '8': 'mit Phosphat',
-        '9': 'mit Süßungsmittel',
-        '10': 'enthält eine Phenylalaninquelle',
-        '11': 'mit einer Zuckerart und Süßungsmittel',
-
-        '13': 'kakaohaltige Fettglasur',
-        '14': 'Gelatine',
-        'Kn': 'Knoblauch',
-        '99': 'Alkohol',
-    }
+    # prices are stored on a separate page
     document = parse(urlopen(base + '/mensa-preise/').read(), 'lxml')
     prices = {}
     for tr in document.find('div', 'ce-bodytext').find_all('tr'):
@@ -88,49 +34,82 @@ def parse_url(url, today=False):
             price_search = price_regex.search(price_html)
             if price_search:
                 prices[meal][role] = price_search.group('price')
+
     errorCount = 0
     date = datetime.date.today()
     while errorCount < 7:
         try:
             document = parse(urlopen(url.format(date)).read(), 'lxml')
+            errorCount = 0
         except HTTPError as e:
             if e.code == 404:
                 errorCount += 1
-                date += datetime.date.resolution
+                date += datetime.timedelta(days=1)
                 continue
             else:
                 raise e
-        else:
-            errorCount = 0
-        for tr in document.find('table', 'zusatzstoffe').find_all('tr'):
-            identifier = tr.find_all('td')[0].text \
-                           .replace('(', '').replace(')', '')
-            legend[identifier] = tr.find_all('td')[1].text.strip()
-        canteen.setLegendData(legend)
-        mensa_data = document.find('table', 'menu')
+
+        # extract legend
+        legend = {}
+        legends = document.find('div', 'tx-stwm-speiseplan')
+        additions = legends.find('div', 'c-schedule__filter-body')
+        for table in additions.find_all('div', 'c-schedule__filter-item'):
+            for ingredient in table.find('ul').find_all('li'):
+                name = ingredient.find('dt').text.strip()
+                description = ingredient.find('dd').text.strip()
+                legend[name] = description
+        for label in legends.find('ul', 'c-schedule__type-list').find_all('li'):
+            name = label.find('dt').text.replace('(', '').replace(')', '').strip()
+            description = label.find('dd').text.strip()
+            legend[name] = description
+
+        # extract meals
+        mensa_data = document.find('ul', 'c-schedule__list')
         category = None
-        for menu_tr in mensa_data.find_all('tr'):
-            if menu_tr.find('td', 'headline'):
-                continue
-            if menu_tr.find('td', 'gericht').text:
-                category = menu_tr.find('td', 'gericht').text
-            data = menu_tr.find('td', 'beschreibung')
-            name = data.find('span').text.strip()
+        for meal in mensa_data.find_all('li'):
+            # update category or use previous one if not specified
+            category_text = meal.find('dt', 'c-schedule__term').text.strip()
+            if category_text:
+                category = category_text
+
+            data = meal.find('dd').find('p', 'js-schedule-dish-description')
+            name = data.contents[0].strip() # name is the first text node
             if not name:
                 continue
-            notes = [span['title'] for span in data.find_all('span', title=True)]
-            canteen.addMeal(
-                date, category, name, notes,
-                prices.get(category.replace('Aktionsessen', 'Bio-/Aktionsgericht'), {})
+
+            # notes are contained in 3 boxes (type, additional, allergen) and
+            # are comma-separated lists enclosed in brackets or parentheses
+            notes = []
+            for note in meal.find_all('span', 'c-schedule__marker'):
+                note_text = note.find('span', 'u-text-sup').text \
+                    .replace('(', '').replace(')', '') \
+                    .replace('[', '').replace(']', '')
+                notes += [n for n in note_text.split(',') if n]
+
+            # some meals contain the GQB label in their name (instead of in notes)
+            if '(GQB)' in name:
+                name = name.replace('(GQB)', '').strip()
+                notes.append('GQB')
+
+            # the price for both meals is specified as Bio-/Aktionsgericht
+            price_category = category \
+                .replace('Aktionsessen', 'Bio-/Aktionsgericht') \
+                .replace('Biogericht', 'Bio-/Aktionsgericht') \
+                .strip()
+
+            canteen.addMeal(date, category, name,
+                [legend.get(n, n) for n in notes],
+                prices.get(price_category, {})
             )
-        date += datetime.date.resolution
+
+        date += datetime.timedelta(days=1)
         if today:
             break
+
     return canteen.toXMLFeed()
 
 
-parser = Parser('muenchen', handler=parse_url,
-                shared_prefix='http://www.studentenwerk-muenchen.de/mensa/speiseplan/')
+parser = Parser('muenchen', handler=parse_url, shared_prefix=base+'/speiseplan/')
 parser.define('leopoldstrasse', suffix='speiseplan_{}_411_-de.html')
 parser.define('martinsried', suffix='speiseplan_{}_412_-de.html')
 parser.define('grosshadern', suffix='speiseplan_{}_414_-de.html')
