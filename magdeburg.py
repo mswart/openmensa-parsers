@@ -70,6 +70,7 @@ parser = Parser('magdeburg',
 parser.define('ovgu-unten', suffix='mensen-cafeterien/mensa-unicampus/speiseplan-unten/')
 parser.define('ovgu-oben', suffix='mensen-cafeterien/mensa-unicampus/speiseplan-oben/')
 parser.define('herrenkrug', suffix='mensen-cafeterien/mensa-herrenkrug/speiseplan/')
+parser.define('kellercafe', suffix='mensen-cafeterien/mensa-kellercafe/speiseplan/')
 parser.define('stendal', suffix='mensen-cafeterien/mensa-stendal/speiseplan/')
 parser.define('halberstadt', suffix='mensen-cafeterien/mensa-halberstadt/speiseplan/')
 parser.define('wernigerode', suffix='mensen-cafeterien/mensa-wernigerode/speiseplan/')
