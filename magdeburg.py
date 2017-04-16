@@ -17,7 +17,7 @@ roles = ('student', 'employee', 'other')
 
 def parse_url(url, today=False):
     content = urlopen(url).read()
-    document = parse(content)
+    document = parse(content, 'lxml')
     legends = document.find_all('div', {'class': 'legende'})
     if len(legends) > 0:
         extraLegend = {int(v[0]): v[1] for v in reversed(legend_regex.findall(legends[0].text))}
