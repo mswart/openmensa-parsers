@@ -51,80 +51,67 @@ def build_notes_string(title):
     for r in refs:
         # parse food is footnotes
         if r == '1':
-            food_is.append('mit Farbstoffen, ')
+            food_is.append('mit Farbstoffen')
         elif r == '2':
-            food_is.append('mit Coffein ')
+            food_is.append('mit Coffein')
         elif r == '4':
-            food_is.append('mit Konservierungsstoff, ')
+            food_is.append('mit Konservierungsstoff')
         elif r == '5':
-            food_is.append('mit Süßungsmittel, ')
+            food_is.append('mit Süßungsmittel')
         elif r == '7':
-            food_is.append('mit Antioxidationsmittel, ')
+            food_is.append('mit Antioxidationsmittel')
         elif r == '8':
-            food_is.append('mit Geschmacksverstärker, ')
+            food_is.append('mit Geschmacksverstärker')
         elif r == '9':
-            food_is.append('geschwefelt, ')
+            food_is.append('geschwefelt')
         elif r == '10':
-            food_is.append('geschwärzt, ')
+            food_is.append('geschwärzt')
         elif r == '11':
-            food_is.append('gewachst, ')
+            food_is.append('gewachst')
         elif r == '12':
-            food_is.append('mit Phosphat, ')
+            food_is.append('mit Phosphat')
         elif r == '13':
             food_is.append('mit einer Phenylalaninquelle')
         elif r == '30':
             food_is.append('mit Fettglasur')
         elif r == 'Veg' or r == ' Veg':
-            food_is.append('vegetarisch, ')
+            food_is.append('ist vegetarisch')
         # parse allergic footnotes
         elif r == 'a1':
-            food_contains.append('Gluten, ')
-        elif r == 'a2':
-            food_contains.append('Krebstiere, ')
+            food_contains.append('mit Gluten')
+        elif r == 'a2' or r == 'G':
+            food_contains.append('mit Krebstiere')
         elif r == 'a3' or r == 'Ei':
-            food_contains.append('Eier, ')
+            food_contains.append('mit Eier')
         elif r == 'a4':
-            food_contains.append('Fisch, ')
+            food_contains.append('mit Fisch')
         elif r == 'a5':
-            food_contains.append('Erdnüsse, ')
+            food_contains.append('mit Erdnüsse')
         elif r == 'a6' or r == 'So':
-            food_contains.append('Soja, ')
+            food_contains.append('mit Soja')
         elif r == 'a7' or r == 'Mi':
-            food_contains.append('Milch/Laktose, ')
+            food_contains.append('mit Milch/Laktose')
         elif r == 'a8':
-            food_contains.append('Schalenfrüchte, ')
+            food_contains.append('mit Schalenfrüchte')
         elif r == 'a9' or r == 'Sel':
-            food_contains.append('Sellerie, ')
+            food_contains.append('mit Sellerie')
         elif r == 'a10' or r == 'Sen':
-            food_contains.append('Senf, ')
+            food_contains.append('mit Senf')
         elif r == 'a11' or r == 'Ses':
-            food_contains.append('Sesam, ')
+            food_contains.append('mit Sesam')
         elif r == 'a12':
-            food_contains.append('Schwefeldioxid/Sulfite, ')
+            food_contains.append('mit Schwefeldioxid/Sulfite')
         elif r == 'a13':
-            food_contains.append('Lupinen, ')
+            food_contains.append('mit Lupinen')
         elif r == 'a14':
-            food_contains.append('Weichtiere, ')
+            food_contains.append('mit Weichtiere')
         elif r == 'Wz':
-            food_contains.append('Weizen, ')
+            food_contains.append('mit Weizen')
         elif r == 'Man':
-            food_contains.append('Mandeln, ')
+            food_contains.append('mit Mandeln')
         else:
-            food_contains.append('undefinierte Chemikalie ' + r + ', ')
-    notes = []
-    if food_is:
-        notes.append('Gericht ist ')
-        notes.extend(food_is)
-    if food_contains:
-        if food_is:
-            notes.append('Gericht enthält ')
-        else:
-            notes.append('und enthält ')
-        notes.extend(food_contains)
-    if notes:
-        return notes
-    else:
-        return []
+            food_contains.append('mit undefinierter Chemikalie ' + r )
+    return food_contains
 
 def get_description(title):
     raw = remove_refs_regex.split(title)
