@@ -36,6 +36,7 @@ for module in [
     'ostniedersachsen',
     'siegen',
     'wuerzburg',
+    'rostock',
 ]:
     register_parser(importlib.import_module(module).parser)
 
