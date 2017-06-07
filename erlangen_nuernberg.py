@@ -99,7 +99,7 @@ def build_notes_string(title):
             food_contains.append('mit Senf')
         elif r == 'a11' or r == 'Ses':
             food_contains.append('mit Sesam')
-        elif r == 'a12':
+        elif r == 'a12' or r == 'Su':
             food_contains.append('mit Schwefeldioxid/Sulfite')
         elif r == 'a13':
             food_contains.append('mit Lupinen')
