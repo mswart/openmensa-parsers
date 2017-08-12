@@ -61,6 +61,8 @@ def parse_url(url, today=False):
     days = ('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag')
     for day in days:
         data = document.find('div', {'data-day': day})
+        if data is None:
+            continue
         date = data.attrs['data-date']
         parse_day(canteen, date, data)
 
