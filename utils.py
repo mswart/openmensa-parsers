@@ -34,6 +34,8 @@ class Parser(object):
         self.sources = {}
 
     def define(self, name, suffix=None, args=[], extra_args={}):
+        if suffix is None:
+            suffix = ''
         if args:
             source_args = self.shared_args + args
         else:
