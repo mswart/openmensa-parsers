@@ -24,22 +24,23 @@ def parse_week(url, params, canteen):
             continue
         group_name = group_name.text.strip()
         for item in group.find_all('div', class_='splMeal'):
-            #TODO: notes/legend (class_="kennz")
-            # veggie = item.find_all('img', class_='splIcon')
-            # annotation = None
-            # for icon in veggie:
-            #     if 'icons/15.png' in icon.attrs['src']:
-            #         annotation = VEGAN
-            #     elif 'icons/1.png' in icon.attrs['src']:
-            #         annotation = VEGGIE
-            #     elif 'icons/38.png' in icon.attrs['src']:
-            #         annotation = FISH
-            # if annotation is None:
-            #     annotation = MEAT
             title = item.find('span', class_='bold').text.strip()
             price_tag = item.find('div', class_='text-right').text.strip()
             prices = re.split(r'[^0-9,]+', price_tag)[1:4]
-            canteen.addMeal(date, category=group_name, name=title,
+            notes = [td.text.strip() for td in
+                     item.find_all('td', class_=False)]
+            for icon in item.find_all('img', class_='splIcon'):
+                if 'icons/15.png' in icon.attrs['src']:
+                    notes.append("vegan")
+                elif 'icons/43.png' in icon.attrs['src']:
+                    notes.append("Klimaessen")
+                elif 'icons/1.png' in icon.attrs['src']:
+                    notes.append("Fisch- und Fleischfrei")
+                elif 'icons/38.png' in icon.attrs['src']:
+                    notes.append("MSC-Fisch")
+                elif 'icons/18.png' in icon.attrs['src']:
+                    notes.append("Bio")
+            canteen.addMeal(date, category=group_name, name=title, notes=notes,
                             prices=prices,
                             roles=["student", "employee", "other"])
 
