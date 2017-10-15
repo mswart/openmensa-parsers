@@ -46,16 +46,12 @@ def parse_week(url, params, canteen):
 
 def parse_url(url, today=True, resources_id=0):
     canteen = LazyBuilder()
-    day = datetime.date.today()
-    parse_week(url,
-               {"date": day.isoformat(), "resources_id": resources_id},
-               canteen)
-    if not today:
-        for i in range(-7, +28):
-            day = datetime.date.today() + datetime.timedelta(days=i)
-            parse_week(url,
-                       {"date": day.isoformat(), "resources_id": resources_id},
-                       canteen)
+    days = [0] if today else range(-7, +28)
+    for i in days:
+        day = datetime.date.today() + datetime.timedelta(days=i)
+        parse_week(url,
+                   {"date": day.isoformat(), "resources_id": resources_id},
+                   canteen)
 
     return canteen.toXMLFeed()
 
@@ -122,4 +118,4 @@ for id, sub in mapping.items():
 
 # for debugging / testing
 if __name__ == "__main__":
-    print(parser.parse("berlin", mapping[321]["name"], None))
+    print(parser.parse("berlin", mapping[321]["name"], "today.xml"))
