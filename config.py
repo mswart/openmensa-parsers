@@ -19,6 +19,7 @@ def parse(request, parser_name, *args):
 
 for module in [
     'aachen',
+    'berlin',
     'chemnitz_zwickau',
     'darmstadt',
     'dresden',
