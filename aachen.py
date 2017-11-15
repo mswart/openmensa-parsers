@@ -2,7 +2,6 @@ from urllib.request import urlopen
 
 from bs4 import BeautifulSoup as parse
 from bs4.element import Tag
-from ordered_set import OrderedSet
 
 from pyopenmensa.feed import OpenMensaCanteen, buildLegend
 from utils import Parser
@@ -77,7 +76,7 @@ def parse_meal(table_row, legend):
 
 def parse_description(description, legend):
     name = ''
-    notes = OrderedSet()
+    notes = set()
     for namePart in description.children:
         if type(namePart) is Tag and namePart.name == 'sup':
             notes.update(namePart.text.strip().split(','))
