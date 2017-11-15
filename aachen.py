@@ -1,6 +1,8 @@
 from urllib.request import urlopen
+
 from bs4 import BeautifulSoup as parse
 from bs4.element import NavigableString, Tag
+from ordered_set import OrderedSet
 
 from utils import Parser
 
@@ -15,7 +17,7 @@ def add_meals_from_table(canteen, table, day):
         category = item.find('span', attrs={'class': 'menue-category'}).text.strip()
         # split names and notes
         name = ''
-        notes = set()
+        notes = OrderedSet()
         descs = item.find('span', attrs={'class': 'menue-desc'})
         if not descs:
             return
