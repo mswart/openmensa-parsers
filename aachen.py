@@ -41,36 +41,51 @@ def parse_description(description, legend):
 
 
 def parse_day(canteen, day, data):
-    note = data.find(id='note')
-    if note:
+    if is_closed(data):
         canteen.setDayClosed(day)
         return
-    add_meals_from_table(canteen, data.find(attrs={'class': 'menues'}), day)
+
+    meals_table = data.find(attrs={'class': 'menues'})
+    add_meals_from_table(canteen, meals_table, day)
 
     extras_table = data.find(attrs={'class': 'extras'})
-    if not extras_table:
-        return
     add_meals_from_table(canteen, extras_table, day)
+
+
+def is_closed(data):
+    note = data.find(id='note')
+    if note:
+        return True
+    else:
+        return False
 
 
 def parse_url(url, today=False):
     canteen = OpenMensaCanteen()
-    # todo only for: Tellergericht, vegetarisch, Klassiker, Empfehlung des Tages:
-    canteen.setAdditionalCharges('student', {'other': 1.5})
-
     document = parse(urlopen(url).read(), 'lxml')
 
+    # todo only for: Tellergericht, vegetarisch, Klassiker, Empfehlung des Tages:
+    canteen.setAdditionalCharges('student', {'other': 1.5})
+    canteen.legend = parse_legend(document)
+
+    parse_all_days(canteen, document)
+
+    return canteen.toXMLFeed()
+
+
+def parse_legend(document):
     regex = '\((?P<name>[\dA-Z]+)\)\s*(?P<value>[\w\s]+)'
     # bypass automatic notes extraction in `OpenMensaCanteen.addMeal()`:
-    canteen.legend = buildLegend(text=document.find(id='additives').text, regex=regex)
+    return buildLegend(text=document.find(id='additives').text, regex=regex)
 
+
+def parse_all_days(canteen, document):
     days = ('montag', 'dienstag', 'mittwoch', 'donnerstag', 'freitag',
             'montagNaechste', 'dienstagNaechste', 'mittwochNaechste', 'donnerstagNaechste', 'freitagNaechste')
     for day in days:
         data = document.find('div', id=day)
-        headline = document.find('a', attrs={'data-anchor': '#' + day})
-        parse_day(canteen, headline.text, data)
-    return canteen.toXMLFeed()
+        day_header = document.find('a', attrs={'data-anchor': '#' + day})
+        parse_day(canteen, day_header.text, data)
 
 
 parser = Parser('aachen', handler=parse_url,
