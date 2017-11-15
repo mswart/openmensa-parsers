@@ -8,17 +8,17 @@ from pyopenmensa.feed import OpenMensaCanteen, buildLegend
 from utils import Parser
 
 
-def add_meals_from_table(canteen, table, day, legend):
+def add_meals_from_table(canteen, table, day):
     for item in table.find_all('tr'):
-        category, name, notes, price_tag = parse_meal(item, legend)
-        canteen.addMeal(day, category, name, notes, price_tag)
+        category, name, notes, price_tag = parse_meal(item, canteen.legend)
+        canteen.addMeal(day, category, name, notes, prices=price_tag)
 
 
 def parse_meal(table_row, legend):
     category = table_row.find('span', attrs={'class': 'menue-category'}).text.strip()
 
-    description_elements = table_row.find('span', attrs={'class': 'menue-desc'})
-    name, notes = parse_description(description_elements, legend)
+    description_container = table_row.find('span', attrs={'class': 'menue-desc'})
+    name, notes = parse_description(description_container, legend)
 
     price_tag = table_row.find('span', attrs={'class': 'menue-price'})
     if price_tag:
@@ -40,17 +40,17 @@ def parse_description(description, legend):
     return name, notes
 
 
-def parse_day(canteen, day, data, legend):
+def parse_day(canteen, day, data):
     note = data.find(id='note')
     if note:
         canteen.setDayClosed(day)
         return
-    add_meals_from_table(canteen, data.find(attrs={'class': 'menues'}), day, legend)
+    add_meals_from_table(canteen, data.find(attrs={'class': 'menues'}), day)
 
     extras_table = data.find(attrs={'class': 'extras'})
     if not extras_table:
         return
-    add_meals_from_table(canteen, extras_table, day, legend)
+    add_meals_from_table(canteen, extras_table, day)
 
 
 def parse_url(url, today=False):
@@ -61,14 +61,15 @@ def parse_url(url, today=False):
     document = parse(urlopen(url).read(), 'lxml')
 
     regex = '\((?P<name>[\dA-Z]+)\)\s*(?P<value>[\w\s]+)'
-    legend = buildLegend(text=document.find(id='additives').text, regex=regex)
+    # bypass automatic notes extraction in `OpenMensaCanteen.addMeal()`:
+    canteen.legend = buildLegend(text=document.find(id='additives').text, regex=regex)
 
     days = ('montag', 'dienstag', 'mittwoch', 'donnerstag', 'freitag',
             'montagNaechste', 'dienstagNaechste', 'mittwochNaechste', 'donnerstagNaechste', 'freitagNaechste')
     for day in days:
         data = document.find('div', id=day)
         headline = document.find('a', attrs={'data-anchor': '#' + day})
-        parse_day(canteen, headline.text, data, legend)
+        parse_day(canteen, headline.text, data)
     return canteen.toXMLFeed()
 
 
