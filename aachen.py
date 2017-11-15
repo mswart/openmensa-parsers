@@ -13,29 +13,35 @@ legend = None
 
 def add_meals_from_table(canteen, table, day):
     for item in table.find_all('tr'):
-        # category
-        category = item.find('span', attrs={'class': 'menue-category'}).text.strip()
-        # split names and notes
-        name = ''
-        notes = OrderedSet()
-        descs = item.find('span', attrs={'class': 'menue-desc'})
-        if not descs:
-            return
-        for namePart in descs.children:
-            if type(namePart) is NavigableString:
+        category, name, notes, price_tag = find_meal(item)
+        canteen.addMeal(day, category, name, notes, price_tag)
+
+
+def find_meal(table_row):
+    # category
+    category = table_row.find('span', attrs={'class': 'menue-category'}).text.strip()
+    # split names and notes
+    name = ''
+    notes = OrderedSet()
+    descs = table_row.find('span', attrs={'class': 'menue-desc'})
+    if not descs:
+        return
+    for namePart in descs.children:
+        if type(namePart) is NavigableString:
+            name += namePart.string
+        elif type(namePart) is Tag:
+            if namePart.name == 'sup':
+                notes.update(namePart.text.strip().split(','))
+            else:
                 name += namePart.string
-            elif type(namePart) is Tag:
-                if namePart.name == 'sup':
-                    notes.update(namePart.text.strip().split(','))
-                else:
-                    name += namePart.string
-        name = name.strip()
-        notes = [legend.get(n, n) for n in notes if n]
-        price_tag = item.find('span', attrs={'class': 'menue-price'})
-        if not price_tag:
-            canteen.addMeal(day, category, name, notes)
-        else:
-            canteen.addMeal(day, category, name, notes, price_tag.text.strip())
+    name = name.strip()
+    notes = [legend.get(n, n) for n in notes if n]
+    price_tag = table_row.find('span', attrs={'class': 'menue-price'})
+    if not price_tag:
+        price_tag = None
+    else:
+        price_tag = price_tag.text.strip()
+    return category, name, notes, price_tag
 
 
 def parse_day(canteen, day, data):
