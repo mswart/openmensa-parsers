@@ -1,27 +1,24 @@
 from urllib.request import urlopen
 
 from bs4 import BeautifulSoup as parse
-from bs4.element import NavigableString, Tag
+from bs4.element import Tag
 from ordered_set import OrderedSet
 
+from pyopenmensa.feed import OpenMensaCanteen, buildLegend
 from utils import Parser
 
-from pyopenmensa.feed import OpenMensaCanteen, buildLegend
 
-legend = None
-
-
-def add_meals_from_table(canteen, table, day):
+def add_meals_from_table(canteen, table, day, legend):
     for item in table.find_all('tr'):
-        category, name, notes, price_tag = parse_meal(item)
+        category, name, notes, price_tag = parse_meal(item, legend)
         canteen.addMeal(day, category, name, notes, price_tag)
 
 
-def parse_meal(table_row):
+def parse_meal(table_row, legend):
     category = table_row.find('span', attrs={'class': 'menue-category'}).text.strip()
 
     description_elements = table_row.find('span', attrs={'class': 'menue-desc'})
-    name, notes = parse_description(description_elements)
+    name, notes = parse_description(description_elements, legend)
 
     price_tag = table_row.find('span', attrs={'class': 'menue-price'})
     if price_tag:
@@ -30,7 +27,7 @@ def parse_meal(table_row):
     return category, name, notes, price_tag
 
 
-def parse_description(description):
+def parse_description(description, legend):
     name = ''
     notes = OrderedSet()
     for namePart in description.children:
@@ -43,20 +40,17 @@ def parse_description(description):
     return name, notes
 
 
-def parse_day(canteen, day, data):
-    # 1. menues
+def parse_day(canteen, day, data, legend):
     note = data.find(id='note')
     if note:
         canteen.setDayClosed(day)
         return
-    add_meals_from_table(canteen, data.find(attrs={'class': 'menues'}), day)
+    add_meals_from_table(canteen, data.find(attrs={'class': 'menues'}), day, legend)
 
-    # 2. extras:
     extras_table = data.find(attrs={'class': 'extras'})
-
     if not extras_table:
         return
-    add_meals_from_table(canteen, extras_table, day)
+    add_meals_from_table(canteen, extras_table, day, legend)
 
 
 def parse_url(url, today=False):
@@ -66,16 +60,15 @@ def parse_url(url, today=False):
 
     document = parse(urlopen(url).read(), 'lxml')
 
-    global legend
     regex = '\((?P<name>[\dA-Z]+)\)\s*(?P<value>[\w\s]+)'
-    legend = buildLegend(legend, document.find(id='additives').text, regex=regex)
+    legend = buildLegend(text=document.find(id='additives').text, regex=regex)
 
     days = ('montag', 'dienstag', 'mittwoch', 'donnerstag', 'freitag',
             'montagNaechste', 'dienstagNaechste', 'mittwochNaechste', 'donnerstagNaechste', 'freitagNaechste')
     for day in days:
         data = document.find('div', id=day)
         headline = document.find('a', attrs={'data-anchor': '#' + day})
-        parse_day(canteen, headline.text, data)
+        parse_day(canteen, headline.text, data, legend)
     return canteen.toXMLFeed()
 
 
