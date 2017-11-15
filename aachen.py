@@ -13,35 +13,34 @@ legend = None
 
 def add_meals_from_table(canteen, table, day):
     for item in table.find_all('tr'):
-        category, name, notes, price_tag = find_meal(item)
+        category, name, notes, price_tag = parse_meal(item)
         canteen.addMeal(day, category, name, notes, price_tag)
 
 
-def find_meal(table_row):
-    # category
+def parse_meal(table_row):
     category = table_row.find('span', attrs={'class': 'menue-category'}).text.strip()
-    # split names and notes
+
+    description_elements = table_row.find('span', attrs={'class': 'menue-desc'})
+    name, notes = parse_description(description_elements)
+
+    price_tag = table_row.find('span', attrs={'class': 'menue-price'})
+    if price_tag:
+        price_tag = price_tag.text.strip()
+
+    return category, name, notes, price_tag
+
+
+def parse_description(description):
     name = ''
     notes = OrderedSet()
-    descs = table_row.find('span', attrs={'class': 'menue-desc'})
-    if not descs:
-        return
-    for namePart in descs.children:
-        if type(namePart) is NavigableString:
+    for namePart in description.children:
+        if type(namePart) is Tag and namePart.name == 'sup':
+            notes.update(namePart.text.strip().split(','))
+        else:
             name += namePart.string
-        elif type(namePart) is Tag:
-            if namePart.name == 'sup':
-                notes.update(namePart.text.strip().split(','))
-            else:
-                name += namePart.string
     name = name.strip()
     notes = [legend.get(n, n) for n in notes if n]
-    price_tag = table_row.find('span', attrs={'class': 'menue-price'})
-    if not price_tag:
-        price_tag = None
-    else:
-        price_tag = price_tag.text.strip()
-    return category, name, notes, price_tag
+    return name, notes
 
 
 def parse_day(canteen, day, data):
