@@ -1,3 +1,4 @@
+import re
 from urllib.request import urlopen
 
 from bs4 import BeautifulSoup as parse
@@ -86,18 +87,19 @@ def get_cleaned_description_container(description_container):
             element for element in nutrition_expander.children
             if is_valid_description_element(element)
         ]
+
     return description_container
 
 
 def parse_description(description_container, legend):
-    name = ''
+    name_parts = []
     notes = set()
-    for namePart in description_container:
-        if type(namePart) is Tag and namePart.name == 'sup':
-            notes.update(namePart.text.strip().split(','))
+    for element in description_container:
+        if type(element) is Tag and element.name == 'sup':
+            notes.update(element.text.strip().split(','))
         else:
-            name += namePart.string
-    name = name.strip()
+            name_parts.append(element.string.strip())
+    name = re.sub(r"\s+", ' ', ' '.join(name_parts))
     notes = [legend.get(n, n) for n in sorted(notes) if n]
     return name, notes
 
