@@ -83,7 +83,7 @@ def parse_description(description, legend):
         else:
             name += namePart.string
     name = name.strip()
-    notes = [legend.get(n, n) for n in notes if n]
+    notes = [legend.get(n, n) for n in sorted(notes) if n]
     return name, notes
 
 
