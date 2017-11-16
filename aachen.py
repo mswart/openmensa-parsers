@@ -27,12 +27,12 @@ def parse_legend(document):
 
 
 def parse_all_days(canteen, document):
-    days = ('montag', 'dienstag', 'mittwoch', 'donnerstag', 'freitag',
-            'montagNaechste', 'dienstagNaechste', 'mittwochNaechste', 'donnerstagNaechste', 'freitagNaechste')
+    days = ('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag',
+            'MontagNaechste', 'DienstagNaechste', 'MittwochNaechste', 'DonnerstagNaechste', 'FreitagNaechste')
     for day in days:
-        data = document.find('div', id=day)
-        day_header = document.find('a', attrs={'data-anchor': '#' + day})
-        parse_day(canteen, day_header.text, data)
+        day_column = document.find('div', id=day)
+        day_header = day_column.find_previous_sibling('h3')
+        parse_day(canteen, day_header.text, day_column)
 
 
 def parse_day(canteen, day, data):
@@ -65,7 +65,8 @@ def parse_meal(table_row, legend):
     category = table_row.find('span', attrs={'class': 'menue-category'}).text.strip()
 
     description_container = table_row.find('span', attrs={'class': 'menue-desc'})
-    name, notes = parse_description(description_container, legend)
+    clean_description_container = get_cleaned_description_container(description_container)
+    name, notes = parse_description(clean_description_container, legend)
 
     price_tag = table_row.find('span', attrs={'class': 'menue-price'})
     if price_tag:
@@ -74,10 +75,24 @@ def parse_meal(table_row, legend):
     return category, name, notes, price_tag
 
 
-def parse_description(description, legend):
+def get_cleaned_description_container(description_container):
+    nutrition_expander = description_container.find('span', attrs={'class': 'expand-nutr'})
+    if nutrition_expander:  # "Hauptbeilage" and "Nebenbeilage" do not have a nutrition expander
+        def is_valid_description_element(element):
+            # filter out the nutrition expander element, <span class="menue-nutr">+</span>
+            return not isinstance(element, Tag) or not element.name == 'span' or not 'menue-nutr' in element['class']
+
+        description_container = [
+            element for element in nutrition_expander.children
+            if is_valid_description_element(element)
+        ]
+    return description_container
+
+
+def parse_description(description_container, legend):
     name = ''
     notes = set()
-    for namePart in description.children:
+    for namePart in description_container:
         if type(namePart) is Tag and namePart.name == 'sup':
             notes.update(namePart.text.strip().split(','))
         else:
