@@ -16,7 +16,7 @@ def add_meals_from_table(canteen, table, day):
         # split names and notes
         name = ''
         notes = set()
-        descs = item.find('span', attrs={'class': 'menue-desc'})
+        descs = item.find('span', attrs={'class': 'expand-nutr'})
         if not descs:
             return
         for namePart in descs.children:
@@ -26,9 +26,28 @@ def add_meals_from_table(canteen, table, day):
                 if namePart.name == 'sup':
                     notes.update(namePart.text.strip().split(','))
                 else:
-                    name += namePart.string
+                    name += namePart.text
         name = name.strip()
+        # Dieses Plus Zeichen entfernen
+        name = name[1:] 
         notes = [legend.get(n, n) for n in notes if n]
+
+        nutrition = item.find('div', attrs={'class': 'nutr-info'})
+
+        first = True
+        for br in nutrition.findAll('br'):
+            prev_s = br.prevSibling
+            next_s = br.nextSibling        
+            if first:
+                first = False
+                if prev_s:
+                    notes.append(prev_s.strip())
+                if next_s:
+                    notes.append(next_s.strip())
+            else:
+                if next_s:
+                    notes.append(next_s.strip())
+
         price_tag = item.find('span', attrs={'class': 'menue-price'})
         if not price_tag:
             canteen.addMeal(day, category, name, notes)
@@ -63,11 +82,11 @@ def parse_url(url, today=False):
     regex = '\((?P<name>[\dA-Z]+)\)\s*(?P<value>[\w\s]+)'
     legend = buildLegend(legend, document.find(id='additives').text, regex=regex)
 
-    days = ('montag', 'dienstag', 'mittwoch', 'donnerstag', 'freitag',
-            'montagNaechste', 'dienstagNaechste', 'mittwochNaechste', 'donnerstagNaechste', 'freitagNaechste')
+    days = ('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag',
+            'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag')
     for day in days:
         data = document.find('div', id=day)
-        headline = document.find('a', attrs={'data-anchor': '#' + day})
+        headline = document.find('a', attrs={'data-anchor':day.lower()})
         parse_day(canteen, headline.text, data)
     return canteen.toXMLFeed()
 
