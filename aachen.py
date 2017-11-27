@@ -19,13 +19,16 @@ def add_meals_from_table(canteen, table, day):
         descs = item.find('span', attrs={'class': 'menue-desc'})
         if not descs:
             return
-        for namePart in descs.children:
-            if type(namePart) is NavigableString:
+        expand = descs.find('span', attrs={'class': 'expand-nutr'})
+        if not expand:
+            return
+        for namePart in expand.children:
+            if type(namePart) is NavigableString and namePart.string is not '+':
                 name += namePart.string
             elif type(namePart) is Tag:
                 if namePart.name == 'sup':
                     notes.update(namePart.text.strip().split(','))
-                else:
+                elif namePart.name != 'span':
                     name += namePart.string
         name = name.strip()
         notes = [legend.get(n, n) for n in notes if n]
@@ -63,11 +66,12 @@ def parse_url(url, today=False):
     regex = '\((?P<name>[\dA-Z]+)\)\s*(?P<value>[\w\s]+)'
     legend = buildLegend(legend, document.find(id='additives').text, regex=regex)
 
-    days = ('montag', 'dienstag', 'mittwoch', 'donnerstag', 'freitag',
-            'montagNaechste', 'dienstagNaechste', 'mittwochNaechste', 'donnerstagNaechste', 'freitagNaechste')
-    for day in days:
-        data = document.find('div', id=day)
-        headline = document.find('a', attrs={'data-anchor': '#' + day})
+    days = ('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag',
+               'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag')
+    for (i, day) in enumerate(days):
+        data = document.find('div', id=(day if i < 5 else day + 'Naechste'))
+        headlines = document.findAll('a', attrs={'data-anchor': day.lower()})
+        headline = headlines[0] if i < 5 else headlines[1]
         parse_day(canteen, headline.text, data)
     return canteen.toXMLFeed()
 
