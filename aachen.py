@@ -77,12 +77,11 @@ def parse_meal(table_row, legend):
 
 
 def get_cleaned_description_container(description_container):
-    # "Hauptbeilage" and "Nebenbeilage" do not have a nutrition expander
+    # "Hauptbeilage" and "Nebenbeilage" are flat, while the others are wrapped in <span class="expand-nutr">
     effective_description_container = description_container.find('span', attrs={
         'class': 'expand-nutr'}) or description_container
 
     def is_valid_description_element(element):
-        # filter out the nutrition expander element, <span class="menue-nutr">+</span>, and <br> (Tag)
         if not isinstance(element, Tag):
             return True
         # Keep <span class="seperator">oder</span>
