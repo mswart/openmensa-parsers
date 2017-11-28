@@ -77,16 +77,20 @@ def parse_meal(table_row, legend):
 
 
 def get_cleaned_description_container(description_container):
-    nutrition_expander = description_container.find('span', attrs={'class': 'expand-nutr'})
-    if nutrition_expander:  # "Hauptbeilage" and "Nebenbeilage" do not have a nutrition expander
-        def is_valid_description_element(element):
-            # filter out the nutrition expander element, <span class="menue-nutr">+</span>
-            return not isinstance(element, Tag) or not element.name == 'span' or not 'menue-nutr' in element['class']
+    # "Hauptbeilage" and "Nebenbeilage" do not have a nutrition expander
+    effective_description_container = description_container.find('span', attrs={
+        'class': 'expand-nutr'}) or description_container
 
-        description_container = [
-            element for element in nutrition_expander.children
-            if is_valid_description_element(element)
-        ]
+    def is_valid_description_element(element):
+        # filter out the nutrition expander element, <span class="menue-nutr">+</span>, and <br> (Tag)
+        if not isinstance(element, Tag):
+            return True
+        # Keep <span class="seperator">oder</span>
+        if element.name == 'span' and 'seperator' in element['class']:
+            return True
+        return False
+
+    description_container = list(filter(is_valid_description_element, effective_description_container.children))
 
     return description_container
 
