@@ -59,6 +59,8 @@ def is_closed(data):
 def add_meals_from_table(canteen, table, day):
     for item in table.find_all('tr'):
         category, name, notes, price_tag = parse_meal(item, canteen.legend)
+        if not category or not name:
+            return
         canteen.addMeal(day, category, name, notes, prices=price_tag)
 
 
@@ -86,7 +88,8 @@ def get_cleaned_description_container(description_container):
             return True
         # Keep <span class="seperator">oder</span>
         if element.name == 'span' and 'seperator' in element['class']:
-            return True
+            # Sometimes, <span class="seperator"></span> is empty
+            return len(element.contents) > 0
         return False
 
     description_container = list(filter(is_valid_description_element, effective_description_container.children))
