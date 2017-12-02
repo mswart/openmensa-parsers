@@ -31,12 +31,13 @@ def add_meals_from_table(canteen, table, day):
                 elif namePart.name != 'span':
                     name += namePart.string
         name = name.strip()
-        notes = [legend.get(n, n) for n in notes if n]
-        price_tag = item.find('span', attrs={'class': 'menue-price'})
-        if not price_tag:
-            canteen.addMeal(day, category, name, notes)
-        else:
-            canteen.addMeal(day, category, name, notes, price_tag.text.strip())
+        if name:
+            notes = [legend.get(n, n) for n in notes if n]
+            price_tag = item.find('span', attrs={'class': 'menue-price'})
+            if not price_tag:
+                canteen.addMeal(day, category, name, notes)
+            else:
+                canteen.addMeal(day, category, name, notes, price_tag.text.strip())
 
 
 def parse_day(canteen, day, data):
