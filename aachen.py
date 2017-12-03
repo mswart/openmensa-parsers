@@ -92,6 +92,9 @@ def get_cleaned_description_container(description_container):
         if element.name == 'span' and 'seperator' in element['class']:
             # Sometimes it's empty, i. e. <span class="seperator"></span>
             return len(element.contents) > 0
+        # Keep <sup> tags for notes
+        if element.name == 'sup':
+            return True
         return False
 
     description_container = list(filter(
