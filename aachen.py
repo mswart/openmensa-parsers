@@ -14,6 +14,8 @@ def parse_url(url, today=False):
 
     # todo only for: Tellergericht, vegetarisch, Klassiker, Empfehlung des Tages:
     canteen.setAdditionalCharges('student', {'other': 1.5})
+    # unwanted automatic notes extraction would be done in `OpenMensaCanteen.addMeal()`
+    # if we used `LazyBuilder.setLegendData()`, so we bypass it using a custom attribute
     canteen.legend = parse_legend(document)
 
     parse_all_days(canteen, document)
@@ -23,7 +25,6 @@ def parse_url(url, today=False):
 
 def parse_legend(document):
     regex = '\((?P<name>[\dA-Z]+)\)\s*(?P<value>[\w\s]+)'
-    # bypass automatic notes extraction in `OpenMensaCanteen.addMeal()`:
     return buildLegend(text=document.find(id='additives').text, regex=regex)
 
 
@@ -79,20 +80,24 @@ def parse_meal(table_row, legend):
 
 
 def get_cleaned_description_container(description_container):
-    # "Hauptbeilage" and "Nebenbeilage" are flat, while the others are wrapped in <span class="expand-nutr">
+    # "Hauptbeilage" and "Nebenbeilage" are flat,
+    # while the others are wrapped in <span class="expand-nutr">
     effective_description_container = description_container.find('span', attrs={
         'class': 'expand-nutr'}) or description_container
 
     def is_valid_description_element(element):
         if not isinstance(element, Tag):
             return True
-        # Keep <span class="seperator">oder</span>
+        # Keep <span class="seperator">oder</span>, notice typo in "seperator"
         if element.name == 'span' and 'seperator' in element['class']:
-            # Sometimes, <span class="seperator"></span> is empty
+            # Sometimes it's empty, i. e. <span class="seperator"></span>
             return len(element.contents) > 0
         return False
 
-    description_container = list(filter(is_valid_description_element, effective_description_container.children))
+    description_container = list(filter(
+        is_valid_description_element,
+        effective_description_container.children
+    ))
 
     return description_container
 
