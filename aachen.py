@@ -60,9 +60,8 @@ def is_closed(data):
 def add_meals_from_table(canteen, table, day):
     for item in table.find_all('tr'):
         category, name, notes, price_tag = parse_meal(item, canteen.legend)
-        if not category or not name:
-            return
-        canteen.addMeal(day, category, name, notes, prices=price_tag)
+        if category and name:
+            canteen.addMeal(day, category, name, notes, prices=price_tag)
 
 
 def parse_meal(table_row, legend):
