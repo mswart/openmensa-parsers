@@ -90,8 +90,8 @@ def parse_url(url, today=False):
     return canteen.toXMLFeed()
 
 
-parser = Parser('aachen', handler=parse_url, #TODO: Update!
-                shared_prefix='http://www.studentenwerk-aachen.de/speiseplaene/')
+parser = Parser('aachen', handler=parse_url,
+                shared_prefix='http://www.studierendenwerk-aachen.de/speiseplaene/')
 parser.define('academica', suffix='academica-w.html')
 parser.define('ahorn', suffix='ahornstrasse-w.html')
 parser.define('templergraben', suffix='templergraben-w.html')
