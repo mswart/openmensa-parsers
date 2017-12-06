@@ -67,8 +67,9 @@ def parse_url(url, today=False):
             'montagNaechste', 'dienstagNaechste', 'mittwochNaechste', 'donnerstagNaechste', 'freitagNaechste')
     for day in days:
         data = document.find('div', id=day)
-        headline = document.find('a', attrs={'data-anchor': '#' + day})
-        parse_day(canteen, headline.text, data)
+        headline = document.find('a', attrs={'data-anchor': day})
+        print(headline)
+        #parse_day(canteen, headline.text, data)
     return canteen.toXMLFeed()
 
 
