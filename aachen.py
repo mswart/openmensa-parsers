@@ -33,6 +33,8 @@ def parse_all_days(canteen, document):
             'MontagNaechste', 'DienstagNaechste', 'MittwochNaechste', 'DonnerstagNaechste', 'FreitagNaechste')
     for day in days:
         day_column = document.find('div', id=day)
+        if day_column is None:  # assume closed?
+            continue
         day_header = day_column.find_previous_sibling('h3')
         parse_day(canteen, day_header.text, day_column)
 
