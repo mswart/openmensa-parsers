@@ -11,4 +11,5 @@ setup(name="openmensa-parsers",
       author="Malte Swart",
       author_email="mswart@devtation.de",
       url="https://github.com/mswart/openmensa-parsers.git",
-      py_modules=modules + ['pyopenmensa/__init__', 'pyopenmensa/feed'])
+      py_modules=modules + ['pyopenmensa/__init__', 'pyopenmensa/feed'],
+      requires=['beautifulsoup4', 'lxml'])
