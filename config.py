@@ -32,7 +32,7 @@ def register_all_parsers(module_list):
         registered_parsers[parser.name] = parser
 
     for module in module_list:
-        register_parser(importlib.import_module(f'parsers.{module}').parser)
+        register_parser(importlib.import_module('parsers.' + module).parser)
 
     register_parser(CanteenPrefixer('braunschweig', 'ostniedersachsen'))
     register_parser(ParserRenamer('clausthal', 'ostniedersachsen'))
