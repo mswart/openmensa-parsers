@@ -73,11 +73,11 @@ As many meal information are only available online as HTML, [Beautiful Soup 4] i
 * The [add howto for developers of new parser](https://github.com/mswart/openmensa-parsers/issues/2) issue may be helpful.
 * Open an issue
 
-[OpenMensa]: http://openmensa.org
-[OpenMensa Documentation]: http://doc.openmensa.org
-[feed documentation]: http://doc.openmensa.org/feed/v2/
+[OpenMensa]: https://openmensa.org
+[OpenMensa Documentation]: https://doc.openmensa.org
+[feed documentation]: https://doc.openmensa.org/feed/v2/
 [config.py]: config.py
 [PyOpenMensa]: https://pypi.python.org/pypi/pyopenmensa
-[Beautiful Soup 4]: http://www.crummy.com/software/BeautifulSoup/
+[Beautiful Soup 4]: https://www.crummy.com/software/BeautifulSoup/
 [python-lxml]: http://lxml.de/
 [Python 3]: https://www.python.org/
