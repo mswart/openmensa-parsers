@@ -38,7 +38,7 @@ for module in [
     'wuerzburg',
     'rostock',
 ]:
-    register_parser(importlib.import_module(module).parser)
+    register_parser(importlib.import_module('parsers.' + module).parser)
 
 
 register_parser(CanteenPrefixer('braunschweig', 'ostniedersachsen'))
