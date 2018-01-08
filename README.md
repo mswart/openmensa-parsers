@@ -28,7 +28,7 @@ The [config.py] contains a list of all known providers and it's canteens (plus t
 
 ## Common implementation details of providers
 
-At the moment all providers using [PyOpenMensa] ([documentation](https://pyopenmensa.readthedocs.io/), [repo](https://github.com/mswart/pyopenmensa)) to generate the XML feed and for some help for the parsing itself.
+At the moment all providers are using [PyOpenMensa] ([documentation](https://pyopenmensa.readthedocs.io/), [repo](https://github.com/mswart/pyopenmensa)) to generate the XML feed and for some help for the parsing itself.
 
 As many meal information are only available online as HTML, [Beautiful Soup 4] is used as a robust but easy to use HTML parser.
 
@@ -39,10 +39,10 @@ As many meal information are only available online as HTML, [Beautiful Soup 4] i
 
         git clone --recurse-submodules git://github.com/mswart/openmensa-parsers
 
-2. Install the dependecies:
+2. Install the dependencies:
    * [Python 3]
    * [Beautiful Soup 4] - needed for most parsers/providers.
-   * [python-lxml] Some parsers using the `lxml` backend of Beautiful Soup, so you might need the Python `lxml` module/extension.
+   * [python-lxml] Some parsers use the `lxml` backend of Beautiful Soup, so you might need the Python `lxml` module/extension.
 
 3. Try some parsers
 
