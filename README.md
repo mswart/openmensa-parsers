@@ -28,7 +28,7 @@ The [config.py] contains a list of all known providers and it's canteens (plus t
 
 ## Common implementation details of providers
 
-At the moment all providers using [PyOpenMensa] ([documentation](http://pyom.devtation.de), [repo](https://github.com/mswart/pyopenmensa)) to generate the XML feed and for some help for the parsing itself.
+At the moment all providers using [PyOpenMensa] ([documentation](https://pyopenmensa.readthedocs.io/), [repo](https://github.com/mswart/pyopenmensa)) to generate the XML feed and for some help for the parsing itself.
 
 As many meal information are only available online as HTML, [Beautiful Soup 4] is used as a robust but easy to use HTML parser.
 
