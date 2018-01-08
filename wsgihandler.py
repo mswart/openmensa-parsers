@@ -2,7 +2,7 @@ import sys
 import traceback
 import re
 
-from config import parse
+from parse import parse
 import utils
 
 canteen_request = re.compile('/(?P<dirs>([\w-]+/)*[\w-]+)/(?P<file>[\w-]+.(xml|json))')
