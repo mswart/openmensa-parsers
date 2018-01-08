@@ -13,8 +13,8 @@ script:
   - dpkg --info ../*.deb
   - dpkg --contents ../*.deb
   - sudo scripts/travis-install-and-setup-deb.sh
-  - wget --output-document=/dev/null --input-file=test-urls.txt
-  - wget --output-document=/dev/null --input-file=maybe-urls.txt || true
+  - wget --output-document=/dev/null --input-file=./scripts/test-urls.txt
+  - wget --output-document=/dev/null --input-file=./scripts/maybe-urls.txt || true
 after_success:
   - 'test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && scripts/travis-publish-package.sh'
 after_script:
