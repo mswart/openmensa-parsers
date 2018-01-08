@@ -1,9 +1,6 @@
-import os
-import glob
 from distutils.core import setup
 
-modules = list(map(lambda d: d[:-3], glob.glob(os.path.join('*.py'))))
-modules.remove('setup')
+from setuptools import find_packages
 
 setup(name="openmensa-parsers",
       version="1.0",
@@ -11,5 +8,6 @@ setup(name="openmensa-parsers",
       author="Malte Swart",
       author_email="mswart@devtation.de",
       url="https://github.com/mswart/openmensa-parsers.git",
-      py_modules=modules + ['pyopenmensa/__init__', 'pyopenmensa/feed'],
+      packages=find_packages(),
+      py_modules=['parse', 'wsgihandler'],
       requires=['beautifulsoup4', 'lxml', 'pyopenmensa'])
