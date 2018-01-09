@@ -5,18 +5,18 @@ dist: trusty
 before_install:
   - deactivate
 install:
-  - sudo build_scripts/travis-install-deps.sh
+  - sudo build-scripts/travis-install-deps.sh
 before_script:
-  - build_scripts/travis-prepare-packaging.sh
+  - build-scripts/travis-prepare-packaging.sh
 script:
   - dpkg-buildpackage -uc -us
   - dpkg --info ../*.deb
   - dpkg --contents ../*.deb
-  - sudo build_scripts/travis-install-and-setup-deb.sh
-  - wget --output-document=/dev/null --input-file=build_scripts/test-urls.txt
-  - wget --output-document=/dev/null --input-file=build_scripts/maybe-urls.txt || true
+  - sudo build-scripts/travis-install-and-setup-deb.sh
+  - wget --output-document=/dev/null --input-file=build-scripts/test-urls.txt
+  - wget --output-document=/dev/null --input-file=build-scripts/maybe-urls.txt || true
 after_success:
-  - 'test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && build_scripts/travis-publish-package.sh'
+  - 'test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && build-scripts/travis-publish-package.sh'
 after_script:
   - sudo cat /var/log/uwsgi/app/openmensa-parsers.log
 env:
