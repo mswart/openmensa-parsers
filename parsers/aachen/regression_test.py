@@ -1,4 +1,4 @@
-from aachen import parse_url
+from .parser import parse_url
 
 
 def test_parse_url():
