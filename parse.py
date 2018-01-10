@@ -17,8 +17,9 @@ class SimulatedRequest(Request):
         self.host = 'http://example.org'
 
 
-try:
-    print(parse(SimulatedRequest(), *sys.argv[1:]))
-except NotFoundError as e:
-    print(e)
-    sys.exit(2)
+if __name__ == '__main__':
+    try:
+        print(parse(SimulatedRequest(), *sys.argv[1:]))
+    except NotFoundError as e:
+        print(e)
+        sys.exit(2)
