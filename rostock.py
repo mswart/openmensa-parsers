@@ -61,7 +61,7 @@ def parse_url(url, today=False):
     return parsePlan(splitted[0], splitted[1], today)
 
 
-parser = Parser('rostock', handler=parse_url, shared_prefix='https://www.studentenwerk-rostock.de/de/mensen/speiseplaene.html')
+parser = Parser('rostock', handler=parse_url, shared_prefix='https://www.stw-rw.de/de/mensen-und-cafeterien/speiseplaene.html')
 parser.define('mensa-sued', suffix='#mensa_id_1')
 parser.define('campus-cafeteria-einstein', suffix='#mensa_id_13')
 parser.define('mensa-st-georg-straße', suffix='#mensa_id_2')
