@@ -122,7 +122,7 @@ def parse_description(description_container, legend):
 parser = Parser(
     'aachen',
     handler=parse_url,
-    shared_prefix='http://www.studentenwerk-aachen.de/speiseplaene/',
+    shared_prefix='http://www.studierendenwerk-aachen.de/speiseplaene/',
 )
 
 parser.define('academica', suffix='academica-w.html')
