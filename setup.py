@@ -15,5 +15,6 @@ setup(name="openmensa-parsers",
       extra_require={
           'dev': [
               'pytest',
+              'request-mock',
           ],
       })
