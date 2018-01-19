@@ -21,6 +21,8 @@ def generate_all_snapshots(canteens):
             result = parse_mocked(parser, canteen)
             result_file.write(result)
 
+        print("Updated snapshots for {}/{}.".format(parser, canteen))
+
 
 if __name__ == '__main__':
     generate_all_snapshots(parsers_to_test)
