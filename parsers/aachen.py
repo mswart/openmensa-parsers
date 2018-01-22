@@ -9,9 +9,12 @@ from utils import Parser
 
 
 def parse_url(url, today=False):
-    canteen = OpenMensaCanteen()
     document = parse(request.urlopen(url).read(), 'lxml')
+    return parse_html_document(document)
 
+
+def parse_html_document(document):
+    canteen = OpenMensaCanteen()
     # todo only for: Tellergericht, vegetarisch, Klassiker, Empfehlung des Tages:
     canteen.setAdditionalCharges('student', {'other': 1.5})
     # unwanted automatic notes extraction would be done in `OpenMensaCanteen.addMeal()`
@@ -62,17 +65,17 @@ def is_closed(data):
 
 def add_meals_from_table(canteen, table, day):
     for item in table.find_all('tr'):
-        category, name, notes, price_tag = parse_meal(item, canteen.legend)
+        category, name, notes, price_tag = parse_category(item, canteen.legend)
         if category and name:
             canteen.addMeal(day, category, name, notes, prices=price_tag)
 
 
-def parse_meal(table_row, legend):
+def parse_category(table_row, legend):
     category = table_row.find('span', attrs={'class': 'menue-category'}).text.strip()
 
-    description_container = table_row.find('span', attrs={'class': 'menue-desc'})
-    clean_description_container = get_cleaned_description_container(description_container)
-    name, notes = parse_description(clean_description_container, legend)
+    meal_container = table_row.find('span', attrs={'class': 'menue-desc'})
+    clean_meal_container = get_cleaned_meal_container(meal_container)
+    name, notes = parse_meal(clean_meal_container, legend)
 
     price_tag = table_row.find('span', attrs={'class': 'menue-price'})
     if price_tag:
@@ -81,13 +84,13 @@ def parse_meal(table_row, legend):
     return category, name, notes, price_tag
 
 
-def get_cleaned_description_container(description_container):
+def get_cleaned_meal_container(meal_container):
     # "Hauptbeilage" and "Nebenbeilage" are flat,
     # while the others are wrapped in <span class="expand-nutr">
-    effective_description_container = description_container.find('span', attrs={
-        'class': 'expand-nutr'}) or description_container
+    effective_meal_container = meal_container.find('span', attrs={
+        'class': 'expand-nutr'}) or meal_container
 
-    def is_valid_description_element(element):
+    def is_valid_meal_element(element):
         if not isinstance(element, Tag):
             return True
         # Keep <span class="seperator">oder</span>, notice typo in "seperator"
@@ -99,15 +102,15 @@ def get_cleaned_description_container(description_container):
             return True
         return False
 
-    description_container = list(filter(
-        is_valid_description_element,
-        effective_description_container.children
+    meal_container = list(filter(
+        is_valid_meal_element,
+        effective_meal_container.children
     ))
 
-    return description_container
+    return meal_container
 
 
-def parse_description(description_container, legend):
+def parse_meal(description_container, legend):
     name_parts = []
     notes = set()
     for element in description_container:
