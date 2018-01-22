@@ -4,6 +4,7 @@ from urllib import request
 from bs4 import BeautifulSoup as parse
 from bs4.element import Tag
 
+from parsers.canteen import Meal
 from pyopenmensa.feed import OpenMensaCanteen, buildLegend
 from utils import Parser
 
@@ -75,13 +76,13 @@ def parse_category(table_row, legend):
 
     meal_container = table_row.find('span', attrs={'class': 'menue-desc'})
     clean_meal_container = get_cleaned_meal_container(meal_container)
-    name, notes = parse_meal(clean_meal_container, legend)
+    meal = parse_meal(clean_meal_container, legend)
 
     price_tag = table_row.find('span', attrs={'class': 'menue-price'})
     if price_tag:
         price_tag = price_tag.text.strip()
 
-    return category, name, notes, price_tag
+    return category, meal.name, meal.get_fulltext_notes(legend), price_tag
 
 
 def get_cleaned_meal_container(meal_container):
@@ -113,14 +114,17 @@ def get_cleaned_meal_container(meal_container):
 def parse_meal(description_container, legend):
     name_parts = []
     notes = set()
+
     for element in description_container:
         if type(element) is Tag and element.name == 'sup':
             notes.update(element.text.strip().split(','))
         else:
             name_parts.append(element.string.strip())
     name = re.sub(r"\s+", ' ', ' '.join(name_parts))
-    notes = [legend.get(n, n) for n in sorted(notes) if n]
-    return name, notes
+
+    meal = Meal(name)
+    meal.set_note_keys(notes)
+    return meal
 
 
 parser = Parser(
