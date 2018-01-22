@@ -4,7 +4,7 @@ from urllib import request
 from bs4 import BeautifulSoup as parse
 from bs4.element import Tag
 
-from parsers.canteen import Meal
+from parsers.canteen import Meal, Entry
 from pyopenmensa.feed import OpenMensaCanteen, buildLegend
 from utils import Parser
 
@@ -66,23 +66,28 @@ def is_closed(data):
 
 def add_meals_from_table(canteen, table, day):
     for item in table.find_all('tr'):
-        category, name, notes, price_tag = parse_category(item, canteen.legend)
-        if category and name:
-            canteen.addMeal(day, category, name, notes, prices=price_tag)
+        entry = parse_category(item)
+        if entry.category_name and entry.meal.name:
+            canteen.addMeal(
+                day,
+                entry.category_name,
+                entry.meal.name,
+                entry.meal.get_fulltext_notes(canteen.legend),
+                prices=entry.price_string)
 
 
-def parse_category(table_row, legend):
-    category = table_row.find('span', attrs={'class': 'menue-category'}).text.strip()
+def parse_category(table_row):
+    category_name = table_row.find('span', attrs={'class': 'menue-category'}).text.strip()
+    price_element = table_row.find('span', attrs={'class': 'menue-price'})
+    price_string = None
+    if price_element:
+        price_string = price_element.text.strip()
 
     meal_container = table_row.find('span', attrs={'class': 'menue-desc'})
     clean_meal_container = get_cleaned_meal_container(meal_container)
-    meal = parse_meal(clean_meal_container, legend)
+    meal = parse_meal(clean_meal_container)
 
-    price_tag = table_row.find('span', attrs={'class': 'menue-price'})
-    if price_tag:
-        price_tag = price_tag.text.strip()
-
-    return category, meal.name, meal.get_fulltext_notes(legend), price_tag
+    return Entry(category_name, meal, price_string=price_string)
 
 
 def get_cleaned_meal_container(meal_container):
@@ -111,7 +116,7 @@ def get_cleaned_meal_container(meal_container):
     return meal_container
 
 
-def parse_meal(description_container, legend):
+def parse_meal(description_container):
     name_parts = []
     notes = set()
 

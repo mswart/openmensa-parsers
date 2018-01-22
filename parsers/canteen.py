@@ -1,3 +1,10 @@
+class Entry:
+    def __init__(self, category_name, meal, price_string=None):
+        self.category_name = category_name
+        self.meal = meal
+        self.price_string = price_string
+
+
 class Meal:
     def __init__(self, name):
         self.name = name
