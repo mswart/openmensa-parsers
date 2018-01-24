@@ -4,7 +4,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup as parse
 from bs4.element import Tag
 
-from pyopenmensa.feed import OpenMensaCanteen, buildLegend, extractDate
+from pyopenmensa.feed import OpenMensaCanteen, buildLegend
 from utils import Parser
 
 
@@ -65,17 +65,6 @@ def add_meals_from_table(canteen, table, day):
         category, name, notes, price_tag = parse_meal(item, canteen.legend)
         if category and name:
             canteen.addMeal(day, category, name, notes, prices=price_tag)
-
-            # TODO: Move determinism upstream (PyOpenMensa)
-            date = extractDate(day)
-            unsorted_meal_entry = canteen._days[date][category][-1]
-            canteen._days[date][category][-1] = (
-                unsorted_meal_entry[0],
-                sorted(unsorted_meal_entry[1]),
-                # relies on alphabetic price output
-                # (i. e. set pyopenmensa.feed.py in line 594 to `for role in sorted(prices):`)
-                unsorted_meal_entry[2]
-            )
 
 
 def parse_meal(table_row, legend):
