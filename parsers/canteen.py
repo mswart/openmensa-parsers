@@ -1,8 +1,19 @@
+from pyopenmensa.feed import convertPrice
+
+
 class Entry:
-    def __init__(self, category_name, meal, price_string=None):
-        self.category_name = category_name
+    def __init__(self, category, meal):
+        self.category = category
         self.meal = meal
-        self.price_string = price_string
+
+
+class Category:
+    def __init__(self, name, price=None):
+        self.name = name
+        self.price = price
+
+    def set_price_from_string(self, price_string):
+        self.price = convertPrice(price_string)
 
 
 class Meal:
