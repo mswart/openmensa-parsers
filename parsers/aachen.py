@@ -4,8 +4,8 @@ from urllib import request
 from bs4 import BeautifulSoup as parse
 from bs4.element import Tag
 
-from parsers.canteen import Meal, Entry, Category
-from pyopenmensa.feed import OpenMensaCanteen, buildLegend
+from parsers.canteen import Category, Day, DayClosed, Entry, Meal
+from pyopenmensa.feed import OpenMensaCanteen, buildLegend, extractDate
 from utils import Parser
 
 
@@ -21,11 +21,36 @@ def parse_html_document(document):
     canteen.setAdditionalCharges('student', {'other': 1.5})
     # unwanted automatic notes extraction would be done in `OpenMensaCanteen.addMeal()`
     # if we used `LazyBuilder.setLegendData()`, so we bypass it using a custom attribute
-    canteen.legend = parse_legend(document)
+    legend = parse_legend(document)
 
-    parse_all_days(canteen, document)
+    all_days = parse_all_days(canteen, document)
 
+    insert_into_canteen(all_days, canteen, legend)
     return canteen.toXMLFeed()
+
+
+def insert_into_canteen(all_days, canteen, legend):
+    for day in all_days:
+        if isinstance(day, DayClosed):
+            canteen.setDayClosed(day.date)
+            continue
+        for category in day.categories.values():
+            for meal in category.meals:
+                notes = set()
+                for key in meal.note_keys:
+                    if key not in legend:
+                        notes.add(key)
+                    else:
+                        notes.add(legend[key])
+
+                if category.name and meal.name:
+                    canteen.addMeal(
+                        day.date,
+                        category.name,
+                        meal.name,
+                        notes=sorted(notes),
+                        prices=meal.price
+                    )
 
 
 def parse_legend(document):
@@ -37,18 +62,23 @@ def parse_all_days(canteen, document):
     days = ('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag',
             'MontagNaechste', 'DienstagNaechste', 'MittwochNaechste', 'DonnerstagNaechste',
             'FreitagNaechste')
+    all_days = []
     for day in days:
         day_column = document.find('div', id=day)
         if day_column is None:  # assume closed?
             continue
-        day_header = day_column.find_previous_sibling('h3')
-        parse_day(canteen, day_header.text, day_column)
+        day = parse_day(day_column)
+        all_days.append(day)
+
+    return all_days
 
 
-def parse_day(canteen, day, day_container):
+def parse_day(day_container):
+    day_header = day_container.find_previous_sibling('h3')
+    date_string = day_header.text
+    date = extractDate(date_string)
     if is_closed(day_container):
-        canteen.setDayClosed(day)
-        return
+        return DayClosed(date)
 
     meals_table = day_container.find(attrs={'class': 'menues'})
     meal_entries = parse_all_entries_from_table(meals_table)
@@ -57,14 +87,12 @@ def parse_day(canteen, day, day_container):
     extras_entries = parse_all_entries_from_table(extras_table)
 
     all_entries = meal_entries + extras_entries
+
+    day = Day(date)
     for entry in all_entries:
-        if entry.category.name and entry.meal.name:
-            canteen.addMeal(
-                day,
-                entry.category.name,
-                entry.meal.name,
-                entry.meal.get_fulltext_notes(canteen.legend),
-                prices=entry.category.price)
+        day.parse_entry(entry)
+
+    return day
 
 
 def is_closed(data):
@@ -87,8 +115,7 @@ def parse_all_entries_from_table(table):
 def parse_entry(table_row):
     category = parse_category(table_row)
 
-    meal_container = table_row.find('span', attrs={'class': 'menue-desc'})
-    meal = parse_meal(meal_container)
+    meal = parse_meal(table_row)
 
     return Entry(category, meal)
 
@@ -98,33 +125,37 @@ def parse_category(category_container):
 
     category = Category(category_name)
 
-    price_element = category_container.find('span', attrs={'class': 'menue-price'})
-    if price_element:
-        price_string = price_element.text.strip()
-        category.set_price_from_string(price_string)
-
     return category
 
 
 def parse_meal(meal_container):
-    clean_meal_container = get_cleaned_meal_container(meal_container)
+    description_container = meal_container.find('span', attrs={'class': 'menue-desc'})
+    clean_description_container = get_cleaned_description_container(description_container)
 
     name_parts = []
     notes = set()
 
-    for element in clean_meal_container:
+    for element in clean_description_container:
         if type(element) is Tag and element.name == 'sup':
-            notes.update(element.text.strip().split(','))
+            note = element.text.strip().split(',')
+            if not note == ['']:
+                notes.update(element.text.strip().split(','))
         else:
             name_parts.append(element.string.strip())
     name = re.sub(r"\s+", ' ', ' '.join(name_parts))
 
     meal = Meal(name)
     meal.set_note_keys(notes)
+
+    price_element = meal_container.find('span', attrs={'class': 'menue-price'})
+    if price_element:
+        price_string = price_element.text.strip()
+        meal.set_price_from_string(price_string)
+
     return meal
 
 
-def get_cleaned_meal_container(meal_container):
+def get_cleaned_description_container(meal_container):
     # "Hauptbeilage" and "Nebenbeilage" are flat,
     # while the others are wrapped in <span class="expand-nutr">
     effective_meal_container = meal_container.find('span', attrs={

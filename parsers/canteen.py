@@ -1,6 +1,22 @@
 from pyopenmensa.feed import convertPrice
 
 
+class Day:
+    def __init__(self, date):
+        self.date = date
+        self.categories = {}
+
+    def parse_entry(self, entry):
+        if entry.category.name not in self.categories:
+            self.categories[entry.category.name] = entry.category
+        self.categories[entry.category.name].add_meal(entry.meal)
+
+
+class DayClosed:
+    def __init__(self, date):
+        self.date = date
+
+
 class Entry:
     def __init__(self, category, meal):
         self.category = category
@@ -8,21 +24,28 @@ class Entry:
 
 
 class Category:
-    def __init__(self, name, price=None):
+    def __init__(self, name):
         self.name = name
-        self.price = price
+        self.meals = []
 
-    def set_price_from_string(self, price_string):
-        self.price = convertPrice(price_string)
+    def add_meal(self, meal):
+        self.meals.append(meal)
 
 
 class Meal:
-    def __init__(self, name):
+    def __init__(self, name, price=None):
+        """
+        :type name: str
+        """
         self.name = name
         self.note_keys = []
+        self.price = price
 
     def set_note_keys(self, note_keys):
+        """
+        :type note_keys: Iterable[str]
+        """
         self.note_keys = note_keys
 
-    def get_fulltext_notes(self, legend):
-        return [legend.get(n, n) for n in sorted(self.note_keys) if n]
+    def set_price_from_string(self, price_string):
+        self.price = convertPrice(price_string)
