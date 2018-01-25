@@ -4,7 +4,7 @@ from urllib import request
 from bs4 import BeautifulSoup as parse
 from bs4.element import Tag
 
-from parsers.canteen import Meal, Entry
+from parsers.canteen import Meal, Entry, Category
 from pyopenmensa.feed import OpenMensaCanteen, buildLegend
 from utils import Parser
 
@@ -66,28 +66,34 @@ def is_closed(data):
 
 def add_meals_from_table(canteen, table, day):
     for item in table.find_all('tr'):
-        entry = parse_category(item)
-        if entry.category_name and entry.meal.name:
+        entry = parse_entry(item)
+        if entry.category.name and entry.meal.name:
             canteen.addMeal(
                 day,
-                entry.category_name,
+                entry.category.name,
                 entry.meal.name,
                 entry.meal.get_fulltext_notes(canteen.legend),
-                prices=entry.price_string)
+                prices=entry.category.price)
 
 
-def parse_category(table_row):
-    category_name = table_row.find('span', attrs={'class': 'menue-category'}).text.strip()
-    price_element = table_row.find('span', attrs={'class': 'menue-price'})
-    price_string = None
-    if price_element:
-        price_string = price_element.text.strip()
+def parse_entry(table_row):
+    category = parse_category(table_row)
 
     meal_container = table_row.find('span', attrs={'class': 'menue-desc'})
     clean_meal_container = get_cleaned_meal_container(meal_container)
     meal = parse_meal(clean_meal_container)
 
-    return Entry(category_name, meal, price_string=price_string)
+    return Entry(category, meal)
+
+
+def parse_category(table_row):
+    category_name = table_row.find('span', attrs={'class': 'menue-category'}).text.strip()
+    category = Category(category_name)
+    price_element = table_row.find('span', attrs={'class': 'menue-price'})
+    if price_element:
+        price_string = price_element.text.strip()
+        category.set_price_from_string(price_string)
+    return category
 
 
 def get_cleaned_meal_container(meal_container):
