@@ -45,16 +45,26 @@ def parse_all_days(canteen, document):
         parse_day(canteen, day_header.text, day_column)
 
 
-def parse_day(canteen, day, data):
-    if is_closed(data):
+def parse_day(canteen, day, day_container):
+    if is_closed(day_container):
         canteen.setDayClosed(day)
         return
 
-    meals_table = data.find(attrs={'class': 'menues'})
-    add_meals_from_table(canteen, meals_table, day)
+    meals_table = day_container.find(attrs={'class': 'menues'})
+    meal_entries = parse_all_entries_from_table(meals_table)
 
-    extras_table = data.find(attrs={'class': 'extras'})
-    add_meals_from_table(canteen, extras_table, day)
+    extras_table = day_container.find(attrs={'class': 'extras'})
+    extras_entries = parse_all_entries_from_table(extras_table)
+
+    all_entries = meal_entries + extras_entries
+    for entry in all_entries:
+        if entry.category.name and entry.meal.name:
+            canteen.addMeal(
+                day,
+                entry.category.name,
+                entry.meal.name,
+                entry.meal.get_fulltext_notes(canteen.legend),
+                prices=entry.category.price)
 
 
 def is_closed(data):
@@ -65,16 +75,13 @@ def is_closed(data):
         return False
 
 
-def add_meals_from_table(canteen, table, day):
+def parse_all_entries_from_table(table):
+    all_entries = []
     for item in table.find_all('tr'):
         entry = parse_entry(item)
-        if entry.category.name and entry.meal.name:
-            canteen.addMeal(
-                day,
-                entry.category.name,
-                entry.meal.name,
-                entry.meal.get_fulltext_notes(canteen.legend),
-                prices=entry.category.price)
+        all_entries.append(entry)
+
+    return all_entries
 
 
 def parse_entry(table_row):
