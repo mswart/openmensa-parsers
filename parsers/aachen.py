@@ -10,7 +10,8 @@ from utils import Parser
 
 
 def parse_url(url, today=False):
-    document = parse(request.urlopen(url).read(), 'lxml')
+    raw_html = request.urlopen(url).read()
+    document = parse(raw_html, 'lxml')
     return parse_html_document(document)
 
 
@@ -80,20 +81,40 @@ def parse_entry(table_row):
     category = parse_category(table_row)
 
     meal_container = table_row.find('span', attrs={'class': 'menue-desc'})
-    clean_meal_container = get_cleaned_meal_container(meal_container)
-    meal = parse_meal(clean_meal_container)
+    meal = parse_meal(meal_container)
 
     return Entry(category, meal)
 
 
-def parse_category(table_row):
-    category_name = table_row.find('span', attrs={'class': 'menue-category'}).text.strip()
+def parse_category(category_container):
+    category_name = category_container.find('span', attrs={'class': 'menue-category'}).text.strip()
+
     category = Category(category_name)
-    price_element = table_row.find('span', attrs={'class': 'menue-price'})
+
+    price_element = category_container.find('span', attrs={'class': 'menue-price'})
     if price_element:
         price_string = price_element.text.strip()
         category.set_price_from_string(price_string)
+
     return category
+
+
+def parse_meal(meal_container):
+    clean_meal_container = get_cleaned_meal_container(meal_container)
+
+    name_parts = []
+    notes = set()
+
+    for element in clean_meal_container:
+        if type(element) is Tag and element.name == 'sup':
+            notes.update(element.text.strip().split(','))
+        else:
+            name_parts.append(element.string.strip())
+    name = re.sub(r"\s+", ' ', ' '.join(name_parts))
+
+    meal = Meal(name)
+    meal.set_note_keys(notes)
+    return meal
 
 
 def get_cleaned_meal_container(meal_container):
@@ -120,22 +141,6 @@ def get_cleaned_meal_container(meal_container):
     ))
 
     return meal_container
-
-
-def parse_meal(description_container):
-    name_parts = []
-    notes = set()
-
-    for element in description_container:
-        if type(element) is Tag and element.name == 'sup':
-            notes.update(element.text.strip().split(','))
-        else:
-            name_parts.append(element.string.strip())
-    name = re.sub(r"\s+", ' ', ' '.join(name_parts))
-
-    meal = Meal(name)
-    meal.set_note_keys(notes)
-    return meal
 
 
 parser = Parser(
