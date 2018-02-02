@@ -34,7 +34,6 @@ def insert_into_canteen(all_days, canteen, legend):
         if isinstance(day, DayClosed):
             canteen.setDayClosed(day.date)
             continue
-        print(day.categories)
         for category in day.categories.values():
             for meal in category.meals:
                 notes = set()
