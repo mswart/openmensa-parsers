@@ -1,7 +1,10 @@
+from collections import OrderedDict
+
+
 class Day:
     def __init__(self, date):
         self.date = date
-        self.categories = {}
+        self.categories = OrderedDict()
 
     def parse_entry(self, entry):
         if entry.category.name not in self.categories:
