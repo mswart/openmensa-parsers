@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup as parse
 from bs4.element import Tag
 
 from parsers.canteen import Category, Day, DayClosed, Entry, Meal
-from pyopenmensa.feed import OpenMensaCanteen, buildLegend, extractDate
+from pyopenmensa.feed import OpenMensaCanteen, buildLegend, extractDate, convertPrice
 from utils import Parser
 
 
@@ -34,6 +34,7 @@ def insert_into_canteen(all_days, canteen, legend):
         if isinstance(day, DayClosed):
             canteen.setDayClosed(day.date)
             continue
+        print(day.categories)
         for category in day.categories.values():
             for meal in category.meals:
                 notes = set()
@@ -145,12 +146,12 @@ def parse_meal(meal_container):
     name = re.sub(r"\s+", ' ', ' '.join(name_parts))
 
     meal = Meal(name)
-    meal.set_note_keys(notes)
+    meal.note_keys = notes
 
     price_element = meal_container.find('span', attrs={'class': 'menue-price'})
     if price_element:
         price_string = price_element.text.strip()
-        meal.set_price_from_string(price_string)
+        meal.price = convertPrice(price_string)
 
     return meal
 
