@@ -1,12 +1,13 @@
+import copy
 import re
 from urllib import request
 
-from bs4 import BeautifulSoup as parse, Tag
+from bs4 import BeautifulSoup as parse, NavigableString
 
 from pyopenmensa.feed import buildLegend, extractDate
 from utils import Parser
-from . import feed_model as OpenMensa
 from . import model as Aachen
+from . import openmensa_model as OpenMensa
 
 
 def parse_url(url, today=False):
@@ -21,7 +22,7 @@ def parse_url(url, today=False):
     all_days = this_week_days + next_week_days
 
     legend = parse_legend(document_this_week)
-    feed = convert_to_feed_model(all_days, legend)
+    feed = convert_to_openmensa_model(all_days, legend)
     return feed.to_string()
 
 
@@ -80,34 +81,42 @@ def parse_day(categories_with_occurrences, day_column):
     day = OpenMensa.Day(date)
 
     row_counter = 1
-    for (category, occurrences) in categories_with_occurrences:
+    for (template_category, occurrences) in categories_with_occurrences:
+        category = copy.deepcopy(template_category)
         for meal_number in range(occurrences):
             try:
-                meal = parse_meal(day_column[row_counter])
-                category.add_meal(meal)
+                meal = parse_meal(day_column[row_counter], category)
+                category.append(meal)
             except LookupError:
                 pass
             row_counter += 1
 
-        day.append(category)
+        if len(category.meals) > 0:
+            day.append(category)
 
     return day
 
 
-def parse_meal(meal_container):
-    description_container = meal_container.find('p', attrs={'class': 'dish-text'})
-    if description_container:
-        description_elements = description_container.contents
-        description_string_parts = map(lambda tag: tag.text if isinstance(tag, Tag) else tag.string,
-                                       description_elements)
-        # Some parts start with a space
-        description_string_parts = map(lambda string: re.sub(r'^ ', '', string),
-                                       description_string_parts)
-        raw_description = ''.join(description_string_parts)
+def parse_meal(meal_container, category):
+    if category.name in ['Hauptbeilage', 'Nebenbeilage']:
+        description_container = meal_container
+    else:
+        description_container = meal_container.find('p', attrs={'class': 'dish-text'})
 
-        note_regex = re.compile(r'\(((?:[A-Z\d]+,?)+)\) ?')
+    if description_container and description_container.text:
+        description_elements = description_container.contents
+        description_string_parts = [element.string for element in description_elements
+                                    if isinstance(element, NavigableString)]
+        # Some parts have leading and trailing whitespace
+        description_string_parts = list(map(
+            lambda string: re.sub(r'(^ | $)', '', string),
+            description_string_parts
+        ))
+        raw_description = ' | '.join(description_string_parts)
+
+        note_regex = re.compile(r' \(((?:[A-Z\d]+,?)+)\)')
         all_note_keys = set()
-        for match in note_regex.finditer(raw_description, re.UNICODE):
+        for match in note_regex.finditer(raw_description):
             note_group = match.group(1)
             note_keys = note_group.split(',')
             all_note_keys.update(note_keys)
@@ -122,15 +131,16 @@ def parse_meal(meal_container):
         raise LookupError("No meal could be found in {}.".format(meal_container))
 
 
-def convert_to_feed_model(all_days, legend):
+def convert_to_openmensa_model(all_days, legend):
     feed = OpenMensa.Canteen()
     for day in all_days:
         openmensa_day = OpenMensa.Day(day.date)
         for category in day.categories:
             openmensa_category = OpenMensa.Category(category.name)
             for meal in category.meals:
-                notes = map(lambda note_key: legend[note_key] if note_key in legend else note_key,
-                            meal.note_keys)
+                notes = list(
+                    map(lambda note_key: legend[note_key] if note_key in legend else note_key,
+                        meal.note_keys))
                 openmensa_meal = OpenMensa.Meal(meal.name, price=category.price, notes=notes)
                 openmensa_category.append(openmensa_meal)
 
