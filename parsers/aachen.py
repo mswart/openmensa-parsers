@@ -4,7 +4,7 @@ from urllib import request
 from bs4 import BeautifulSoup as parse
 from bs4.element import Tag
 
-from parsers.canteen import Category, Day, DayClosed, Entry, Meal
+from parsers.canteen import Category, Day, DayClosed, Entry, Meal, Xml
 from pyopenmensa.feed import OpenMensaCanteen, buildLegend, extractDate, convertPrice
 from utils import Parser
 
@@ -25,8 +25,9 @@ def parse_html_document(document):
 
     all_days = parse_all_days(canteen, document)
 
-    insert_into_canteen(all_days, canteen, legend)
-    return canteen.toXMLFeed()
+    xml = Xml()
+    feed_xml = xml.days_to_xml(all_days, legend, {'student': 0, 'other': 150})
+    return xml.xml_to_string(feed_xml)
 
 
 def insert_into_canteen(all_days, canteen, legend):
