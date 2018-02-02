@@ -1,6 +1,3 @@
-from pyopenmensa.feed import convertPrice
-
-
 class Day:
     def __init__(self, date):
         self.date = date
@@ -33,19 +30,10 @@ class Category:
 
 
 class Meal:
-    def __init__(self, name, price=None):
+    def __init__(self, name, note_keys=None, price=None):
         """
         :type name: str
         """
         self.name = name
-        self.note_keys = []
+        self.note_keys = note_keys or []
         self.price = price
-
-    def set_note_keys(self, note_keys):
-        """
-        :type note_keys: Iterable[str]
-        """
-        self.note_keys = note_keys
-
-    def set_price_from_string(self, price_string):
-        self.price = convertPrice(price_string)
