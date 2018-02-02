@@ -28,7 +28,13 @@ class Canteen:
         day_elements = [day.to_xml() for day in self.days]
         canteen.extend(day_elements)
 
-        return canteen
+        return openmensa
+
+    def __repr__(self):
+        return '<{}: {}>'.format(self.__class__.__name__, self.__dict__)
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
 
 class Day:
@@ -50,6 +56,12 @@ class Day:
 
         return day_element
 
+    def __repr__(self):
+        return '<{}: {}>'.format(self.__class__.__name__, self.__dict__)
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
 
 class DayClosed(Day):
     def __init__(self, date):
@@ -57,6 +69,12 @@ class DayClosed(Day):
 
     def append(self, category):
         raise NotImplementedError("You cannot add categories to a closed day.")
+
+    def __repr__(self):
+        return '<{}: {}>'.format(self.__class__.__name__, self.__dict__)
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
 
 class Category:
@@ -72,6 +90,12 @@ class Category:
         meal_elements = [meal.to_xml() for meal in self.meals]
         category_element.extend(meal_elements)
         return category_element
+
+    def __repr__(self):
+        return '<{}: {}>'.format(self.__class__.__name__, self.__dict__)
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
 
 class Meal:
@@ -102,17 +126,35 @@ class Meal:
 
         return meal_element
 
+    def __repr__(self):
+        return '<{}: {}>'.format(self.__class__.__name__, self.__dict__)
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
 
 class PriceWithRoles:
     def __init__(self, default, roles):
         self.default = default
         self.roles = roles
 
+    def __repr__(self):
+        return '<{}: {}>'.format(self.__class__.__name__, self.__dict__)
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
 
 class Role:
     def __init__(self, name, price_supplement=0):
         self.name = name
         self.priceSupplement = price_supplement
+
+    def __repr__(self):
+        return '<{}: {}>'.format(self.__class__.__name__, self.__dict__)
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __lt__(self, other):
         return isinstance(other, self.__class__) and self.name < other.name
