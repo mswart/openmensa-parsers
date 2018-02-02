@@ -4,30 +4,40 @@ from urllib import request
 from bs4 import BeautifulSoup as parse
 from bs4.element import Tag
 
-from parsers.canteen import Category, Day, DayClosed, Entry, Meal, Xml
+from parsers.aachen.canteen import Category, Day, DayClosed, Entry, Meal, Xml
 from pyopenmensa.feed import buildLegend, extractDate, convertPrice
 from utils import Parser
 
 
 def parse_url(url, today=False):
-    raw_html = request.urlopen(url).read()
-    document = parse(raw_html, 'lxml')
-    return parse_html_document(document)
+    raw_this_week_html = request.urlopen(url + '_diese_woche.html').read()
+    raw_next_week_html = request.urlopen(url + '_naechste_woche.html').read()
+
+    document_this_week = parse(raw_this_week_html, 'lxml')
+    document_next_week = parse(raw_next_week_html, 'lxml')
+
+    this_week_days = parse_all_days(document_this_week)
+    next_week_days = parse_all_days(document_next_week)
+
+    all_days = this_week_days + next_week_days
+    return parse_html_document(document_this_week, all_days)
 
 
-def parse_html_document(document):
-    all_days = parse_all_days(document)
-
-    legend = parse_legend(document)
+def parse_html_document(legend_container, all_days):
+    legend = parse_legend(legend_container)
     xml = Xml()
     feed_xml = xml.days_to_xml(all_days, legend, {'student': 0, 'other': 150})
 
     return xml.xml_to_string(feed_xml)
 
 
-def parse_legend(document):
-    regex = '\((?P<name>[\dA-Z]+)\)\s*(?P<value>[\w\s]+)'
-    return buildLegend(text=document.find(id='additives').text, regex=regex)
+def parse_legend(legend_container):
+    legend_div = legend_container.find(attrs={'class': 'bottom-wrap'})
+    additive_container, allergens = legend_div.find_all('div')
+
+    raw_legend_string = additive_container.text + allergens.text
+    regex = '\((?P<name>[\dA-Z]+)\) (?P<value>[\wäüöÄÜÖß ]+)'
+    return buildLegend(text=raw_legend_string, regex=regex)
 
 
 def parse_all_days(document):
@@ -159,15 +169,15 @@ def get_cleaned_description_container(meal_container):
 parser = Parser(
     'aachen',
     handler=parse_url,
-    shared_prefix='http://www.studierendenwerk-aachen.de/speiseplaene/',
+    shared_prefix='http://www.studierendenwerk-aachen.de/files/content/Downloads/Gastronomie/Speiseplaene/speiseplan_mensa_'
 )
 
-parser.define('academica', suffix='academica-w.html')
-parser.define('ahorn', suffix='ahornstrasse-w.html')
-parser.define('templergraben', suffix='templergraben-w.html')
-parser.define('bayernallee', suffix='bayernallee-w.html')
-parser.define('eups', suffix='eupenerstrasse-w.html')
-parser.define('goethe', suffix='goethestrasse-w.html')
-parser.define('vita', suffix='vita-w.html')
-parser.define('zeltmensa', suffix='forum-w.html')
-parser.define('juelich', suffix='juelich-w.html')
+parser.define('academica', suffix='academica')
+parser.define('ahorn', suffix='ahornstrasse')
+parser.define('templergraben', suffix='bistro_templergraben')
+parser.define('bayernallee', suffix='bayernallee')
+parser.define('eupenerstrasse', suffix='eupener_strasse')
+parser.define('goethestrasse', suffix='goethestrasse')
+parser.define('vita', suffix='vita')
+parser.define('suedpark', suffix='suedpark')
+parser.define('juelich', suffix='juelich')
