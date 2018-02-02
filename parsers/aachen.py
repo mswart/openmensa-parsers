@@ -91,7 +91,10 @@ def parse_day(day_container):
 
     day = Day(date)
     for entry in all_entries:
-        day.parse_entry(entry)
+        try:
+            day.parse_entry(entry)
+        except ValueError as e:
+            print("Ignored error on meal addition: " + str(e))
 
     return day
 

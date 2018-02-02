@@ -12,10 +12,7 @@ class Day:
         if entry.category.name not in self.categories:
             self.categories[entry.category.name] = entry.category
 
-        try:
-            self.categories[entry.category.name].add_meal(entry.meal)
-        except ValueError as e:
-            print("Ignored error on meal addition: " + str(e))
+        self.categories[entry.category.name].add_meal(entry.meal)
 
 
 class DayClosed:
