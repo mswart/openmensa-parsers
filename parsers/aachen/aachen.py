@@ -1,12 +1,12 @@
 import re
 from urllib import request
 
-from bs4 import BeautifulSoup as parse
-from bs4.element import Tag
+from bs4 import BeautifulSoup as parse, Tag
 
-from parsers.aachen.canteen import Category, Day, DayClosed, Entry, Meal, Xml
-from pyopenmensa.feed import buildLegend, extractDate, convertPrice
+from pyopenmensa.feed import buildLegend, extractDate
 from utils import Parser
+from . import feed_model as OpenMensa
+from . import model as Aachen
 
 
 def parse_url(url, today=False):
@@ -16,19 +16,13 @@ def parse_url(url, today=False):
     document_this_week = parse(raw_this_week_html, 'lxml')
     document_next_week = parse(raw_next_week_html, 'lxml')
 
-    this_week_days = parse_all_days(document_this_week)
-    next_week_days = parse_all_days(document_next_week)
-
+    this_week_days = parse_document(document_this_week)
+    next_week_days = parse_document(document_next_week)
     all_days = this_week_days + next_week_days
-    return parse_html_document(document_this_week, all_days)
 
-
-def parse_html_document(legend_container, all_days):
-    legend = parse_legend(legend_container)
-    xml = Xml()
-    feed_xml = xml.days_to_xml(all_days, legend, {'student': 0, 'other': 150})
-
-    return xml.xml_to_string(feed_xml)
+    legend = parse_legend(document_this_week)
+    feed = convert_to_feed_model(all_days, legend)
+    return feed.to_string()
 
 
 def parse_legend(legend_container):
@@ -36,134 +30,113 @@ def parse_legend(legend_container):
     additive_container, allergens = legend_div.find_all('div')
 
     raw_legend_string = additive_container.text + allergens.text
-    regex = '\((?P<name>[\dA-Z]+)\) (?P<value>[\wäüöÄÜÖß ]+)'
+    regex = r'\((?P<name>[\dA-Z]+)\) (?P<value>[\wäüöÄÜÖß ]+)'
     return buildLegend(text=raw_legend_string, regex=regex)
 
 
-def parse_all_days(document):
-    days = ('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag',
-            'MontagNaechste', 'DienstagNaechste', 'MittwochNaechste', 'DonnerstagNaechste',
-            'FreitagNaechste')
-    all_days = []
-    for day in days:
-        day_column = document.find('div', id=day)
-        if day_column is None:  # assume closed?
-            continue
-        day = parse_day(day_column)
-        all_days.append(day)
+def parse_document(document):
+    table = document.find(attrs={'class': 'dc-wrap'}).table
 
+    subsidized_roles = [OpenMensa.Role('student'), OpenMensa.Role('other', 150)]
+    # Differentiate between categories with only one vs multiple rows in the table.
+    categories_with_occurrences = [
+        Aachen.Category('Tellergericht', price=OpenMensa.PriceWithRoles(180, subsidized_roles)),
+        Aachen.Category('Vegetarisch', price=OpenMensa.PriceWithRoles(210, subsidized_roles)),
+        Aachen.Category('Empfehlung des Tages',
+                        price=OpenMensa.PriceWithRoles(390, subsidized_roles)),
+        Aachen.Category('Klassiker', price=OpenMensa.PriceWithRoles(260, subsidized_roles)),
+        Aachen.Category('Süßspeise', price=OpenMensa.PriceWithRoles(150, subsidized_roles)),
+        Aachen.Category('Hauptbeilage'),
+        Aachen.Category('Nebenbeilage'),
+        Aachen.Category('Pizza des Tages', price=350),
+        Aachen.Category('Burger des Tages', price=470),
+        (Aachen.Category('Burger Classics', price=430), 4),
+        Aachen.Category('Fingerfood', price=350),
+        Aachen.Category('Sandwich', price=320),
+        Aachen.Category('Flammengrill', price=450),
+        (Aachen.Category('Wok', price=320), 2),
+        (Aachen.Category('Pasta', price=350), 3),
+    ]
+    # Normalize so that all entries indicate the number of occurrences.
+    categories_with_occurrences = list(
+        map(lambda entry: (entry, 1) if isinstance(entry, Aachen.Category) else entry,
+            categories_with_occurrences))
+
+    day_columns = map_table_to_day_columns(table)
+    all_days = [parse_day(categories_with_occurrences, column) for column in day_columns]
     return all_days
 
 
-def parse_day(day_container):
-    day_header = day_container.find_previous_sibling('h3')
-    date_string = day_header.text
-    date = extractDate(date_string)
-    if is_closed(day_container):
-        return DayClosed(date)
+def map_table_to_day_columns(table):
+    return [
+        [row.contents[day_number] for row in table.find_all('tr')]
+        for day_number in range(1, 6)
+    ]
 
-    meals_table = day_container.find(attrs={'class': 'menues'})
-    meal_entries = parse_all_entries_from_table(meals_table)
 
-    extras_table = day_container.find(attrs={'class': 'extras'})
-    extras_entries = parse_all_entries_from_table(extras_table)
+def parse_day(categories_with_occurrences, day_column):
+    day_date_string = day_column[0].text
+    date = extractDate(day_date_string)
+    day = OpenMensa.Day(date)
 
-    all_entries = meal_entries + extras_entries
+    row_counter = 1
+    for (category, occurrences) in categories_with_occurrences:
+        for meal_number in range(occurrences):
+            try:
+                meal = parse_meal(day_column[row_counter])
+                category.add_meal(meal)
+            except LookupError:
+                pass
+            row_counter += 1
 
-    day = Day(date)
-    for entry in all_entries:
-        try:
-            day.parse_entry(entry)
-        except ValueError as e:
-            print("Ignored error on meal addition: " + str(e))
+        day.append(category)
 
     return day
 
 
-def is_closed(data):
-    note = data.find(id='note')
-    if note:
-        return True
-    else:
-        return False
-
-
-def parse_all_entries_from_table(table):
-    all_entries = []
-    for item in table.find_all('tr'):
-        entry = parse_entry(item)
-        all_entries.append(entry)
-
-    return all_entries
-
-
-def parse_entry(table_row):
-    category = parse_category(table_row)
-
-    meal = parse_meal(table_row)
-
-    return Entry(category, meal)
-
-
-def parse_category(category_container):
-    category_name = category_container.find('span', attrs={'class': 'menue-category'}).text.strip()
-
-    category = Category(category_name)
-
-    return category
-
-
 def parse_meal(meal_container):
-    description_container = meal_container.find('span', attrs={'class': 'menue-desc'})
-    clean_description_container = get_cleaned_description_container(description_container)
+    description_container = meal_container.find('p', attrs={'class': 'dish-text'})
+    if description_container:
+        description_elements = description_container.contents
+        description_string_parts = map(lambda tag: tag.text if isinstance(tag, Tag) else tag.string,
+                                       description_elements)
+        # Some parts start with a space
+        description_string_parts = map(lambda string: re.sub(r'^ ', '', string),
+                                       description_string_parts)
+        raw_description = ''.join(description_string_parts)
 
-    name_parts = []
-    notes = set()
+        note_regex = re.compile(r'\(((?:[A-Z\d]+,?)+)\) ?')
+        all_note_keys = set()
+        for match in note_regex.finditer(raw_description, re.UNICODE):
+            note_group = match.group(1)
+            note_keys = note_group.split(',')
+            all_note_keys.update(note_keys)
 
-    for element in clean_description_container:
-        if type(element) is Tag and element.name == 'sup':
-            note = element.text.strip().split(',')
-            if not note == ['']:
-                notes.update(element.text.strip().split(','))
-        else:
-            name_parts.append(element.string.strip())
-    name = re.sub(r"\s+", ' ', ' '.join(name_parts))
+        if meal_container.find('img', attrs={'class': 'vegan'}) is not None:
+            all_note_keys.add('vegan')
 
-    meal = Meal(name)
-    meal.note_keys = notes
+        cleaned_description = note_regex.sub('', raw_description)
 
-    price_element = meal_container.find('span', attrs={'class': 'menue-price'})
-    if price_element:
-        price_string = price_element.text.strip()
-        meal.price = convertPrice(price_string)
-
-    return meal
+        return Aachen.Meal(cleaned_description, all_note_keys)
+    else:
+        raise LookupError("No meal could be found in {}.".format(meal_container))
 
 
-def get_cleaned_description_container(meal_container):
-    # "Hauptbeilage" and "Nebenbeilage" are flat,
-    # while the others are wrapped in <span class="expand-nutr">
-    effective_meal_container = meal_container.find('span', attrs={
-        'class': 'expand-nutr'}) or meal_container
+def convert_to_feed_model(all_days, legend):
+    feed = OpenMensa.Canteen()
+    for day in all_days:
+        openmensa_day = OpenMensa.Day(day.date)
+        for category in day.categories:
+            openmensa_category = OpenMensa.Category(category.name)
+            for meal in category.meals:
+                notes = map(lambda note_key: legend[note_key] if note_key in legend else note_key,
+                            meal.note_keys)
+                openmensa_meal = OpenMensa.Meal(meal.name, price=category.price, notes=notes)
+                openmensa_category.append(openmensa_meal)
 
-    def is_valid_meal_element(element):
-        if not isinstance(element, Tag):
-            return True
-        # Keep <span class="seperator">oder</span>, notice typo in "seperator"
-        if element.name == 'span' and 'seperator' in element['class']:
-            # Sometimes it's empty, i. e. <span class="seperator"></span>
-            return len(element.contents) > 0
-        # Keep <sup> tags for notes
-        if element.name == 'sup':
-            return True
-        return False
-
-    meal_container = list(filter(
-        is_valid_meal_element,
-        effective_meal_container.children
-    ))
-
-    return meal_container
+            openmensa_day.append(openmensa_category)
+        feed.insert(openmensa_day)
+    return feed
 
 
 parser = Parser(
