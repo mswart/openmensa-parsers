@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup as parse
 from bs4.element import Tag
 
 from parsers.canteen import Category, Day, DayClosed, Entry, Meal, Xml
-from pyopenmensa.feed import OpenMensaCanteen, buildLegend, extractDate, convertPrice
+from pyopenmensa.feed import buildLegend, extractDate, convertPrice
 from utils import Parser
 
 
@@ -16,42 +16,13 @@ def parse_url(url, today=False):
 
 
 def parse_html_document(document):
-    canteen = OpenMensaCanteen()
-    # todo only for: Tellergericht, vegetarisch, Klassiker, Empfehlung des Tages:
-    canteen.setAdditionalCharges('student', {'other': 1.5})
-    # unwanted automatic notes extraction would be done in `OpenMensaCanteen.addMeal()`
-    # if we used `LazyBuilder.setLegendData()`, so we bypass it using a custom attribute
+    all_days = parse_all_days(document)
+
     legend = parse_legend(document)
-
-    all_days = parse_all_days(canteen, document)
-
     xml = Xml()
     feed_xml = xml.days_to_xml(all_days, legend, {'student': 0, 'other': 150})
+
     return xml.xml_to_string(feed_xml)
-
-
-def insert_into_canteen(all_days, canteen, legend):
-    for day in all_days:
-        if isinstance(day, DayClosed):
-            canteen.setDayClosed(day.date)
-            continue
-        for category in day.categories.values():
-            for meal in category.meals:
-                notes = set()
-                for key in meal.note_keys:
-                    if key not in legend:
-                        notes.add(key)
-                    else:
-                        notes.add(legend[key])
-
-                if category.name and meal.name:
-                    canteen.addMeal(
-                        day.date,
-                        category.name,
-                        meal.name,
-                        notes=sorted(notes),
-                        prices=meal.price
-                    )
 
 
 def parse_legend(document):
@@ -59,7 +30,7 @@ def parse_legend(document):
     return buildLegend(text=document.find(id='additives').text, regex=regex)
 
 
-def parse_all_days(canteen, document):
+def parse_all_days(document):
     days = ('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag',
             'MontagNaechste', 'DienstagNaechste', 'MittwochNaechste', 'DonnerstagNaechste',
             'FreitagNaechste')
