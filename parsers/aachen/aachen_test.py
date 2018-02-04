@@ -3,9 +3,9 @@ import datetime
 from bs4 import BeautifulSoup as parse
 import lxml.etree as ET
 
+import openmensa_model as OpenMensa
 from parsers.aachen.aachen import convert_to_openmensa_model, parse_legend, parse_meal
 from . import model as Aachen
-from . import openmensa_model as OpenMensa
 
 
 def test_legend():

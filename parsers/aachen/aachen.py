@@ -4,10 +4,10 @@ from urllib import request
 
 from bs4 import BeautifulSoup as parse, NavigableString
 
+import openmensa_model as OpenMensa
 from pyopenmensa.feed import buildLegend, extractDate
 from utils import Parser
 from . import model as Aachen
-from . import openmensa_model as OpenMensa
 
 
 def parse_url(url, today=False):
