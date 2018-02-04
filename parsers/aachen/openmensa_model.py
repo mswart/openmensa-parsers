@@ -47,13 +47,8 @@ class Day:
 
     def to_xml(self):
         day_element = ET.Element('day', {'date': self.date.isoformat()})
-
-        if isinstance(self, DayClosed):
-            ET.SubElement(day_element, 'closed')
-        else:
-            category_elements = [category.to_xml() for category in self.categories]
-            day_element.extend(category_elements)
-
+        category_elements = [category.to_xml() for category in self.categories]
+        day_element.extend(category_elements)
         return day_element
 
     def __repr__(self):
@@ -63,12 +58,14 @@ class Day:
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
 
-class DayClosed(Day):
+class DayClosed:
     def __init__(self, date):
-        super().__init__(date)
+        self.date = date
 
-    def append(self, category):
-        raise NotImplementedError("You cannot add categories to a closed day.")
+    def to_xml(self):
+        day_element = ET.Element('day', {'date': self.date.isoformat()})
+        ET.SubElement(day_element, 'closed')
+        return day_element
 
     def __repr__(self):
         return '<{}: {}>'.format(self.__class__.__name__, self.__dict__)
