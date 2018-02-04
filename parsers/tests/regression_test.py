@@ -1,4 +1,5 @@
 import importlib
+import json
 import os
 
 import pytest
@@ -23,25 +24,23 @@ def test_parse_url(parser, canteen):
 
 
 def parse_mocked(parser, canteen):
-    canteen_url = get_canteen_url(parser, canteen)
-    with open(get_snapshot_website_path(parser, canteen), encoding='utf-8') as html_file:
-        html = html_file.read()
-
-        mock_request(parser, canteen_url, html)
-
-        return parsers[parser].parse('', canteen, 'full.xml')
+    mock_request(parser, canteen)
+    return parsers[parser].parse('', canteen, 'full.xml')
 
 
-def mock_request(module, expected_url, response):
-    def mock_response(actual_url):
-        class MockResponse:
-            def read(self):
-                return response
+def mock_request(parser, canteen):
+    snapshot_website_path = get_snapshot_website_path(parser, canteen)
+    with open(snapshot_website_path) as snapshot_file:
+        website_snapshots = json.load(snapshot_file)
 
-        assert actual_url == expected_url
-        return MockResponse()
+        def mock_response(actual_url):
+            class MockResponse:
+                def read(self):
+                    return website_snapshots[actual_url]
 
-    parser_import = importlib.import_module('parsers.' + module)
+            return MockResponse()
+
+    parser_import = importlib.import_module('parsers.' + parser)
     parser_import.urlopen = mock_response
 
 
@@ -51,7 +50,7 @@ def get_canteen_url(parser, canteen):
 
 
 def get_snapshot_website_path(parser, canteen):
-    return os.path.join(base_directory, parser, canteen, 'snapshot-website.html')
+    return os.path.join(base_directory, parser, canteen, 'snapshot-website.json')
 
 
 def get_snapshot_result_path(parser, canteen):
