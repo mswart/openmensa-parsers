@@ -42,7 +42,7 @@ def generate_snapshot(parser, canteen):
 
     snapshot_website_path = get_snapshot_website_path(parser, canteen)
     with open(snapshot_website_path, 'w', encoding='utf-8') as file:
-        json.dump(intercepted_requests, file)
+        json.dump(intercepted_requests, file, indent=4)
 
     snapshot_result_path = get_snapshot_result_path(parser, canteen)
     with open(snapshot_result_path, 'w', encoding='utf-8') as result_file:
