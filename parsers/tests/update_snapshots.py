@@ -1,7 +1,7 @@
-import importlib
 import json
 import os
 import sys
+from unittest import mock
 from urllib.request import urlopen
 
 from config import parsers
@@ -20,10 +20,19 @@ def generate_all_snapshots():
 
 def generate_snapshot(parser, canteen):
     intercepted_requests = {}
-    intercept_request(parser, intercepted_requests)
 
-    url = get_canteen_url(parser, canteen)
-    parsers[parser].parse(url, canteen, 'full.xml')
+    def intercept_request(requested_url):
+        response = urlopen(requested_url)
+
+        html = response.read()
+        intercepted_requests[requested_url] = html.decode('utf-8')
+
+        # cannot return original response, because read() has side effects on it
+        return urlopen(requested_url)
+
+    with mock.patch('urllib.request.urlopen', intercept_request):
+        url = get_canteen_url(parser, canteen)
+        parsers[parser].parse(url, canteen, 'full.xml')
 
     snapshot_website_path = get_snapshot_website_path(parser, canteen)
     with open(snapshot_website_path, 'w', encoding='utf-8') as file:
@@ -35,20 +44,6 @@ def generate_snapshot(parser, canteen):
         result_file.write(result)
 
     print("Updated snapshots for {}/{}.".format(parser, canteen))
-
-
-def intercept_request(module, intercepted_requests):
-    def intercepted_response(url):
-        response = urlopen(url)
-
-        html = response.read()
-        intercepted_requests[url] = html.decode('utf-8')
-
-        # cannot return original response, because read() has side effects on it
-        return urlopen(url)
-
-    parser_import = importlib.import_module('parsers.' + module)
-    parser_import.urlopen = intercepted_response
 
 
 def main():

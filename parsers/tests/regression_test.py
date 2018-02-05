@@ -1,6 +1,6 @@
-import importlib
 import json
 import os
+from unittest import mock
 
 import pytest
 
@@ -24,11 +24,6 @@ def test_parse_url(parser, canteen):
 
 
 def parse_mocked(parser, canteen):
-    mock_request(parser, canteen)
-    return parsers[parser].parse('', canteen, 'full.xml')
-
-
-def mock_request(parser, canteen):
     snapshot_website_path = get_snapshot_website_path(parser, canteen)
     with open(snapshot_website_path) as snapshot_file:
         website_snapshots = json.load(snapshot_file)
@@ -40,8 +35,8 @@ def mock_request(parser, canteen):
 
             return MockResponse()
 
-    parser_import = importlib.import_module('parsers.' + parser)
-    parser_import.urlopen = mock_response
+    with mock.patch('urllib.request.urlopen', mock_response):
+        return parsers[parser].parse('', canteen, 'full.xml')
 
 
 def get_canteen_url(parser, canteen):
