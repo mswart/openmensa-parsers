@@ -34,6 +34,12 @@ def generate_snapshot(parser, canteen):
         url = get_canteen_url(parser, canteen)
         parsers[parser].parse(url, canteen, 'full.xml')
 
+    # TODO: Improve mock so that parsers are free to use request library of their choice.
+    if len(intercepted_requests) == 0:
+        raise RuntimeError("Could not intercept the HTTP calls from parser '{}'. "
+                           "Please use `from urllib import request` "
+                           "and `request.urlopen`.".format(parser))
+
     snapshot_website_path = get_snapshot_website_path(parser, canteen)
     with open(snapshot_website_path, 'w', encoding='utf-8') as file:
         json.dump(intercepted_requests, file)
