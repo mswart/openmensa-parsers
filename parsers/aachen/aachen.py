@@ -1,10 +1,11 @@
+from collections import Counter
 import copy
 import re
 from urllib import request
 
 from bs4 import BeautifulSoup as parse, NavigableString
 
-from pyopenmensa.feed import buildLegend, extractDate
+from pyopenmensa.feed import buildLegend, convertPrice, extractDate
 from utils import Parser
 from . import model as Aachen
 from . import openmensa_model as OpenMensa
@@ -38,57 +39,65 @@ def parse_legend(legend_container):
 def parse_document(document):
     table = document.find(attrs={'class': 'dc-wrap'}).table
 
-    subsidized_roles = [OpenMensa.Role('student'), OpenMensa.Role('other', 150)]
-    # Differentiate between categories with only one vs multiple rows in the table.
-    categories_with_occurrences = [
-        Aachen.Category('Tellergericht', price=OpenMensa.PriceWithRoles(180, subsidized_roles)),
-        Aachen.Category('Vegetarisch', price=OpenMensa.PriceWithRoles(210, subsidized_roles)),
-        Aachen.Category('Empfehlung des Tages',
-                        price=OpenMensa.PriceWithRoles(390, subsidized_roles)),
-        Aachen.Category('Klassiker', price=OpenMensa.PriceWithRoles(260, subsidized_roles)),
-        Aachen.Category('Süßspeise', price=OpenMensa.PriceWithRoles(150, subsidized_roles)),
-        Aachen.Category('Hauptbeilage'),
-        Aachen.Category('Nebenbeilage'),
-        Aachen.Category('Pizza des Tages', price=350),
-        Aachen.Category('Burger des Tages', price=470),
-        (Aachen.Category('Burger Classics', price=430), 4),
-        Aachen.Category('Fingerfood', price=350),
-        Aachen.Category('Sandwich', price=320),
-        Aachen.Category('Flammengrill', price=450),
-        (Aachen.Category('Wok', price=320), 2),
-        (Aachen.Category('Pasta', price=350), 3),
-    ]
-    # Normalize so that all entries indicate the number of occurrences.
-    categories_with_occurrences = list(
-        map(lambda entry: (entry, 1) if isinstance(entry, Aachen.Category) else entry,
-            categories_with_occurrences))
+    categories_with_occurrences = parse_categories(table)
 
     day_columns = map_table_to_day_columns(table)
     all_days = [parse_day(categories_with_occurrences, column) for column in day_columns]
     return all_days
 
 
+def parse_categories(category_container):
+    table_rows = category_container.find_all('tr')
+    # Get first cell of all rows, excluding header row
+    category_table_cells = [row.find('td') for row in table_rows[1:]]
+
+    categories = [
+        parse_category(cell) for cell in category_table_cells
+    ]
+    return Counter(categories)
+
+
+def parse_category(category_cell):
+    if len(category_cell.contents) == 3:
+        category_name_element, _, price_string_element = category_cell.children
+        category_name = str(category_name_element)
+        price_string = str(price_string_element)
+    else:
+        category_name = str(category_cell.text)
+        price_string = None
+
+    price = None
+    if price_string:
+        price = convertPrice(price_string)
+
+        if category_name in ['Tellergericht', 'Vegetarisch', 'Empfehlung des Tages', 'Klassiker',
+                             'Süßspeise']:
+            subsidized_roles = [OpenMensa.Role('student'), OpenMensa.Role('other', 150)]
+            price = OpenMensa.PriceWithRoles(price, subsidized_roles)
+
+    return Aachen.Category(category_name, price)
+
+
 def map_table_to_day_columns(table):
     return [
-        [row.contents[day_number] for row in table.find_all('tr')]
-        for day_number in range(1, 6)
+        [row.contents[column_index] for row in table.find_all('tr')]
+        for column_index in range(1, 6)
     ]
 
 
-def parse_day(categories_with_occurrences, day_column):
+def parse_day(category_counter, day_column):
     day_date_string = day_column[0].text
     date = extractDate(day_date_string)
     day = OpenMensa.Day(date)
 
     row_counter = 1
-    for (template_category, occurrences) in categories_with_occurrences:
+    for (template_category, occurrences) in category_counter.items():
         category = copy.deepcopy(template_category)
         for meal_number in range(occurrences):
-            try:
-                meal = parse_meal(day_column[row_counter], category)
+            meal = parse_meal(day_column[row_counter])
+            if meal:
                 category.append(meal)
-            except LookupError:
-                pass
+
             row_counter += 1
 
         if len(category.meals) > 0:
@@ -97,11 +106,14 @@ def parse_day(categories_with_occurrences, day_column):
     return day
 
 
-def parse_meal(meal_container, category):
-    if category.name in ['Hauptbeilage', 'Nebenbeilage']:
+def parse_meal(meal_container):
+    if 'main-dish' in meal_container.parent['class']:
+        description_container = meal_container.find('p', attrs={'class': 'dish-text'})
+    elif 'side-dish' in meal_container.parent['class']:
         description_container = meal_container
     else:
-        description_container = meal_container.find('p', attrs={'class': 'dish-text'})
+        raise ValueError("Element {} should have a parent with either the `main-dish` "
+                         "or `side-dish` class.".format(meal_container))
 
     if description_container and description_container.text:
         description_elements = description_container.contents
@@ -128,7 +140,7 @@ def parse_meal(meal_container, category):
 
         return Aachen.Meal(cleaned_description, all_note_keys)
     else:
-        raise LookupError("No meal could be found in {}.".format(meal_container))
+        return None
 
 
 def convert_to_openmensa_model(all_days, legend):
