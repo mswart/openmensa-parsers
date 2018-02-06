@@ -118,39 +118,53 @@ def parse_meal(meal_container):
                          "or `side-dish` class.".format(meal_container))
 
     if description_container and description_container.text:
-        description_elements = description_container.contents
-        description_string_parts = [element.string for element in description_elements
-                                    if isinstance(element, NavigableString)]
-        # Some parts have leading and trailing whitespace
-        description_string_parts = list(map(
-            lambda string: re.sub(r'(^\s+|\s+$)', '', string),
-            description_string_parts
-        ))
-        # Clean redundant whitespace
-        description_string_parts = list(map(
-            lambda string: re.sub(r'\s+', ' ', string),
-            description_string_parts
-        ))
-        raw_description = ' | '.join(description_string_parts)
-
-        if re.search(r'((heute )?kein (\w)*angebot|geschlossen)', raw_description, re.IGNORECASE):
-            return None
-
-        note_regex = re.compile(r' \(((?:[A-Z\d]+,?)+)\)')
-        all_note_keys = set()
-        for match in note_regex.finditer(raw_description):
-            note_group = match.group(1)
-            note_keys = note_group.split(',')
-            all_note_keys.update(note_keys)
-
-        if meal_container.find('img', attrs={'class': 'vegan'}) is not None:
-            all_note_keys.add('vegan')
-
-        cleaned_description = note_regex.sub('', raw_description)
-
-        return Aachen.Meal(cleaned_description, all_note_keys)
+        return parse_meal_description(description_container)
     else:
         return None
+
+
+def parse_meal_description(description_container):
+    raw_description = get_description(description_container)
+
+    if re.search(r'((heute )?kein (\w)*angebot|geschlossen)', raw_description, re.IGNORECASE):
+        return None
+
+    all_note_keys, cleaned_description = extract_note_keys(description_container, raw_description)
+
+    return Aachen.Meal(cleaned_description, all_note_keys)
+
+
+def get_description(description_container):
+    description_elements = description_container.contents
+    description_string_parts = [element.string for element in description_elements
+                                if isinstance(element, NavigableString)]
+    # Clean leading and trailing whitespace
+    description_string_parts = list(map(
+        lambda string: re.sub(r'(^\s+|\s+$)', '', string),
+        description_string_parts
+    ))
+    # Clean redundant whitespace
+    description_string_parts = list(map(
+        lambda string: re.sub(r'\s+', ' ', string),
+        description_string_parts
+    ))
+    raw_description = ' | '.join(description_string_parts)
+    return raw_description
+
+
+def extract_note_keys(description_container, raw_description):
+    note_regex = re.compile(r' \(((?:[A-Z\d]+,?)+)\)')
+    all_note_keys = set()
+    for match in note_regex.finditer(raw_description):
+        note_group = match.group(1)
+        note_keys = note_group.split(',')
+        all_note_keys.update(note_keys)
+    if description_container.parent.find('img', attrs={'class': 'vegan'}) is not None:
+        all_note_keys.add('vegan')
+
+    cleaned_description = note_regex.sub('', raw_description)
+
+    return all_note_keys, cleaned_description
 
 
 def convert_to_openmensa_model(all_days, legend):
