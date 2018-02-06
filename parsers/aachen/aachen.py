@@ -126,6 +126,9 @@ def parse_meal(meal_container):
         ))
         raw_description = ' | '.join(description_string_parts)
 
+        if re.search(r'(heute )?kein (\w)*angebot', raw_description, re.IGNORECASE):
+            return None
+
         note_regex = re.compile(r' \(((?:[A-Z\d]+,?)+)\)')
         all_note_keys = set()
         for match in note_regex.finditer(raw_description):
