@@ -1,10 +1,10 @@
-from collections import Counter
 import copy
 import re
 from urllib import request
 
 from bs4 import BeautifulSoup as parse, NavigableString
 
+from parsers.aachen.utils import OrderedCounter
 from pyopenmensa.feed import buildLegend, convertPrice, extractDate
 from utils import Parser
 from . import model as Aachen
@@ -39,7 +39,7 @@ def parse_legend(legend_container):
 def parse_document(document):
     table = document.find(attrs={'class': 'dc-wrap'}).table
 
-    category_counter = Counter(parse_categories(table))
+    category_counter = OrderedCounter(parse_categories(table))
 
     day_columns = transpose_table_to_day_columns(table)
     all_days = [parse_day(category_counter, column) for column in day_columns]
