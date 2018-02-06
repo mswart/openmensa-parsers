@@ -3,7 +3,7 @@ import datetime
 from bs4 import BeautifulSoup as parse
 import lxml.etree as ET
 
-from parsers.aachen.aachen import convert_to_openmensa_model, parse_legend, parse_meal
+from parsers.aachen.aachen import convert_to_openmensa_feed, parse_legend, parse_meal
 from . import model as Aachen
 from . import openmensa_model as OpenMensa
 
@@ -55,7 +55,7 @@ def test_model_conversion():
     day.append(category)
     custom_model = [day]
 
-    actual = convert_to_openmensa_model(
+    actual = convert_to_openmensa_feed(
         custom_model,
         {'1': 'FirstNote', 'A': 'SecondNote', 'A1': 'UnusedNote'}
     )
