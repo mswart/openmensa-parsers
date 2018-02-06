@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<openmensa version="2.1" xmlns="http://openmensa.org/open-mensa-v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://openmensa.org/open-mensa-v2 http://openmensa.org/open-mensa-v2.xsd">
+<?xml version='1.0' encoding='UTF-8'?>
+<openmensa xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://openmensa.org/open-mensa-v2" version="2.1" xsi:schemaLocation="http://openmensa.org/open-mensa-v2 http://openmensa.org/open-mensa-v2.xsd">
   <canteen>
     <day date="2018-02-05">
       <category name="Tellergericht">
         <meal>
           <name>Chili con carne | Fladenbrot</name>
           <note>Antioxidationsmittel</note>
-          <note>Gluten</note>
           <note>Sesamsamen</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">3.30</price>
           <price role="student">1.80</price>
         </meal>
@@ -24,7 +24,7 @@
         <meal>
           <name>Schweinerückensteak | Sauce Robert</name>
           <note>Senf</note>
-          <note>Süßungsmittel</note>
+          <note>SüßungsmittelAllergene</note>
           <price role="other">5.40</price>
           <price role="student">3.90</price>
         </meal>
@@ -35,14 +35,27 @@
           <note>Antioxidationsmittel</note>
           <note>Farbstoff</note>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Phosphat</note>
           <note>Sellerie</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">4.10</price>
           <price role="student">2.60</price>
+        </meal>
+      </category>
+      <category name="Hauptbeilagen">
+        <meal>
+          <name>Kartoffelpüree | Zartweizen</name>
+          <note>Milch</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+        </meal>
+      </category>
+      <category name="Nebenbeilage">
+        <meal>
+          <name>Kaisergemüse | Mischsalat</name>
         </meal>
       </category>
       <category name="Pizza des Tages">
@@ -50,193 +63,81 @@
           <name>Pizza Gamberetti | Shrimps, Spinat, Knoblauch, Oliven</name>
           <note>Farbstoff</note>
           <note>Gerste</note>
-          <note>Gluten</note>
+          <note>Geschwärzt</note>
           <note>Konservierungsstoff</note>
           <note>Krebstiere</note>
           <note>Milch</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <note>geschwärzt</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Express">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">1.50</price>
-          <price role="student">0.00</price>
-        </meal>
-      </category>
-      <category name="Pasta">
-        <meal>
-          <name>Conchiglie al forno | Gemüse | Rinderhack | Béchamel</name>
-          <note>Eier</note>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Gnocchi Mediterranea | Champignons, Spinat | Béchamel</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Tortiglioni Poletto | Geflügel, Paprikasauce, Rucola</name>
-          <note>Gluten</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>Pizza Margherita</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Truthahnsalami</name>
-          <note>Antioxidationsmittel</note>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Funghi</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Wok">
-        <meal>
-          <name>Schweinefleisch | Soja-Pflaumen Sauce | Basmatireis</name>
-          <note>Erdnüsse</note>
-          <note>Gluten</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-        <meal>
-          <name>Wok Kanpur | Geröstete Erdnüsse, Gemüse | Basmatireis</name>
-          <note>Erdnüsse</note>
-          <note>Gluten</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-      </category>
-      <category name="Burger Classics">
-        <meal>
-          <name>Hamburger | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Burger des Tages">
         <meal>
           <name>Gorgonzola-Bacon-Burger | Laugenbrötchen, Preiselbeeren, Rucola</name>
           <note>Antioxidationsmittel</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Senf</note>
           <note>Weizen</note>
-          <price role="other">6.90</price>
-          <price role="student">5.40</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.70</price>
+        </meal>
+      </category>
+      <category name="Burger Classics">
+        <meal>
+          <name>Hamburger | Pommes | Getränk 0,25 L</name>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
+          <note>Gerste</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
         </meal>
       </category>
       <category name="Fingerfood">
         <meal>
           <name>Chicken Wings 8 Stück mit einem Dip | Pommes | Getränk 0,25 L</name>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Hähnchennuggets 9 Stück mit 2 Dips | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Sandwich">
@@ -245,7 +146,6 @@
           <note>Antioxidationsmittel</note>
           <note>Farbstoff</note>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Hafer</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
@@ -253,40 +153,55 @@
           <note>Sesamsamen</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
       </category>
-      <category name="Flammengrill">
+      <category name="Wok">
         <meal>
-          <name>heute kein Grillangebot</name>
-          <price role="other">6.00</price>
-          <price role="student">4.50</price>
-        </meal>
-      </category>
-      <category name="Ofenkartoffel">
-        <meal>
-          <name>heute kein Angebot</name>
-          <price role="other">4.40</price>
-          <price role="student">2.90</price>
-        </meal>
-        <meal>
-          <name>heute kein Angebot</name>
-          <price role="other">5.40</price>
-          <price role="student">3.90</price>
-        </meal>
-      </category>
-      <category name="Hauptbeilagen">
-        <meal>
-          <name>Kartoffelpüree oder Zartweizen</name>
-          <note>Gluten</note>
-          <note>Milch</note>
+          <name>Schweinefleisch | Soja-Pflaumen Sauce | Basmatireis</name>
+          <note>Erdnüsse</note>
+          <note>Sojabohnen</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
+        </meal>
+        <meal>
+          <name>Wok Kanpur | Geröstete Erdnüsse, Gemüse | Basmatireis</name>
+          <note>Erdnüsse</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
       </category>
-      <category name="Nebenbeilage">
+      <category name="Pasta">
         <meal>
-          <name>Kaisergemüse oder Mischsalat</name>
+          <name>Conchiglie al forno | Gemüse | Rinderhack | Béchamel</name>
+          <note>Eier</note>
+          <note>Farbstoff</note>
+          <note>Gerste</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
+        </meal>
+        <meal>
+          <name>Gnocchi Mediterranea | Champignons, Spinat | Béchamel</name>
+          <note>Gerste</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
+        </meal>
+        <meal>
+          <name>Tortiglioni Poletto | Geflügel, Paprikasauce, Rucola</name>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
     </day>
@@ -295,10 +210,10 @@
         <meal>
           <name>Harira | Kichererbsen, roten Linsen | Fladenbrot</name>
           <note>Antioxidationsmittel</note>
-          <note>Gluten</note>
           <note>Sellerie</note>
           <note>Sesamsamen</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">3.30</price>
           <price role="student">1.80</price>
         </meal>
@@ -323,12 +238,24 @@
         <meal>
           <name>Schweineschnitzel | Pfeffersauce</name>
           <note>Eier</note>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Senf</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">4.10</price>
           <price role="student">2.60</price>
+        </meal>
+      </category>
+      <category name="Hauptbeilagen">
+        <meal>
+          <name>Pommes Frites | Basmatireis</name>
+        </meal>
+      </category>
+      <category name="Nebenbeilage">
+        <meal>
+          <name>Mandel-Brokkoli | Mischsalat</name>
+          <note>Mandeln</note>
+          <note>Schalenfrüchte</note>
         </meal>
       </category>
       <category name="Pizza des Tages">
@@ -336,202 +263,79 @@
           <name>Pizza Erbaccie | Gorgonzola, Broccoli, Spinat</name>
           <note>Farbstoff</note>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Express">
-        <meal>
-          <name>Schweineschnitzel | Pfeffersauce | Pommes frites | Brokkoli</name>
-          <note>Eier</note>
-          <note>Gluten</note>
-          <note>Mandeln</note>
-          <note>Milch</note>
-          <note>Schalenfrüchte</note>
-          <note>Senf</note>
-          <note>Weizen</note>
-          <price role="other">4.10</price>
-          <price role="student">2.60</price>
-        </meal>
-      </category>
-      <category name="Pasta">
-        <meal>
-          <name>Lachslasagne | Rahmspinat | Tomatensauce</name>
-          <note>Eier</note>
-          <note>Farbstoff</note>
-          <note>Fische</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Spaghetti al Arrabiata | Tomaten-Chili-Sauce</name>
-          <note>Antioxidationsmittel</note>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Weizen</note>
-          <note>geschwärzt</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Conchiglie Funghi e Carne | Pilze, Schweinefleisch | Bechamelsauce | Bratensauce</name>
-          <note>Eier</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>Pizza Margherita</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Truthahnsalami</name>
-          <note>Antioxidationsmittel</note>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Funghi</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Wok">
-        <meal>
-          <name>Gebratenes Rindfleisch mit Ananas | Ananas-Curry-Reis</name>
-          <note>Gluten</note>
-          <note>Sellerie</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-        <meal>
-          <name>Gemüse-Ananas-Wok | Ananas-Curry-Reis</name>
-          <note>Gluten</note>
-          <note>Sellerie</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-      </category>
-      <category name="Burger Classics">
-        <meal>
-          <name>Hamburger | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Burger des Tages">
         <meal>
           <name>Gorgonzola-Bacon-Burger | Laugenbrötchen, Preiselbeeren, Rucola</name>
           <note>Antioxidationsmittel</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Senf</note>
           <note>Weizen</note>
-          <price role="other">6.90</price>
-          <price role="student">5.40</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.70</price>
+        </meal>
+      </category>
+      <category name="Burger Classics">
+        <meal>
+          <name>Hamburger | Pommes | Getränk 0,25 L</name>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
+          <note>Gerste</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
         </meal>
       </category>
       <category name="Fingerfood">
         <meal>
           <name>Chicken Wings 8 Stück mit einem Dip | Pommes | Getränk 0,25 L</name>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Hähnchennuggets 9 Stück mit 2 Dips | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Sandwich">
@@ -540,20 +344,19 @@
           <note>Antioxidationsmittel</note>
           <note>Farbstoff</note>
           <note>Gerste</note>
-          <note>Gluten</note>
+          <note>Geschwärzt</note>
           <note>Hafer</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Roggen</note>
-          <note>Schwefeldioxid oder Sulfite</note>
+          <note>Schwefeldioxid</note>
           <note>Sellerie</note>
           <note>Sesamsamen</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
           <note>geschwefelt</note>
-          <note>geschwärzt</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
       </category>
       <category name="Flammengrill">
@@ -562,36 +365,58 @@
           <note>Eier</note>
           <note>Milch</note>
           <note>Senf</note>
-          <price role="other">6.00</price>
-          <price role="student">4.50</price>
+          <price>4.50</price>
         </meal>
       </category>
-      <category name="Ofenkartoffel">
+      <category name="Wok">
         <meal>
-          <name>Ofenkartoffel mit Dip | Mischsalat</name>
-          <price role="other">4.40</price>
-          <price role="student">2.90</price>
+          <name>Gebratenes Rindfleisch mit Ananas | Ananas-Curry-Reis</name>
+          <note>Sellerie</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
         <meal>
-          <name>Ofenkartoffel mit Pulled Pork | Schmand | Mischsalat</name>
+          <name>Gemüse-Ananas-Wok | Ananas-Curry-Reis</name>
+          <note>Sellerie</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
+        </meal>
+      </category>
+      <category name="Pasta">
+        <meal>
+          <name>Lachslasagne | Rahmspinat | Tomatensauce</name>
+          <note>Eier</note>
+          <note>Farbstoff</note>
+          <note>Fisch</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
+        </meal>
+        <meal>
+          <name>Spaghetti al Arrabiata | Tomaten-Chili-Sauce</name>
+          <note>Antioxidationsmittel</note>
+          <note>Farbstoff</note>
+          <note>Geschwärzt</note>
+          <note>Konservierungsstoff</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
+        </meal>
+        <meal>
+          <name>Conchiglie Funghi e Carne | Pilze, Schweinefleisch | Bechamelsauce | Bratensauce</name>
+          <note>Eier</note>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Sellerie</note>
-          <price role="other">5.40</price>
-          <price role="student">3.90</price>
-        </meal>
-      </category>
-      <category name="Hauptbeilagen">
-        <meal>
-          <name>Pommes Frites oder Basmatireis</name>
-        </meal>
-      </category>
-      <category name="Nebenbeilage">
-        <meal>
-          <name>Mandel-Brokkoli oder Mischsalat</name>
-          <note>Mandeln</note>
-          <note>Schalenfrüchte</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
     </day>
@@ -600,10 +425,10 @@
         <meal>
           <name>Currywurstsuppe | Paprika, Kartoffeln | Brötchen</name>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">3.30</price>
           <price role="student">1.80</price>
         </meal>
@@ -611,9 +436,9 @@
       <category name="Vegetarisch">
         <meal>
           <name>Gemüsecurry in scharfer Kokossauce | Couscous</name>
-          <note>Gluten</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">3.60</price>
           <price role="student">2.10</price>
         </meal>
@@ -621,20 +446,30 @@
       <category name="Empfehlung des Tages">
         <meal>
           <name>Scholle Müllerin | Zitronensauce</name>
-          <note>Fische</note>
-          <note>Gluten</note>
+          <note>Fisch</note>
           <note>Milch</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">5.40</price>
           <price role="student">3.90</price>
         </meal>
       </category>
       <category name="Klassiker">
         <meal>
-          <name>Köttbullar mit Preiselbeeren | Rahmsauce Wildreis | Mischsalat</name>
+          <name>Köttbullar mit Preiselbeeren | RahmsauceWildreis | Mischsalat</name>
           <note>Milch</note>
           <price role="other">4.10</price>
           <price role="student">2.60</price>
+        </meal>
+      </category>
+      <category name="Hauptbeilagen">
+        <meal>
+          <name>Kartoffeln | Wildreis</name>
+        </meal>
+      </category>
+      <category name="Nebenbeilage">
+        <meal>
+          <name>Buntes Gemüse | Mischsalat</name>
         </meal>
       </category>
       <category name="Pizza des Tages">
@@ -642,201 +477,79 @@
           <name>Pizza Formaggio di Capra | Ziegenkäse, Honig</name>
           <note>Farbstoff</note>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Express">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">1.50</price>
-          <price role="student">0.00</price>
-        </meal>
-      </category>
-      <category name="Pasta">
-        <meal>
-          <name>Lasagne Bolognese | Béchamel</name>
-          <note>Eier</note>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Vollkornspaghetti | Radicchio | Bärlauchpestosauce</name>
-          <note>Antioxidationsmittel</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Tortiglioni Salmone | Lachs, Gemüse | Tomatenrahmsauce</name>
-          <note>Antioxidationsmittel</note>
-          <note>Fische</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>Pizza Margherita</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Truthahnsalami</name>
-          <note>Antioxidationsmittel</note>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Funghi</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Wok">
-        <meal>
-          <name>Indonesische Nudeln mit Hähnchenstreifen</name>
-          <note>Eier</note>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-        <meal>
-          <name>Mie Nudeln Indonesischer Art</name>
-          <note>Eier</note>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-      </category>
-      <category name="Burger Classics">
-        <meal>
-          <name>Hamburger | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Burger des Tages">
         <meal>
           <name>Gorgonzola-Bacon-Burger | Laugenbrötchen, Preiselbeeren, Rucola</name>
           <note>Antioxidationsmittel</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Senf</note>
           <note>Weizen</note>
-          <price role="other">6.90</price>
-          <price role="student">5.40</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.70</price>
+        </meal>
+      </category>
+      <category name="Burger Classics">
+        <meal>
+          <name>Hamburger | Pommes | Getränk 0,25 L</name>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
+          <note>Gerste</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
         </meal>
       </category>
       <category name="Fingerfood">
         <meal>
           <name>Chicken Wings 8 Stück mit einem Dip | Pommes | Getränk 0,25 L</name>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Hähnchennuggets 9 Stück mit 2 Dips | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Sandwich">
@@ -845,7 +558,7 @@
           <note>Antioxidationsmittel</note>
           <note>Eier</note>
           <note>Gerste</note>
-          <note>Gluten</note>
+          <note>Geschwärzt</note>
           <note>Hafer</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
@@ -853,9 +566,8 @@
           <note>Sesamsamen</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <note>geschwärzt</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
       </category>
       <category name="Flammengrill">
@@ -863,38 +575,68 @@
           <name>Kasselerbraten | Bratensauce | Spätzle</name>
           <note>Antioxidationsmittel</note>
           <note>Eier</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Phosphat</note>
           <note>Weizen</note>
-          <price role="other">6.00</price>
-          <price role="student">4.50</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.50</price>
         </meal>
       </category>
-      <category name="Ofenkartoffel">
+      <category name="Wok">
         <meal>
-          <name>Ofenkartoffel mit Dip | Mischsalat</name>
-          <price role="other">4.40</price>
-          <price role="student">2.90</price>
+          <name>Indonesische Nudeln mit Hähnchenstreifen</name>
+          <note>Eier</note>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
         <meal>
-          <name>Ofenkartoffel mit Pulled Pork | Schmand | Mischsalat</name>
+          <name>Mie Nudeln Indonesischer Art</name>
+          <note>Eier</note>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
+        </meal>
+      </category>
+      <category name="Pasta">
+        <meal>
+          <name>Lasagne Bolognese | Béchamel</name>
+          <note>Eier</note>
+          <note>Farbstoff</note>
           <note>Gerste</note>
-          <note>Gluten</note>
+          <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Sellerie</note>
-          <price role="other">5.40</price>
-          <price role="student">3.90</price>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
-      </category>
-      <category name="Hauptbeilagen">
         <meal>
-          <name>Kartoffeln oder Wildreis</name>
+          <name>Vollkornspaghetti | Radicchio | Bärlauchpestosauce</name>
+          <note>Antioxidationsmittel</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
-      </category>
-      <category name="Nebenbeilage">
         <meal>
-          <name>Buntes Gemüse oder Mischsalat</name>
+          <name>Tortiglioni Salmone | Lachs, Gemüse | Tomatenrahmsauce</name>
+          <note>Antioxidationsmittel</note>
+          <note>Fisch</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
     </day>
@@ -904,36 +646,15 @@
           <name>Erbseneintopf | Speck | Bockwurst | Brötchen</name>
           <note>Antioxidationsmittel</note>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Phosphat</note>
           <note>Sellerie</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">3.30</price>
           <price role="student">1.80</price>
-        </meal>
-      </category>
-      <category name="Vegetarisch">
-        <meal>
-          <name>Kein Angebot</name>
-          <price role="other">5.40</price>
-          <price role="student">3.90</price>
-        </meal>
-      </category>
-      <category name="Empfehlung des Tages">
-        <meal>
-          <name>Kein Angebot</name>
-          <price role="other">5.40</price>
-          <price role="student">3.90</price>
-        </meal>
-      </category>
-      <category name="Klassiker">
-        <meal>
-          <name>Kein Angebot</name>
-          <price role="other">4.10</price>
-          <price role="student">2.60</price>
         </meal>
       </category>
       <category name="Pizza des Tages">
@@ -941,204 +662,79 @@
           <name>Pizza Pomodori fresco e Mozzarella | Tomaten, Mozzarella</name>
           <note>Farbstoff</note>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Express">
-        <meal>
-          <name>Erbseneintopf | Speck | Bockwurst | Brötchen</name>
-          <note>Antioxidationsmittel</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Phosphat</note>
-          <note>Sellerie</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">1.50</price>
-          <price role="student">0.00</price>
-        </meal>
-      </category>
-      <category name="Pasta">
-        <meal>
-          <name>Nudelauflauf Siciliana | Hähnchen, Gemüse, Oliven | Tomatensauce</name>
-          <note>Antioxidationsmittel</note>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Tortiglioni | Hirtenkäse, Rucola | Béchamel</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Spaghetti Lardo | Geflügel, Speck, Weißweinsauce | Tomatensauce</name>
-          <note>Antioxidationsmittel</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Schwefeldioxid oder Sulfite</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>Pizza Margherita</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Truthahnsalami</name>
-          <note>Antioxidationsmittel</note>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Funghi</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Wok">
-        <meal>
-          <name>Chinesische Wokpfanne | Garnelen, Gemüse | Wildreis</name>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Krebstiere</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-        <meal>
-          <name>Gemüse-Wok China-Art | Wildreis</name>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-      </category>
-      <category name="Burger Classics">
-        <meal>
-          <name>Hamburger | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Burger des Tages">
         <meal>
           <name>Gorgonzola-Bacon-Burger | Laugenbrötchen, Preiselbeeren, Rucola</name>
           <note>Antioxidationsmittel</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Senf</note>
           <note>Weizen</note>
-          <price role="other">6.90</price>
-          <price role="student">5.40</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.70</price>
+        </meal>
+      </category>
+      <category name="Burger Classics">
+        <meal>
+          <name>Hamburger | Pommes | Getränk 0,25 L</name>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
+          <note>Gerste</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
         </meal>
       </category>
       <category name="Fingerfood">
         <meal>
           <name>Chicken Wings 8 Stück mit einem Dip | Pommes | Getränk 0,25 L</name>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Hähnchennuggets 9 Stück mit 2 Dips | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Sandwich">
@@ -1146,7 +742,6 @@
           <name>Wiener Gaudi | Schnitzel, Krautsalat | Käse</name>
           <note>Eier</note>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Hafer</note>
           <note>Milch</note>
           <note>Roggen</note>
@@ -1154,8 +749,8 @@
           <note>Sesamsamen</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
       </category>
       <category name="Flammengrill">
@@ -1164,34 +759,58 @@
           <note>Eier</note>
           <note>Milch</note>
           <note>Senf</note>
-          <price role="other">6.00</price>
-          <price role="student">4.50</price>
+          <price>4.50</price>
         </meal>
       </category>
-      <category name="Ofenkartoffel">
+      <category name="Wok">
         <meal>
-          <name>Ofenkartoffel mit Dip | Mischsalat</name>
-          <price role="other">4.40</price>
-          <price role="student">2.90</price>
+          <name>Chinesische Wokpfanne | Garnelen, Gemüse | Wildreis</name>
+          <note>Konservierungsstoff</note>
+          <note>Krebstiere</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
         <meal>
-          <name>Ofenkartoffel mit Pulled Pork | Schmand | Mischsalat</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
+          <name>Gemüse-Wok China-Art | Wildreis</name>
+          <note>Konservierungsstoff</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
+        </meal>
+      </category>
+      <category name="Pasta">
+        <meal>
+          <name>Nudelauflauf Siciliana | Hähnchen, Gemüse, Oliven | Tomatensauce</name>
+          <note>Antioxidationsmittel</note>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Sellerie</note>
-          <price role="other">5.40</price>
-          <price role="student">3.90</price>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
-      </category>
-      <category name="Hauptbeilagen">
         <meal>
-          <name>Kein Angebot</name>
+          <name>Tortiglioni | Hirtenkäse, Rucola | Béchamel</name>
+          <note>Gerste</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
-      </category>
-      <category name="Nebenbeilage">
         <meal>
-          <name>Kein Angebot oder Mischsalat</name>
+          <name>Spaghetti Lardo | Geflügel, Speck, Weißweinsauce | Tomatensauce</name>
+          <note>Antioxidationsmittel</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Schwefeldioxid</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
     </day>
@@ -1199,33 +818,53 @@
       <category name="Vegetarisch">
         <meal>
           <name>Scharfes Kürbisgemüse | Linsen | Rucola | Penne Rigate</name>
-          <note>Gluten</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">3.60</price>
           <price role="student">2.10</price>
         </meal>
       </category>
       <category name="Empfehlung des Tages">
         <meal>
-          <name>Gebratene Hähnchenbrust &quot;Schlesisches Himmelreich&quot; | Penne Rigate | Mischsalat</name>
+          <name>Gebratene Hähnchenbrust "Schlesisches Himmelreich" | Penne Rigate | Mischsalat</name>
           <note>Antioxidationsmittel</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">5.40</price>
           <price role="student">3.90</price>
         </meal>
       </category>
       <category name="Klassiker">
         <meal>
-          <name>Schlemmerfilet &quot;Italiano&quot; | Weißweinsauce</name>
-          <note>Fische</note>
-          <note>Gluten</note>
+          <name>Schlemmerfilet "Italiano" | Weißweinsauce</name>
+          <note>Fisch</note>
           <note>Milch</note>
-          <note>Schwefeldioxid oder Sulfite</note>
+          <note>Schwefeldioxid</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">4.10</price>
           <price role="student">2.60</price>
+        </meal>
+      </category>
+      <category name="Tellergericht">
+        <meal>
+          <name>Grießbrei mit Himbeeren</name>
+          <note>Milch</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price role="other">3.00</price>
+          <price role="student">1.50</price>
+        </meal>
+      </category>
+      <category name="Hauptbeilagen">
+        <meal>
+          <name>Petersilienkartoffeln</name>
+        </meal>
+      </category>
+      <category name="Nebenbeilage">
+        <meal>
+          <name>Leipziger Allerlei | Mischsalat</name>
         </meal>
       </category>
       <category name="Pizza des Tages">
@@ -1234,219 +873,88 @@
           <note>Antioxidationsmittel</note>
           <note>Farbstoff</note>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Tellergericht">
-        <meal>
-          <name>Grießbrei mit Himbeeren</name>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Weizen</note>
-          <price role="other">3.00</price>
-          <price role="student">1.50</price>
-        </meal>
-      </category>
-      <category name="Express">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">1.50</price>
-          <price role="student">0.00</price>
-        </meal>
-      </category>
-      <category name="Pasta">
-        <meal>
-          <name>Cannelloni | Rindfleisch | Tomatensauce</name>
-          <note>Eier</note>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Gnocchi Genovese | Basilikum | Pfannengemüse | Pestorahmsauce</name>
-          <note>Gluten</note>
-          <note>Sellerie</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Conchiglie Español | Chorizowurst, Paprika | Tomatensauce</name>
-          <note>Antioxidationsmittel</note>
-          <note>Eier</note>
-          <note>Farbstoff</note>
-          <note>Geschmacksverstärker</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Phosphat</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>Pizza Margherita</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Truthahnsalami</name>
-          <note>Antioxidationsmittel</note>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Funghi</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Wok">
-        <meal>
-          <name>Schweinefleisch Woyishau | Aprikosen, Pflaumen | Basmatireis</name>
-          <note>Antioxidationsmittel</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-        <meal>
-          <name>Gemüse-Wok Woyishau | Basmatireis</name>
-          <note>Antioxidationsmittel</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-      </category>
-      <category name="Burger Classics">
-        <meal>
-          <name>Hamburger | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Burger des Tages">
         <meal>
           <name>Gorgonzola-Bacon-Burger | Laugenbrötchen, Preiselbeeren, Rucola</name>
           <note>Antioxidationsmittel</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Senf</note>
           <note>Weizen</note>
-          <price role="other">6.90</price>
-          <price role="student">5.40</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.70</price>
+        </meal>
+      </category>
+      <category name="Burger Classics">
+        <meal>
+          <name>Hamburger | Pommes | Getränk 0,25 L</name>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
+          <note>Gerste</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
         </meal>
       </category>
       <category name="Fingerfood">
         <meal>
           <name>Chicken Wings 8 Stück mit einem Dip | Pommes | Getränk 0,25 L</name>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Hähnchennuggets 9 Stück mit 2 Dips | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Sandwich">
         <meal>
           <name>Thunfisch | Salat, Paprika, Oliven | Käse</name>
           <note>Eier</note>
-          <note>Fische</note>
+          <note>Fisch</note>
           <note>Gerste</note>
-          <note>Gluten</note>
+          <note>Geschwärzt</note>
           <note>Hafer</note>
           <note>Milch</note>
           <note>Roggen</note>
@@ -1454,202 +962,86 @@
           <note>Sesamsamen</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <note>geschwärzt</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
       </category>
       <category name="Flammengrill">
         <meal>
           <name>Putenbraten in Kräutermarinade | Kartoffelwedges | Kräuterschmand</name>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Sellerie</note>
-          <price role="other">6.00</price>
-          <price role="student">4.50</price>
-        </meal>
-      </category>
-      <category name="Ofenkartoffel">
-        <meal>
-          <name>Ofenkartoffel mit Dip | Mischsalat</name>
-          <price role="other">4.40</price>
-          <price role="student">2.90</price>
-        </meal>
-        <meal>
-          <name>Ofenkartoffel mit Pulled Pork | Schmand | Mischsalat</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <price role="other">5.40</price>
-          <price role="student">3.90</price>
-        </meal>
-      </category>
-      <category name="Hauptbeilagen">
-        <meal>
-          <name>Petersilienkartoffeln oder Penne Rigate</name>
-          <note>Gluten</note>
-          <note>Weizen</note>
-        </meal>
-      </category>
-      <category name="Nebenbeilage">
-        <meal>
-          <name>Leipziger Allerlei oder Mischsalat</name>
-        </meal>
-      </category>
-    </day>
-    <day date="2018-02-12">
-      <category name="Tellergericht">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.30</price>
-          <price role="student">1.80</price>
-        </meal>
-      </category>
-      <category name="Vegetarisch">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.60</price>
-          <price role="student">2.10</price>
-        </meal>
-      </category>
-      <category name="Empfehlung des Tages">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">5.40</price>
-          <price role="student">3.90</price>
-        </meal>
-      </category>
-      <category name="Klassiker">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">4.10</price>
-          <price role="student">2.60</price>
-        </meal>
-      </category>
-      <category name="Pizza des Tages">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Pasta">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.50</price>
         </meal>
       </category>
       <category name="Wok">
         <meal>
-          <name>geschlossen</name>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
+          <name>Schweinefleisch Woyishau | Aprikosen, Pflaumen | Basmatireis</name>
+          <note>Antioxidationsmittel</note>
+          <note>Konservierungsstoff</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
         <meal>
-          <name>geschlossen</name>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
+          <name>Gemüse-Wok Woyishau | Basmatireis</name>
+          <note>Antioxidationsmittel</note>
+          <note>Konservierungsstoff</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
       </category>
-      <category name="Burger Classics">
+      <category name="Pasta">
         <meal>
-          <name>geschlossen</name>
-          <price role="other">6.20</price>
-          <price role="student">4.70</price>
+          <name>Cannelloni | Rindfleisch | Tomatensauce</name>
+          <note>Eier</note>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
         <meal>
-          <name>geschlossen</name>
-          <price role="other">6.20</price>
-          <price role="student">4.70</price>
+          <name>Gnocchi Genovese | Basilikum | Pfannengemüse | Pestorahmsauce</name>
+          <note>Sellerie</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
         <meal>
-          <name>geschlossen</name>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">6.20</price>
-          <price role="student">4.70</price>
-        </meal>
-      </category>
-      <category name="Burger des Tages">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">6.20</price>
-          <price role="student">4.70</price>
-        </meal>
-      </category>
-      <category name="Fingerfood">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
+          <name>Conchiglie Español | Chorizowurst, Paprika | Tomatensauce</name>
+          <note>Antioxidationsmittel</note>
+          <note>Eier</note>
+          <note>Farbstoff</note>
+          <note>Geschmacksverstärker</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Phosphat</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
-      <category name="Sandwich">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-      </category>
-      <category name="Flammengrill">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">6.00</price>
-          <price role="student">4.50</price>
-        </meal>
-      </category>
-      <category name="Ofenkartoffel">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">4.40</price>
-          <price role="student">2.90</price>
-        </meal>
-      </category>
-      <category name="Hauptbeilagen">
-        <meal>
-          <name>geschlossen oder geschlossen</name>
-        </meal>
-      </category>
-      <category name="Nebenbeilage">
-        <meal>
-          <name>geschlossen oder geschlossen</name>
-        </meal>
-      </category>
+    </day>
+    <day date="2018-02-12">
+      <closed/>
     </day>
     <day date="2018-02-13">
       <category name="Tellergericht">
         <meal>
           <name>Mais-Karotten-Eintopf | Couscous</name>
-          <note>Gluten</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">3.30</price>
           <price role="student">1.80</price>
         </meal>
@@ -1658,9 +1050,9 @@
         <meal>
           <name>Kartoffeltaschen | Schnittlauchdip</name>
           <note>Eier</note>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">3.60</price>
           <price role="student">2.10</price>
         </meal>
@@ -1668,9 +1060,9 @@
       <category name="Empfehlung des Tages">
         <meal>
           <name>Holzfällersteak | Kräuterbutter dazu Baguette</name>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">5.40</price>
           <price role="student">3.90</price>
         </meal>
@@ -1679,216 +1071,110 @@
         <meal>
           <name>Hähnchenschnitzel | Jalapeño-Käsesauce</name>
           <note>Farbstoff</note>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">4.10</price>
           <price role="student">2.60</price>
+        </meal>
+      </category>
+      <category name="Hauptbeilagen">
+        <meal>
+          <name>Pommes Frites | Spirelli</name>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+        </meal>
+      </category>
+      <category name="Nebenbeilage">
+        <meal>
+          <name>Mais | Mischsalat</name>
         </meal>
       </category>
       <category name="Pizza des Tages">
         <meal>
           <name>Pizza Tonno | Thunfisch, Zwiebeln, Knoblauch</name>
           <note>Farbstoff</note>
-          <note>Fische</note>
+          <note>Fisch</note>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Express">
-        <meal>
-          <name>Hähnchenschnitzel | Jalapeño-Käsesauce | Pommes frites | Mais</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Weizen</note>
-          <price role="other">4.10</price>
-          <price role="student">2.60</price>
-        </meal>
-      </category>
-      <category name="Pasta">
-        <meal>
-          <name>Farfalloni Verdure | Gemüse, Käse | Tomatensauce | Béchamel</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Vollkornspaghetti Carciofo | Artischocken, Oliven | Tomatenrahmsauce</name>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Weizen</note>
-          <note>geschwärzt</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Bandnudeln Salmone e Crema | Lachs | Béchamel</name>
-          <note>Eier</note>
-          <note>Fische</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>Pizza Margherita</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Truthahnsalami</name>
-          <note>Antioxidationsmittel</note>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Funghi</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Wok">
-        <meal>
-          <name>Rindfleisch-Gemüse-Wok | Soja-Pflaumen-Sauce | Basmatireis</name>
-          <note>Gluten</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-        <meal>
-          <name>Gemüse-Wok | Soja-Pflaumen-Sauce | Basmatireis</name>
-          <note>Gluten</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-      </category>
-      <category name="Burger Classics">
-        <meal>
-          <name>Hamburger | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Burger des Tages">
         <meal>
           <name>Chili Cheese Burger | Käse, Jalapeños | Pommes | Getränk 0,25 L</name>
           <note>Farbstoff</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Sellerie</note>
           <note>Senf</note>
           <note>Sesamsamen</note>
           <note>Weizen</note>
-          <price role="other">6.20</price>
-          <price role="student">4.70</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.70</price>
+        </meal>
+      </category>
+      <category name="Burger Classics">
+        <meal>
+          <name>Hamburger | Pommes | Getränk 0,25 L</name>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
+          <note>Gerste</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
         </meal>
       </category>
       <category name="Fingerfood">
         <meal>
           <name>Chili Cheese Peppers 6 Stk mit Dip</name>
           <note>Eier</note>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Hähnchennuggets 9 Stück mit 2 Dips | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Sandwich">
@@ -1896,52 +1182,71 @@
           <name>Steakhouse Style | Rindfleisch, Salat, Paprika, Oliven | Käse</name>
           <note>Eier</note>
           <note>Gerste</note>
-          <note>Gluten</note>
+          <note>Geschwärzt</note>
           <note>Hafer</note>
           <note>Milch</note>
           <note>Roggen</note>
           <note>Sesamsamen</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <note>geschwärzt</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
       </category>
       <category name="Flammengrill">
         <meal>
           <name>Schweinebraten New York mit Pfeffer &amp; Zucker gewürzt | Feurige Sauce | Süßkartoffelpüree</name>
           <note>Milch</note>
-          <price role="other">6.00</price>
-          <price role="student">4.50</price>
+          <price>4.50</price>
         </meal>
       </category>
-      <category name="Ofenkartoffel">
+      <category name="Wok">
         <meal>
-          <name>Ofenkartoffel mit Dip | Mischsalat</name>
-          <price role="other">4.40</price>
-          <price role="student">2.90</price>
+          <name>Rindfleisch-Gemüse-Wok | Soja-Pflaumen-Sauce | Basmatireis</name>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
         <meal>
-          <name>Ofenkartoffel mit Pulled Pork | Schmand | Mischsalat</name>
+          <name>Gemüse-Wok | Soja-Pflaumen-Sauce | Basmatireis</name>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
+        </meal>
+      </category>
+      <category name="Pasta">
+        <meal>
+          <name>Farfalloni Verdure | Gemüse, Käse | Tomatensauce | Béchamel</name>
+          <note>Farbstoff</note>
           <note>Gerste</note>
-          <note>Gluten</note>
+          <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Sellerie</note>
-          <price role="other">5.40</price>
-          <price role="student">3.90</price>
-        </meal>
-      </category>
-      <category name="Hauptbeilagen">
-        <meal>
-          <name>Pommes Frites oder Spirelli</name>
-          <note>Gluten</note>
+          <note>Sojabohnen</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
-      </category>
-      <category name="Nebenbeilage">
         <meal>
-          <name>Mais oder Mischsalat</name>
+          <name>Vollkornspaghetti Carciofo | Artischocken, Oliven | Tomatenrahmsauce</name>
+          <note>Geschwärzt</note>
+          <note>Milch</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
+        </meal>
+        <meal>
+          <name>Bandnudeln Salmone e Crema | Lachs | Béchamel</name>
+          <note>Eier</note>
+          <note>Fisch</note>
+          <note>Gerste</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
     </day>
@@ -1950,10 +1255,10 @@
         <meal>
           <name>Grüner Bohneneintopf | Brötchen</name>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">3.30</price>
           <price role="student">1.80</price>
         </meal>
@@ -1961,10 +1266,10 @@
       <category name="Vegetarisch">
         <meal>
           <name>Ravioli mit Tomatenfüllung | Gemüsesauce</name>
-          <note>Gluten</note>
           <note>Sellerie</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">3.60</price>
           <price role="student">2.10</price>
         </meal>
@@ -1972,12 +1277,12 @@
       <category name="Empfehlung des Tages">
         <meal>
           <name>Hähnchenbrust Teriyaki | Ananas-Chili-Chutney</name>
-          <note>Gluten</note>
           <note>Mandeln</note>
           <note>Schalenfrüchte</note>
           <note>Sellerie</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">5.40</price>
           <price role="student">3.90</price>
         </meal>
@@ -1986,213 +1291,118 @@
         <meal>
           <name>Kibbeling im Backteig | Holländische Remoulade</name>
           <note>Eier</note>
-          <note>Fische</note>
-          <note>Gluten</note>
+          <note>Fisch</note>
           <note>Milch</note>
           <note>Senf</note>
-          <note>Süßungsmittel</note>
+          <note>SüßungsmittelAllergene</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">4.10</price>
           <price role="student">2.60</price>
         </meal>
       </category>
+      <category name="Hauptbeilagen">
+        <meal>
+          <name>Kartoffeln | Curryreis</name>
+        </meal>
+      </category>
+      <category name="Nebenbeilage">
+        <meal>
+          <name>Mandel-Brokkoli | Mischsalat</name>
+          <note>Mandeln</note>
+          <note>Schalenfrüchte</note>
+        </meal>
+      </category>
       <category name="Pizza des Tages">
         <meal>
-          <name>Elsässer Flammkuchen | Speck, Zwiebeln | Crème fraîche .</name>
+          <name>Elsässer Flammkuchen | Speck, Zwiebeln | Crème fraîche.</name>
           <note>Antioxidationsmittel</note>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Pasta">
-        <meal>
-          <name>Maccheroni Polpette | Fleischbällchen, Gemüse | Tomatensauce</name>
-          <note>Antioxidationsmittel</note>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Spaghetti Gorgonzola e Pera | Rucola, Birnen | Gorgonzolasauce</name>
-          <note>Eier</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Farfalloni Rosati | Hähnchen, getrocknete Tomaten | Pesto | Tomatensauce</name>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>Pizza Margherita</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Truthahnsalami</name>
-          <note>Antioxidationsmittel</note>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Funghi</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Wok">
-        <meal>
-          <name>Chili-Zitronen-Hähnchen | Gurkenraita | Kurkumareis</name>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-        <meal>
-          <name>Chili-Zitronen-Wokgemüse | Gurkenraita | Kurkumareis</name>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-      </category>
-      <category name="Burger Classics">
-        <meal>
-          <name>Hamburger | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Burger des Tages">
         <meal>
           <name>Chili Cheese Burger | Käse, Jalapeños | Pommes | Getränk 0,25 L</name>
           <note>Farbstoff</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Sellerie</note>
           <note>Senf</note>
           <note>Sesamsamen</note>
           <note>Weizen</note>
-          <price role="other">6.20</price>
-          <price role="student">4.70</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.70</price>
+        </meal>
+      </category>
+      <category name="Burger Classics">
+        <meal>
+          <name>Hamburger | Pommes | Getränk 0,25 L</name>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
+          <note>Gerste</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
         </meal>
       </category>
       <category name="Fingerfood">
         <meal>
           <name>Chili Cheese Peppers 6 Stk mit Dip</name>
           <note>Eier</note>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Hähnchennuggets 9 Stück mit 2 Dips | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Sandwich">
         <meal>
           <name>Sweet Chili Chicken | Hähnchenfleisch, Karotte | Käse</name>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Hafer</note>
           <note>Milch</note>
           <note>Roggen</note>
@@ -2200,44 +1410,63 @@
           <note>Sesamsamen</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
       </category>
       <category name="Flammengrill">
         <meal>
-          <name>Gegrillter Putenbraten mit griechischen Gewürzen &amp; Olivenöl | Tzatziki Pommes Frites</name>
+          <name>Gegrillter Putenbraten mit griechischen Gewürzen &amp; Olivenöl | TzatzikiPommes Frites</name>
           <note>Milch</note>
-          <price role="other">6.00</price>
-          <price role="student">4.50</price>
+          <price>4.50</price>
         </meal>
       </category>
-      <category name="Ofenkartoffel">
+      <category name="Wok">
         <meal>
-          <name>Ofenkartoffel mit Dip | Mischsalat</name>
-          <price role="other">4.40</price>
-          <price role="student">2.90</price>
+          <name>Chili-Zitronen-Hähnchen | Gurkenraita | Kurkumareis</name>
+          <note>Milch</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
         <meal>
-          <name>Ofenkartoffel mit Pulled Pork | Schmand | Mischsalat</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
+          <name>Chili-Zitronen-Wokgemüse | Gurkenraita | Kurkumareis</name>
+          <note>Milch</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
+        </meal>
+      </category>
+      <category name="Pasta">
+        <meal>
+          <name>Maccheroni Polpette | Fleischbällchen, Gemüse | Tomatensauce</name>
+          <note>Antioxidationsmittel</note>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Sellerie</note>
-          <price role="other">5.40</price>
-          <price role="student">3.90</price>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
-      </category>
-      <category name="Hauptbeilagen">
         <meal>
-          <name>Kartoffeln oder Curryreis</name>
+          <name>Spaghetti Gorgonzola e Pera | Rucola, Birnen | Gorgonzolasauce</name>
+          <note>Eier</note>
+          <note>Gerste</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
-      </category>
-      <category name="Nebenbeilage">
         <meal>
-          <name>Mandel-Brokkoli oder Mischsalat</name>
-          <note>Mandeln</note>
-          <note>Schalenfrüchte</note>
+          <name>Farfalloni Rosati | Hähnchen, getrocknete Tomaten | Pesto | Tomatensauce</name>
+          <note>Milch</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
     </day>
@@ -2246,9 +1475,9 @@
         <meal>
           <name>Apfel-Kürbis-Suppe mit Zitronengras | Weizenmischbrot</name>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Roggen</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">3.30</price>
           <price role="student">1.80</price>
         </meal>
@@ -2256,9 +1485,9 @@
       <category name="Vegetarisch">
         <meal>
           <name>Blumenkohlgratin | Gorgonzolasauce | Heidelbeerquark</name>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">3.60</price>
           <price role="student">2.10</price>
         </meal>
@@ -2267,7 +1496,7 @@
         <meal>
           <name>Düsseldorfer Senfkrustenbraten vom Schwein | Sauce Robert</name>
           <note>Senf</note>
-          <note>Süßungsmittel</note>
+          <note>SüßungsmittelAllergene</note>
           <price role="other">5.40</price>
           <price role="student">3.90</price>
         </meal>
@@ -2280,6 +1509,18 @@
           <price role="student">2.60</price>
         </meal>
       </category>
+      <category name="Hauptbeilagen">
+        <meal>
+          <name>Kroketten | Risi Bisi</name>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+        </meal>
+      </category>
+      <category name="Nebenbeilage">
+        <meal>
+          <name>Feine Erbsen | Mischsalat</name>
+        </meal>
+      </category>
       <category name="Pizza des Tages">
         <meal>
           <name>Pizza Bacon | Speck, gekochtes Ei</name>
@@ -2287,191 +1528,85 @@
           <note>Eier</note>
           <note>Farbstoff</note>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Express">
-        <meal>
-          <name>Hähnchengeschnetzeltes in Pfefferrahmsauce mit Paprika | Risi Bisi | Mischsalat</name>
-          <note>Milch</note>
-          <price role="other">4.10</price>
-          <price role="student">2.60</price>
-        </meal>
-      </category>
-      <category name="Pasta">
-        <meal>
-          <name>Spaghetti al Forno | Tomaten, Pilze, Speck | Tomatensauce</name>
-          <note>Antioxidationsmittel</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Gnocchi Siciliana | Ratatouillegemüse, Oliven | Tomatensauce</name>
-          <note>Gluten</note>
-          <note>Weizen</note>
-          <note>geschwärzt</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Penne con Broccoli | Hähnchen, Brokkoli | Béchamel</name>
-          <note>Eier</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>Pizza Margherita</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Truthahnsalami</name>
-          <note>Antioxidationsmittel</note>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Funghi</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Wok">
-        <meal>
-          <name>Hot Indian Curry | Sojawürfel | Basmatireis</name>
-          <note>Sojabohnen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-        <meal>
-          <name>Hot Indian Curry | Sojawürfel | Basmatireis</name>
-          <note>Sojabohnen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-      </category>
-      <category name="Burger Classics">
-        <meal>
-          <name>Hamburger | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Burger des Tages">
         <meal>
           <name>Chili Cheese Burger | Käse, Jalapeños | Pommes | Getränk 0,25 L</name>
           <note>Farbstoff</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Sellerie</note>
           <note>Senf</note>
           <note>Sesamsamen</note>
           <note>Weizen</note>
-          <price role="other">6.20</price>
-          <price role="student">4.70</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.70</price>
+        </meal>
+      </category>
+      <category name="Burger Classics">
+        <meal>
+          <name>Hamburger | Pommes | Getränk 0,25 L</name>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
+          <note>Gerste</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
         </meal>
       </category>
       <category name="Fingerfood">
         <meal>
           <name>Chili Cheese Peppers 6 Stk mit Dip</name>
           <note>Eier</note>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Hähnchennuggets 9 Stück mit 2 Dips | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
       <category name="Sandwich">
@@ -2481,19 +1616,18 @@
           <note>Eier</note>
           <note>Farbstoff</note>
           <note>Gerste</note>
-          <note>Gluten</note>
+          <note>Geschwärzt</note>
           <note>Hafer</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Roggen</note>
-          <note>Schwefeldioxid oder Sulfite</note>
+          <note>Schwefeldioxid</note>
           <note>Sesamsamen</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
           <note>geschwefelt</note>
-          <note>geschwärzt</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
       </category>
       <category name="Flammengrill">
@@ -2502,38 +1636,49 @@
           <note>Farbstoff</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
-          <note>Schwefeldioxid oder Sulfite</note>
+          <note>Schwefeldioxid</note>
           <note>geschwefelt</note>
-          <price role="other">6.00</price>
-          <price role="student">4.50</price>
+          <price>4.50</price>
         </meal>
       </category>
-      <category name="Ofenkartoffel">
+      <category name="Wok">
         <meal>
-          <name>Ofenkartoffel mit Dip | Mischsalat</name>
-          <price role="other">4.40</price>
-          <price role="student">2.90</price>
+          <name>Hot Indian Curry | Sojawürfel | Basmatireis</name>
+          <note>Sojabohnen</note>
+          <price>3.20</price>
         </meal>
         <meal>
-          <name>Ofenkartoffel mit Pulled Pork | Schmand | Mischsalat</name>
+          <name>Hot Indian Curry | Sojawürfel | Basmatireis</name>
+          <note>Sojabohnen</note>
+          <price>3.20</price>
+        </meal>
+      </category>
+      <category name="Pasta">
+        <meal>
+          <name>Spaghetti al Forno | Tomaten, Pilze, Speck | Tomatensauce</name>
+          <note>Antioxidationsmittel</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
+        </meal>
+        <meal>
+          <name>Gnocchi Siciliana | Ratatouillegemüse, Oliven | Tomatensauce</name>
+          <note>Geschwärzt</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
+        </meal>
+        <meal>
+          <name>Penne con Broccoli | Hähnchen, Brokkoli | Béchamel</name>
+          <note>Eier</note>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Sellerie</note>
-          <price role="other">5.40</price>
-          <price role="student">3.90</price>
-        </meal>
-      </category>
-      <category name="Hauptbeilagen">
-        <meal>
-          <name>Kroketten oder Risi Bisi</name>
-          <note>Gluten</note>
           <note>Weizen</note>
-        </meal>
-      </category>
-      <category name="Nebenbeilage">
-        <meal>
-          <name>Feine Erbsen oder Mischsalat</name>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
     </day>
@@ -2548,11 +1693,11 @@
       </category>
       <category name="Empfehlung des Tages">
         <meal>
-          <name>Pikantes orientalisches Rinderhackfleisch | Pinienkern-Minz-Butter Wellenbandnudeln</name>
+          <name>Pikantes orientalisches Rinderhackfleisch | Pinienkern-Minz-ButterWellenbandnudeln</name>
           <note>Eier</note>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">5.40</price>
           <price role="student">3.90</price>
         </meal>
@@ -2560,27 +1705,13 @@
       <category name="Klassiker">
         <meal>
           <name>Schlemmerfilet Brokkoli | Weißweinsauce</name>
-          <note>Fische</note>
-          <note>Gluten</note>
+          <note>Fisch</note>
           <note>Milch</note>
-          <note>Schwefeldioxid oder Sulfite</note>
+          <note>Schwefeldioxid</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">4.10</price>
           <price role="student">2.60</price>
-        </meal>
-      </category>
-      <category name="Pizza des Tages">
-        <meal>
-          <name>Pizza Aglio e Jalapeños | Knoblauch, Tomaten, Jalapeños</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
         </meal>
       </category>
       <category name="Tellergericht">
@@ -2588,11 +1719,148 @@
           <name>Germknödel | Vanillesauce</name>
           <note>Eier</note>
           <note>Farbstoff</note>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
           <price role="other">3.00</price>
           <price role="student">1.50</price>
+        </meal>
+      </category>
+      <category name="Hauptbeilagen">
+        <meal>
+          <name>Kartoffeln | Bandnudeln</name>
+          <note>Eier</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+        </meal>
+      </category>
+      <category name="Nebenbeilage">
+        <meal>
+          <name>Prinzessbohnen | Mischsalat</name>
+        </meal>
+      </category>
+      <category name="Pizza des Tages">
+        <meal>
+          <name>Pizza Aglio e Jalapeños | Knoblauch, Tomaten, Jalapeños</name>
+          <note>Farbstoff</note>
+          <note>Gerste</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
+        </meal>
+      </category>
+      <category name="Burger des Tages">
+        <meal>
+          <name>Chili Cheese Burger | Käse, Jalapeños | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.70</price>
+        </meal>
+      </category>
+      <category name="Burger Classics">
+        <meal>
+          <name>Hamburger | Pommes | Getränk 0,25 L</name>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
+          <note>Gerste</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+        <meal>
+          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
+          <note>Farbstoff</note>
+          <note>Konservierungsstoff</note>
+          <note>Milch</note>
+          <note>Sellerie</note>
+          <note>Senf</note>
+          <note>Sesamsamen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>4.30</price>
+        </meal>
+      </category>
+      <category name="Fingerfood">
+        <meal>
+          <name>Chili Cheese Peppers 6 Stk mit Dip</name>
+          <note>Eier</note>
+          <note>Milch</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
+        </meal>
+      </category>
+      <category name="Sandwich">
+        <meal>
+          <name>Hähnchen Teriyaki | Salat | Teriyakisauce | Käse</name>
+          <note>Gerste</note>
+          <note>Geschwärzt</note>
+          <note>Hafer</note>
+          <note>Milch</note>
+          <note>Roggen</note>
+          <note>Sesamsamen</note>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
+        </meal>
+      </category>
+      <category name="Flammengrill">
+        <meal>
+          <name>Grillhähnchen Bösel | Pariser Kartoffeln</name>
+          <note>Senf</note>
+          <price>4.50</price>
+        </meal>
+      </category>
+      <category name="Wok">
+        <meal>
+          <name>Schweinefleisch Shanghai | Pilze, Brokkoli | Soja-Pflaumen Sauce | Vollkornreis</name>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
+        </meal>
+        <meal>
+          <name>Wokgemüse Shanghai | Pilzen, Brokkoli, Curry | Vollkornreis</name>
+          <note>Sojabohnen</note>
+          <note>Weizen</note>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.20</price>
         </meal>
       </category>
       <category name="Pasta">
@@ -2601,231 +1869,32 @@
           <note>Antioxidationsmittel</note>
           <note>Farbstoff</note>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Konservierungsstoff</note>
           <note>Milch</note>
           <note>Phosphat</note>
           <note>Sellerie</note>
           <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
         <meal>
           <name>Maccheroni Classica | Blattspinat, ital. Hartkäse | Béchamel</name>
           <note>Gerste</note>
-          <note>Gluten</note>
           <note>Milch</note>
           <note>Sellerie</note>
           <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
         <meal>
           <name>Pasta Amatriciana | Speck, Oliven | Tomatensauce</name>
           <note>Antioxidationsmittel</note>
           <note>Eier</note>
-          <note>Gluten</note>
+          <note>Geschwärzt</note>
           <note>Konservierungsstoff</note>
           <note>Weizen</note>
-          <note>geschwärzt</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>Pizza Margherita</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Truthahnsalami</name>
-          <note>Antioxidationsmittel</note>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Pizza Funghi</name>
-          <note>Farbstoff</note>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Wok">
-        <meal>
-          <name>Schweinefleisch Shanghai | Pilze, Brokkoli | Soja-Pflaumen Sauce | Vollkornreis</name>
-          <note>Gluten</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-        <meal>
-          <name>Wokgemüse Shanghai | Pilzen, Brokkoli, Curry | Vollkornreis</name>
-          <note>Gluten</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-      </category>
-      <category name="Burger Classics">
-        <meal>
-          <name>Hamburger | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Cheeseburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Chicken Burger | Pommes | Getränk 0,25 L</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-        <meal>
-          <name>Veggieburger | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">5.80</price>
-          <price role="student">4.30</price>
-        </meal>
-      </category>
-      <category name="Burger des Tages">
-        <meal>
-          <name>Chili Cheese Burger | Käse, Jalapeños | Pommes | Getränk 0,25 L</name>
-          <note>Farbstoff</note>
-          <note>Gluten</note>
-          <note>Konservierungsstoff</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <note>Senf</note>
-          <note>Sesamsamen</note>
-          <note>Weizen</note>
-          <price role="other">6.20</price>
-          <price role="student">4.70</price>
-        </meal>
-      </category>
-      <category name="Fingerfood">
-        <meal>
-          <name>Chili Cheese Peppers 6 Stk mit Dip</name>
-          <note>Eier</note>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-        <meal>
-          <name>Hähnchennuggets 9 Stück mit 2 Dips | Pommes | Getränk 0,25 L</name>
-          <note>Gluten</note>
-          <note>Weizen</note>
-          <price role="other">5.00</price>
-          <price role="student">3.50</price>
-        </meal>
-      </category>
-      <category name="Sandwich">
-        <meal>
-          <name>Hähnchen Teriyaki | Salat | Teriyakisauce | Käse</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Hafer</note>
-          <note>Milch</note>
-          <note>Roggen</note>
-          <note>Sesamsamen</note>
-          <note>Sojabohnen</note>
-          <note>Weizen</note>
-          <note>geschwärzt</note>
-          <price role="other">4.70</price>
-          <price role="student">3.20</price>
-        </meal>
-      </category>
-      <category name="Flammengrill">
-        <meal>
-          <name>Grillhähnchen Bösel | Pariser Kartoffeln</name>
-          <note>Senf</note>
-          <price role="other">6.00</price>
-          <price role="student">4.50</price>
-        </meal>
-      </category>
-      <category name="Ofenkartoffel">
-        <meal>
-          <name>Ofenkartoffel mit Dip | Mischsalat</name>
-          <price role="other">4.40</price>
-          <price role="student">2.90</price>
-        </meal>
-        <meal>
-          <name>Ofenkartoffel mit Pulled Pork | Schmand | Mischsalat</name>
-          <note>Gerste</note>
-          <note>Gluten</note>
-          <note>Milch</note>
-          <note>Sellerie</note>
-          <price role="other">5.40</price>
-          <price role="student">3.90</price>
-        </meal>
-      </category>
-      <category name="Hauptbeilagen">
-        <meal>
-          <name>Kartoffeln oder Bandnudeln</name>
-          <note>Eier</note>
-          <note>Gluten</note>
-          <note>Weizen</note>
-        </meal>
-      </category>
-      <category name="Nebenbeilage">
-        <meal>
-          <name>Prinzessbohnen oder Mischsalat</name>
+          <note>glutenhaltiges Getreide</note>
+          <price>3.50</price>
         </meal>
       </category>
     </day>
