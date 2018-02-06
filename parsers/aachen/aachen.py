@@ -86,11 +86,8 @@ def map_table_to_day_columns(table):
 
 
 def parse_day(category_counter, day_column):
-    day_date_string = day_column[0].text
-    date = extractDate(day_date_string)
-    day = OpenMensa.Day(date)
-
     row_counter = 1
+    categories = []
     for (template_category, occurrences) in category_counter.items():
         category = copy.deepcopy(template_category)
         for meal_number in range(occurrences):
@@ -101,9 +98,14 @@ def parse_day(category_counter, day_column):
             row_counter += 1
 
         if len(category.meals) > 0:
-            day.append(category)
+            categories.append(category)
 
-    return day
+    day_date_string = day_column[0].text
+    date = extractDate(day_date_string)
+    if all(map(lambda category: len(category.meals) == 0, categories)):
+        return OpenMensa.DayClosed(date)
+    else:
+        return OpenMensa.Day(date, categories)
 
 
 def parse_meal(meal_container):
@@ -126,7 +128,7 @@ def parse_meal(meal_container):
         ))
         raw_description = ' | '.join(description_string_parts)
 
-        if re.search(r'(heute )?kein (\w)*angebot', raw_description, re.IGNORECASE):
+        if re.search(r'((heute )?kein (\w)*angebot|geschlossen)', raw_description, re.IGNORECASE):
             return None
 
         note_regex = re.compile(r' \(((?:[A-Z\d]+,?)+)\)')
@@ -149,18 +151,21 @@ def parse_meal(meal_container):
 def convert_to_openmensa_model(all_days, legend):
     feed = OpenMensa.Canteen()
     for day in all_days:
-        openmensa_day = OpenMensa.Day(day.date)
-        for category in day.categories:
-            openmensa_category = OpenMensa.Category(category.name)
-            for meal in category.meals:
-                notes = list(
-                    map(lambda note_key: legend[note_key] if note_key in legend else note_key,
-                        meal.note_keys))
-                openmensa_meal = OpenMensa.Meal(meal.name, price=category.price, notes=notes)
-                openmensa_category.append(openmensa_meal)
+        if isinstance(day, OpenMensa.DayClosed):
+            feed.insert(day)
+        else:
+            openmensa_day = OpenMensa.Day(day.date)
+            for category in day.categories:
+                openmensa_category = OpenMensa.Category(category.name)
+                for meal in category.meals:
+                    notes = list(
+                        map(lambda note_key: legend[note_key] if note_key in legend else note_key,
+                            meal.note_keys))
+                    openmensa_meal = OpenMensa.Meal(meal.name, price=category.price, notes=notes)
+                    openmensa_category.append(openmensa_meal)
 
-            openmensa_day.append(openmensa_category)
-        feed.insert(openmensa_day)
+                openmensa_day.append(openmensa_category)
+            feed.insert(openmensa_day)
     return feed
 
 
