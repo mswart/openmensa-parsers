@@ -13,6 +13,9 @@ class Category:
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
+    def __hash__(self):
+        return hash(self.name)
+
 
 class Meal:
     def __init__(self, name, note_keys=None):
@@ -35,3 +38,6 @@ class Meal:
         other_fields['note_keys'] = list(sorted(other.note_keys))
 
         return self_fields == other_fields
+
+    def __hash__(self):
+        return hash(self.name)
