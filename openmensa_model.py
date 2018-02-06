@@ -38,9 +38,9 @@ class Canteen:
 
 
 class Day:
-    def __init__(self, date):
+    def __init__(self, date, categories=None):
         self.date = date
-        self.categories = []
+        self.categories = categories or []
 
     def append(self, category):
         self.categories.append(category)
