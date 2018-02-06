@@ -1,5 +1,5 @@
 import re
-from urllib.request import urlopen
+from urllib import request
 
 from bs4 import BeautifulSoup as parse
 from bs4.element import Tag
@@ -10,7 +10,7 @@ from utils import Parser
 
 def parse_url(url, today=False):
     canteen = OpenMensaCanteen()
-    document = parse(urlopen(url).read(), 'lxml')
+    document = parse(request.urlopen(url).read(), 'lxml')
 
     # todo only for: Tellergericht, vegetarisch, Klassiker, Empfehlung des Tages:
     canteen.setAdditionalCharges('student', {'other': 1.5})
