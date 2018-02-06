@@ -123,7 +123,12 @@ def parse_meal(meal_container):
                                     if isinstance(element, NavigableString)]
         # Some parts have leading and trailing whitespace
         description_string_parts = list(map(
-            lambda string: re.sub(r'(^ | $)', '', string),
+            lambda string: re.sub(r'(^\s+|\s+$)', '', string),
+            description_string_parts
+        ))
+        # Clean redundant whitespace
+        description_string_parts = list(map(
+            lambda string: re.sub(r'\s+', ' ', string),
             description_string_parts
         ))
         raw_description = ' | '.join(description_string_parts)
