@@ -79,11 +79,13 @@ def test_model_conversion():
 
 
 def test_meal_creation():
-    html = parse(
-        '<td><p class="dish-text">Wellenbandnudeln (A,D,A1) mit Shrimps <br> Tomaten-Cognac-Rahm (C,H,L) | Rucola-Tomaten-Salat (1,5,L)</p></td>',
-        'lxml')
+    html = parse('<tr class="main-dish"><td><p class="dish-text">'
+                 'Wellenbandnudeln (A,D,A1) mit Shrimps <br>'
+                 ' Tomaten-Cognac-Rahm (C,H,L) | Rucola-Tomaten-Salat (1,5,L)</p></td></tr>',
+                 'lxml')
 
-    actual = parse_meal(html, Aachen.Category('TestCategory'))
+    meal_container = html.td
+    actual = parse_meal(meal_container)
 
     expected = Aachen.Meal(
         "Wellenbandnudeln mit Shrimps | Tomaten-Cognac-Rahm | Rucola-Tomaten-Salat",
