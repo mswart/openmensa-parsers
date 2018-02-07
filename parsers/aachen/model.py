@@ -41,3 +41,30 @@ class Meal:
 
     def __hash__(self):
         return hash(self.name)
+
+
+class PriceWithRoles:
+    def __init__(self, base_price, roles):
+        self.base_price = base_price
+        self.roles = roles
+
+    def __repr__(self):
+        return '<{}: {}>'.format(self.__class__.__name__, self.__dict__)
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+
+class Role:
+    def __init__(self, name, surcharge=0):
+        self.name = name
+        self.surcharge = surcharge
+
+    def __repr__(self):
+        return '<{}: {}>'.format(self.__class__.__name__, self.__dict__)
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __lt__(self, other):
+        return isinstance(other, self.__class__) and self.name < other.name
