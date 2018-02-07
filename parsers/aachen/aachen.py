@@ -102,7 +102,7 @@ def parse_day(category_counter, day_column):
     date = extractDate(day_date_string)
 
     if all(map(is_empty_category, categories)):
-        return OpenMensa.DayClosed(date)
+        return OpenMensa.ClosedDay(date)
     else:
         return OpenMensa.Day(date, categories)
 
@@ -194,8 +194,8 @@ def extract_note_keys(description_container, raw_description):
 def convert_to_openmensa_feed(all_days, legend):
     canteen = OpenMensa.Canteen()
     for day in all_days:
-        if isinstance(day, OpenMensa.DayClosed):
-            canteen.insert(OpenMensa.DayClosed(day.date))
+        if isinstance(day, OpenMensa.ClosedDay):
+            canteen.insert(OpenMensa.ClosedDay(day.date))
         else:
             openmensa_categories = [category.convert_to_openmensa_model(legend)
                                     for category in day.categories]
