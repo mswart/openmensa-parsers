@@ -58,7 +58,7 @@ class Day:
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
 
-class DayClosed:
+class ClosedDay:
     def __init__(self, date):
         self.date = date
 
