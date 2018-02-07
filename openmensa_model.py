@@ -2,8 +2,8 @@ import lxml.etree as ET
 
 
 class Canteen:
-    def __init__(self):
-        self.days = []
+    def __init__(self, days=None):
+        self.days = days or []
 
     def insert(self, day):
         self.days.append(day)
@@ -75,9 +75,9 @@ class DayClosed:
 
 
 class Category:
-    def __init__(self, name):
+    def __init__(self, name, meals=None):
         self.name = name
-        self.meals = []
+        self.meals = meals or []
 
     def append(self, meal):
         self.meals.append(meal)
