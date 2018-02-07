@@ -192,37 +192,16 @@ def extract_note_keys(description_container, raw_description):
 
 
 def convert_to_openmensa_feed(all_days, legend):
-    feed = OpenMensa.Canteen()
+    canteen = OpenMensa.Canteen()
     for day in all_days:
         if isinstance(day, OpenMensa.DayClosed):
-            feed.insert(OpenMensa.DayClosed(day.date))
+            canteen.insert(OpenMensa.DayClosed(day.date))
         else:
-            openmensa_day = OpenMensa.Day(day.date)
-            for category in day.categories:
-                openmensa_category = OpenMensa.Category(category.name)
-                for meal in category.meals:
-                    notes = list(
-                        map(lambda note_key: legend[note_key] if note_key in legend else note_key,
-                            meal.note_keys)
-                    )
-                    if category.price is None:
-                        prices = []
-                    elif isinstance(category.price, Aachen.PriceWithRoles):
-                        prices = [
-                            OpenMensa.Price(category.price.base_price + role.surcharge, role.name)
-                            for role in category.price.roles
-                        ]
-                    elif isinstance(category.price, int):
-                        prices = [OpenMensa.Price(category.price)]
-                    else:
-                        raise TypeError("Unknown type {} for price {}.".format(type(category.price),
-                                                                               category.price))
-                    openmensa_meal = OpenMensa.Meal(meal.name, prices=prices, notes=notes)
-                    openmensa_category.append(openmensa_meal)
-
-                openmensa_day.append(openmensa_category)
-            feed.insert(openmensa_day)
-    return feed
+            openmensa_categories = [category.convert_to_openmensa_model(legend)
+                                    for category in day.categories]
+            openmensa_day = OpenMensa.Day(day.date, openmensa_categories)
+            canteen.insert(openmensa_day)
+    return canteen
 
 
 parser = Parser(
