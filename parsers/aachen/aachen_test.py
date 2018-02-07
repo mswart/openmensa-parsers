@@ -45,9 +45,9 @@ def test_model_conversion():
     day = OpenMensa.Day(datetime.date(2018, 2, 5))
     category = Aachen.Category(
         'TestCategory',
-        price=OpenMensa.PriceWithRoles(180, [
-            OpenMensa.Role('testRoleDefault'),
-            OpenMensa.Role('testRoleSupplement', 100)
+        price=Aachen.PriceWithRoles(180, [
+            Aachen.Role('testRoleDefault'),
+            Aachen.Role('testRoleSupplement', 100)
         ])
     )
     meal = Aachen.Meal('TestMeal', note_keys=['1', 'A'])
@@ -65,10 +65,10 @@ def test_model_conversion():
     openmensa_category = OpenMensa.Category('TestCategory')
     openmensa_meal = OpenMensa.Meal(
         'TestMeal',
-        price=OpenMensa.PriceWithRoles(180, [
-            OpenMensa.Role('testRoleDefault'),
-            OpenMensa.Role('testRoleSupplement', 100)
-        ]),
+        prices=[
+            OpenMensa.Price(180, 'testRoleDefault'),
+            OpenMensa.Price(280, 'testRoleSupplement')
+        ],
         notes=['FirstNote', 'SecondNote']
     )
     openmensa_category.append(openmensa_meal)
@@ -95,7 +95,8 @@ def test_meal_creation():
 
 
 def test_meal_to_xml():
-    meal = OpenMensa.Meal('TestMeal', 180, ['BSecondNote', 'aThirdNote', 'AFirstNote'])
+    meal = OpenMensa.Meal('TestMeal', [OpenMensa.Price(180)],
+                          ['BSecondNote', 'aThirdNote', 'AFirstNote'])
 
     expected = ET.fromstring(
         '<meal><name>TestMeal</name><note>AFirstNote</note><note>BSecondNote</note><note>aThirdNote</note><price>1.80</price></meal>')

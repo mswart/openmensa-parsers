@@ -75,8 +75,8 @@ def parse_main_category(category_cell):
     # Subsidized categories
     if category_name in ['Tellergericht', 'Vegetarisch', 'Empfehlung des Tages', 'Klassiker',
                          'Süßspeise']:
-        subsidized_roles = [OpenMensa.Role('student'), OpenMensa.Role('other', 150)]
-        price = OpenMensa.PriceWithRoles(price, subsidized_roles)
+        subsidized_roles = [Aachen.Role('student'), Aachen.Role('other', 150)]
+        price = Aachen.PriceWithRoles(price, subsidized_roles)
 
     return category_name, price
 
@@ -205,7 +205,19 @@ def convert_to_openmensa_feed(all_days, legend):
                         map(lambda note_key: legend[note_key] if note_key in legend else note_key,
                             meal.note_keys)
                     )
-                    openmensa_meal = OpenMensa.Meal(meal.name, price=category.price, notes=notes)
+                    if category.price is None:
+                        prices = []
+                    elif isinstance(category.price, Aachen.PriceWithRoles):
+                        prices = [
+                            OpenMensa.Price(category.price.base_price + role.surcharge, role.name)
+                            for role in category.price.roles
+                        ]
+                    elif isinstance(category.price, int):
+                        prices = [OpenMensa.Price(category.price)]
+                    else:
+                        raise TypeError("Unknown type {} for price {}.".format(type(category.price),
+                                                                               category.price))
+                    openmensa_meal = OpenMensa.Meal(meal.name, prices=prices, notes=notes)
                     openmensa_category.append(openmensa_meal)
 
                 openmensa_day.append(openmensa_category)
