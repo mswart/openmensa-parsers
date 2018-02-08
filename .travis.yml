@@ -13,6 +13,7 @@ script:
   - dpkg --info ../*.deb
   - dpkg --contents ../*.deb
   - sudo build_scripts/travis-install-and-setup-deb.sh
+  - py.test-3 ./parsers -vv
   - wget --output-document=/dev/null --input-file=build_scripts/test-urls.txt
   - wget --output-document=/dev/null --input-file=build_scripts/maybe-urls.txt || true
 after_success:
