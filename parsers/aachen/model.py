@@ -1,4 +1,4 @@
-import openmensa_model as OpenMensa
+from . import openmensa_model as OpenMensa
 
 
 class Category:
