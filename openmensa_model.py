@@ -96,9 +96,9 @@ class Category:
 
 
 class Meal:
-    def __init__(self, name, price=None, notes=None):
+    def __init__(self, name, prices=None, notes=None):
         self.name = name
-        self.price = price
+        self.prices = prices or []
         self.notes = notes
 
     def to_xml(self):
@@ -110,16 +110,8 @@ class Meal:
             note_element = ET.SubElement(meal_element, 'note')
             note_element.text = note
 
-        if self.price:
-            price_format = "{:0,.2f}"
-            if isinstance(self.price, PriceWithRoles):
-                for role in sorted(self.price.roles):
-                    price = ET.SubElement(meal_element, 'price', {'role': role.name})
-                    role_price = self.price.default + role.priceSupplement
-                    price.text = price_format.format(role_price / 100)
-            else:
-                price = ET.SubElement(meal_element, 'price')
-                price.text = price_format.format(self.price / 100)
+        price_elements = [price.to_xml() for price in self.prices]
+        meal_element.extend(price_elements)
 
         return meal_element
 
@@ -130,22 +122,20 @@ class Meal:
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
 
-class PriceWithRoles:
-    def __init__(self, default, roles):
-        self.default = default
-        self.roles = roles
+class Price:
+    def __init__(self, amount, role=None):
+        self.amount = amount
+        self.role = role
 
-    def __repr__(self):
-        return '<{}: {}>'.format(self.__class__.__name__, self.__dict__)
+    def to_xml(self):
+        price_element = ET.Element('price')
+        price_format = "{:0,.2f}"
+        price_element.text = price_format.format(self.amount / 100)
 
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+        if self.role:
+            price_element.set('role', self.role)
 
-
-class Role:
-    def __init__(self, name, price_supplement=0):
-        self.name = name
-        self.priceSupplement = price_supplement
+        return price_element
 
     def __repr__(self):
         return '<{}: {}>'.format(self.__class__.__name__, self.__dict__)
@@ -154,4 +144,7 @@ class Role:
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __lt__(self, other):
-        return isinstance(other, self.__class__) and self.name < other.name
+        if not isinstance(other, self.__class__):
+            raise TypeError(
+                "Cannot compare type '{}' with type '{}'.".format(type(self), type(other)))
+        return self.role < other.role
