@@ -5,7 +5,7 @@ from unittest import mock
 from urllib.request import urlopen
 
 from config import parsers
-from parsers.tests.regression_test import get_canteen_url, \
+from parser_tests.regression_test import get_canteen_url, \
     get_snapshot_result_path, \
     get_snapshot_website_path, \
     parse_mocked, parsers_to_test
