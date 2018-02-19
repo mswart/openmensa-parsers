@@ -7,9 +7,6 @@ class Canteen:
     def __init__(self, days=None):
         self.days = days or []
 
-    def insert(self, day):
-        self.days.append(day)
-
     def to_string(self, pretty_print=True):
         return ET.tostring(self.to_xml(), encoding='UTF-8', xml_declaration=True,
                            pretty_print=pretty_print).decode('utf-8')
@@ -44,9 +41,6 @@ class Day:
         self.date = date
         self.categories = categories or []
 
-    def append(self, category):
-        self.categories.append(category)
-
     def to_xml(self):
         day_element = ET.Element('day', {'date': self.date.isoformat()})
         category_elements = [category.to_xml() for category in self.categories]
@@ -80,9 +74,6 @@ class Category:
     def __init__(self, name, meals=None):
         self.name = name
         self.meals = meals or []
-
-    def append(self, meal):
-        self.meals.append(meal)
 
     def to_xml(self):
         category_element = ET.Element('category', {'name': self.name})
