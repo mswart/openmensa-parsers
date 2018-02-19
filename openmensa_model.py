@@ -100,8 +100,8 @@ class Category:
 class Meal:
     def __init__(self, name, prices=None, notes=None):
         self.name = name
-        self.prices = prices or []
-        self.notes = notes
+        self.prices = prices
+        self.notes = notes or Notes()
 
     def to_xml(self):
         meal_element = ET.Element('meal')
@@ -111,8 +111,9 @@ class Meal:
         note_elements = self.notes.to_xml()
         meal_element.extend(note_elements)
 
-        price_elements = self.prices.to_xml()
-        meal_element.extend(price_elements)
+        if self.prices:
+            price_elements = self.prices.to_xml()
+            meal_element.extend(price_elements)
 
         return meal_element
 
@@ -164,8 +165,8 @@ class Prices:
 
 
 class Notes:
-    def __init__(self, note_list):
-        self.note_list = sorted(note_list)
+    def __init__(self, note_list=None):
+        self.note_list = sorted(note_list) if note_list is not None else []
 
     def to_xml(self):
         note_elements = []
