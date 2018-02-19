@@ -1,3 +1,5 @@
+from enum import Enum
+
 import lxml.etree as ET
 
 
@@ -122,18 +124,23 @@ class Meal:
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
 
+class Role(Enum):
+    PUPILS = 'pupils'
+    STUDENTS = 'students'
+    EMPLOYEES = 'employees'
+    OTHERS = 'other'
+
+
 class Price:
     def __init__(self, amount, role=None):
         self.amount = amount
-        self.role = role
+        self.role = role or Role.OTHERS
 
     def to_xml(self):
         price_element = ET.Element('price')
         price_format = "{:0,.2f}"
         price_element.text = price_format.format(self.amount / 100)
-
-        if self.role:
-            price_element.set('role', self.role)
+        price_element.set('role', self.role.value)
 
         return price_element
 
