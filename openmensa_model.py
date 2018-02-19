@@ -108,11 +108,10 @@ class Meal:
         name = ET.SubElement(meal_element, 'name')
         name.text = self.name
 
-        for note in sorted(self.notes):
-            note_element = ET.SubElement(meal_element, 'note')
-            note_element.text = note
+        note_elements = self.notes.to_xml()
+        meal_element.extend(note_elements)
 
-        price_elements = [price.to_xml() for price in self.prices]
+        price_elements = self.prices.to_xml()
         meal_element.extend(price_elements)
 
         return meal_element
@@ -131,18 +130,31 @@ class Role(Enum):
     OTHERS = 'other'
 
 
-class Price:
-    def __init__(self, amount, role=None):
-        self.amount = amount
-        self.role = role or Role.OTHERS
+class Prices:
+    def __init__(self, other=None, pupils=None, students=None, employees=None):
+        if all(role is None for role in [other, pupils, students, employees]):
+            raise ValueError("Prices awaits an amount for at least one of the roles "
+                             "others, pupils, students or employees.")
+
+        self.prices = {
+            'other': other,
+            'pupils': pupils,
+            'students': students,
+            'employees': employees,
+        }
 
     def to_xml(self):
-        price_element = ET.Element('price')
-        price_format = "{:0,.2f}"
-        price_element.text = price_format.format(self.amount / 100)
-        price_element.set('role', self.role.value)
+        price_elements = []
+        for role, amount in sorted(self.prices.items()):
+            if amount is not None:
+                price_element = ET.Element('price')
+                price_format = "{:0,.2f}"
+                price_element.text = price_format.format(amount / 100)
+                price_element.set('role', role)
 
-        return price_element
+                price_elements.append(price_element)
+
+        return price_elements
 
     def __repr__(self):
         return '<{}: {}>'.format(self.__class__.__name__, self.__dict__)
@@ -150,8 +162,23 @@ class Price:
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
-    def __lt__(self, other):
-        if not isinstance(other, self.__class__):
-            raise TypeError(
-                "Cannot compare type '{}' with type '{}'.".format(type(self), type(other)))
-        return self.role < other.role
+
+class Notes:
+    def __init__(self, note_list):
+        self.note_list = sorted(note_list)
+
+    def to_xml(self):
+        note_elements = []
+        for note in self.note_list:
+            note_element = ET.Element('note')
+            note_element.text = note
+
+            note_elements.append(note_element)
+
+        return note_elements
+
+    def __repr__(self):
+        return '<{}: {}>'.format(self.__class__.__name__, self.__dict__)
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
