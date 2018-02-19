@@ -1,9 +1,59 @@
+import datetime
 from itertools import zip_longest
 
 import lxml.etree as ET
 import pytest
 
-from openmensa_model import Category, Meal, Notes, Prices
+from openmensa_model import Canteen, Category, ClosedDay, Day, Meal, Notes, Prices
+
+
+def test_canteen_xml():
+    canteen = Canteen(days=[
+        Day(
+            datetime.date(2018, 2, 18),
+            categories=[Category('Category', [Meal('Meal')])]
+        )
+    ])
+    expected_xml = ET.fromstring(
+        '<openmensa version="2.1" '
+        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+        'xmlns="http://openmensa.org/open-mensa-v2" '
+        'xsi:schemaLocation="http://openmensa.org/open-mensa-v2 http://openmensa.org/open-mensa-v2.xsd">'
+        '<canteen>'
+        '<day date="2018-02-18">'
+        '<category name="Category">'
+        '<meal><name>Meal</name></meal>'
+        '</category>'
+        '</day>'
+        '</canteen>'
+        '</openmensa>'
+    )
+    assert ET.tostring(canteen.to_xml()) == ET.tostring(expected_xml)
+
+
+def test_day_xml():
+    day = Day(
+        datetime.date(2018, 2, 19),
+        categories=[Category('Test Category', [Meal('Test Meal')])]
+    )
+    expected_xml = ET.fromstring(
+        '<day date="2018-02-19">'
+        '<category name="Test Category">'
+        '<meal>'
+        '<name>Test Meal</name>'
+        '</meal>'
+        '</category>'
+        '</day>'
+    )
+    assert ET.tostring(day.to_xml()) == ET.tostring(expected_xml)
+
+
+def test_closed_day_xml():
+    day = ClosedDay(datetime.date(2018, 2, 20))
+    expected_xml = ET.fromstring(
+        '<day date="2018-02-20"><closed/></day>'
+    )
+    assert ET.tostring(day.to_xml()) == ET.tostring(expected_xml)
 
 
 def test_category_xml():
