@@ -12,7 +12,7 @@ def test_canteen_xml():
         Day(
             datetime.date(2018, 2, 18),
             categories=[Category('Category', [Meal('Meal')])]
-        )
+        ),
     ])
     expected_xml = ET.fromstring(
         '<openmensa version="2.1" '

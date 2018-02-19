@@ -5,13 +5,26 @@ import lxml.etree as ET
 
 class Canteen:
     def __init__(self, days=None):
+        """
+
+        :param list[Day | ClosedDay] days:
+        """
         self.days = days or []
 
     def to_string(self, pretty_print=True):
+        """
+
+        :param bool pretty_print:
+        :rtype: str
+        """
         return ET.tostring(self.to_xml(), encoding='UTF-8', xml_declaration=True,
                            pretty_print=pretty_print).decode('utf-8')
 
     def to_xml(self):
+        """
+
+        :rtype: lxml.etree.Element
+        """
         xmlns = 'http://openmensa.org/open-mensa-v2'
         xsi = 'http://www.w3.org/2001/XMLSchema-instance'
         schemaLocation = 'http://openmensa.org/open-mensa-v2.xsd'
@@ -38,10 +51,19 @@ class Canteen:
 
 class Day:
     def __init__(self, date, categories=None):
+        """
+
+        :param datetime.date date:
+        :param list[Category] categories:
+        """
         self.date = date
         self.categories = categories or []
 
     def to_xml(self):
+        """
+
+        :rtype: lxml.etree.Element
+        """
         day_element = ET.Element('day', {'date': self.date.isoformat()})
         category_elements = [category.to_xml() for category in self.categories]
         day_element.extend(category_elements)
@@ -56,9 +78,17 @@ class Day:
 
 class ClosedDay:
     def __init__(self, date):
+        """
+
+        :param datetime.date date:
+        """
         self.date = date
 
     def to_xml(self):
+        """
+
+        :rtype: lxml.etree.Element
+        """
         day_element = ET.Element('day', {'date': self.date.isoformat()})
         ET.SubElement(day_element, 'closed')
         return day_element
@@ -72,10 +102,19 @@ class ClosedDay:
 
 class Category:
     def __init__(self, name, meals=None):
+        """
+
+        :param str name:
+        :param list[Meal] meals:
+        """
         self.name = name
         self.meals = meals or []
 
     def to_xml(self):
+        """
+
+        :rtype: lxml.etree.Element
+        """
         category_element = ET.Element('category', {'name': self.name})
         meal_elements = [meal.to_xml() for meal in self.meals]
         category_element.extend(meal_elements)
@@ -90,11 +129,21 @@ class Category:
 
 class Meal:
     def __init__(self, name, prices=None, notes=None):
+        """
+
+        :param str name:
+        :param Prices prices:
+        :param Notes notes:
+        """
         self.name = name
         self.prices = prices
         self.notes = notes or Notes()
 
     def to_xml(self):
+        """
+
+        :rtype: lxml.etree.Element
+        """
         meal_element = ET.Element('meal')
         name = ET.SubElement(meal_element, 'name')
         name.text = self.name
@@ -124,6 +173,13 @@ class Role(Enum):
 
 class Prices:
     def __init__(self, other=None, pupils=None, students=None, employees=None):
+        """
+
+        :param int other:
+        :param int pupils:
+        :param int students:
+        :param int employees:
+        """
         if all(role is None for role in [other, pupils, students, employees]):
             raise ValueError("Prices awaits an amount for at least one of the roles "
                              "others, pupils, students or employees.")
@@ -136,6 +192,10 @@ class Prices:
         }
 
     def to_xml(self):
+        """
+
+        :rtype: lxml.etree.Element
+        """
         price_elements = []
         for role, amount in sorted(self.prices.items()):
             if amount is not None:
@@ -157,9 +217,17 @@ class Prices:
 
 class Notes:
     def __init__(self, note_list=None):
+        """
+
+        :param list[str] note_list:
+        """
         self.note_list = sorted(note_list) if note_list is not None else []
 
     def to_xml(self):
+        """
+
+        :rtype: lxml.etree.Element
+        """
         note_elements = []
         for note in self.note_list:
             note_element = ET.Element('note')
