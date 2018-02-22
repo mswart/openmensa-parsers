@@ -17,8 +17,19 @@ class Canteen:
         :param bool pretty_print:
         :rtype: str
         """
-        return ET.tostring(self.to_xml(), encoding='UTF-8', xml_declaration=True,
-                           pretty_print=pretty_print).decode('utf-8')
+
+        feed_string = ET.tostring(
+            self.to_xml(),
+            encoding='UTF-8',
+            pretty_print=pretty_print
+        ).decode('utf-8')
+        feed_string = '<?xml version="1.0" encoding="UTF-8"?>\n' + feed_string
+
+        schema = ET.XMLSchema(file="open-mensa-v2.xsd")
+        parser = ET.XMLParser(schema=schema)
+        ET.fromstring(feed_string.encode("utf-8"), parser)  # will raise error if invalid
+
+        return feed_string
 
     def to_xml(self):
         """

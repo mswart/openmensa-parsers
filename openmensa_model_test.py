@@ -7,6 +7,29 @@ import pytest
 from openmensa_model import Canteen, Category, ClosedDay, Day, Meal, Notes, Prices
 
 
+def test_canteen_to_string():
+    canteen = Canteen(days=[
+        Day(
+            datetime.date(2018, 2, 18),
+            categories=[Category('Category', [Meal('Meal')])]
+        ),
+    ])
+    assert canteen.to_string() == (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<openmensa xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://openmensa.org/open-mensa-v2" version="2.1" xsi:schemaLocation="http://openmensa.org/open-mensa-v2 http://openmensa.org/open-mensa-v2.xsd">\n'
+        '  <canteen>\n'
+        '    <day date="2018-02-18">\n'
+        '      <category name="Category">\n'
+        '        <meal>\n'
+        '          <name>Meal</name>\n'
+        '        </meal>\n'
+        '      </category>\n'
+        '    </day>\n'
+        '  </canteen>\n'
+        '</openmensa>\n'
+    )
+
+
 def test_canteen_xml():
     canteen = Canteen(days=[
         Day(
