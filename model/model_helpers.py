@@ -1,4 +1,4 @@
-from model.openmensa_model import Notes, Prices
+from model.openmensa_model import Category, Notes, Prices
 
 
 class PricesBuilder:
@@ -53,3 +53,19 @@ class NotesBuilder:
         else:
             note_list = [self.legend[key] if key in self.legend else key for key in note_keys]
         return Notes(note_list)
+
+
+class PricesCategoryBuilder:
+    def __init__(self, prices, overwrite_existing=False):
+        self.prices = prices
+        self.overwrite_existing = overwrite_existing
+
+    def build_category(self, name, meals):
+        for meal in meals:
+            if not self.overwrite_existing and meal.prices is not None:
+                raise ValueError("Attribute `meals` contains a meal with its own price, "
+                                 "which would be overwritten. "
+                                 "If you want this builder to overwrite it, specify it in the "
+                                 "constructor using the `overwrite_existing` flag.")
+            meal.prices = self.prices
+        return Category(name, meals)
