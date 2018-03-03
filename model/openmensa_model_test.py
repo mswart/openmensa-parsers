@@ -157,6 +157,11 @@ def test_notes_sets_default_list():
     assert notes.note_list == []
 
 
+def test_notes_given_empty_item_then_raises():
+    with pytest.raises(ValueError):
+        Notes([''])
+
+
 def test_notes_xml():
     notes = Notes(['Second note', 'First note'])
     expected_xmls = [

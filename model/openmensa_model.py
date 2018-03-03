@@ -228,6 +228,8 @@ class Notes:
         :param list[str] note_list:
         """
         self.note_list = sorted(note_list) if note_list is not None else []
+        if any(len(note) == 0 for note in self.note_list):
+            raise ValueError("Entries in `note_list` cannot be empty.")
 
     def to_xml(self):
         """
