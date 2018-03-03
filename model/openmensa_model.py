@@ -1,5 +1,3 @@
-from enum import Enum
-
 import lxml.etree as ET
 
 
@@ -173,13 +171,6 @@ class Meal:
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-
-class Role(Enum):
-    PUPILS = 'pupils'
-    STUDENTS = 'students'
-    EMPLOYEES = 'employees'
-    OTHERS = 'other'
 
 
 class Prices:
