@@ -11,7 +11,23 @@ def test_canteen_to_string():
     canteen = Canteen(days=[
         Day(
             datetime.date(2018, 2, 18),
-            categories=[Category('Category', [Meal('Meal')])]
+            categories=[
+                Category(
+                    'Category',
+                    [
+                        Meal(
+                            'Meal',
+                            prices=Prices(
+                                other=123,
+                                pupil=234,
+                                student=345,
+                                employee=456,
+                            ),
+                            notes=Notes(['Note'])
+                        )
+                    ]
+                )
+            ]
         ),
     ])
     assert canteen.to_string() == (
@@ -22,6 +38,11 @@ def test_canteen_to_string():
         '      <category name="Category">\n'
         '        <meal>\n'
         '          <name>Meal</name>\n'
+        '          <note>Note</note>\n'
+        '          <price role="employee">4.56</price>\n'
+        '          <price role="other">1.23</price>\n'
+        '          <price role="pupil">2.34</price>\n'
+        '          <price role="student">3.45</price>\n'
         '        </meal>\n'
         '      </category>\n'
         '    </day>\n'
@@ -118,12 +139,13 @@ def test_prices_sets_default_role():
 
 
 def test_prices_xml():
-    prices = Prices(123, students=100, employees=234)
+    prices = Prices(other=123, pupil=345, student=100, employee=234)
 
     expected_xmls = [
-        ET.fromstring('<price role="employees">2.34</price>'),
+        ET.fromstring('<price role="employee">2.34</price>'),
         ET.fromstring('<price role="other">1.23</price>'),
-        ET.fromstring('<price role="students">1.00</price>'),
+        ET.fromstring('<price role="pupil">3.45</price>'),
+        ET.fromstring('<price role="student">1.00</price>'),
     ]
 
     for price_xml, expected_xml in zip_longest(prices.to_xml(), expected_xmls):

@@ -178,23 +178,23 @@ class Meal:
 
 
 class Prices:
-    def __init__(self, other=None, pupils=None, students=None, employees=None):
+    def __init__(self, other=None, pupil=None, student=None, employee=None):
         """
 
         :param int other:
-        :param int pupils:
-        :param int students:
-        :param int employees:
+        :param int pupil:
+        :param int student:
+        :param int employee:
         """
-        if all(role is None for role in [other, pupils, students, employees]):
+        if all(role is None for role in [other, pupil, student, employee]):
             raise ValueError("Prices awaits an amount for at least one of the roles "
                              "others, pupils, students or employees.")
 
         self.prices = {
             'other': other,
-            'pupils': pupils,
-            'students': students,
-            'employees': employees,
+            'pupil': pupil,
+            'student': student,
+            'employee': employee,
         }
 
     def to_xml(self):

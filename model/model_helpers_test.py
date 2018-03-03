@@ -6,10 +6,10 @@ from model.openmensa_model import Category, Meal, Notes, Prices
 
 # PricesBuilder
 def test_given_all_roles_then_builds_prices():
-    builder = PricesBuilder(other=0, pupils=240, students=120, employees=1)
+    builder = PricesBuilder(other=0, pupil=240, student=120, employee=1)
     prices = builder.build_prices(100)
 
-    assert prices == Prices(other=100, pupils=340, students=220, employees=101)
+    assert prices == Prices(other=100, pupil=340, student=220, employee=101)
 
 
 def test_given_no_roles_then_raises():
@@ -18,10 +18,10 @@ def test_given_no_roles_then_raises():
 
 
 def test_given_some_roles_then_builds_prices_with_those_roles_only():
-    builder = PricesBuilder(pupils=123, employees=321)
+    builder = PricesBuilder(pupil=123, employee=321)
     prices = builder.build_prices(100)
 
-    assert prices == Prices(pupils=223, employees=421)
+    assert prices == Prices(pupil=223, employee=421)
 
 
 # NotesBuilder
@@ -85,7 +85,7 @@ def test_given_override_flag_and_meal_with_own_prices_then_overwrites():
     prices = Prices(other=100)
     builder = PricesCategoryBuilder(prices, overwrite_existing=True)
 
-    meals = [Meal('Overwrite my prices', prices=Prices(pupils=200))]
+    meals = [Meal('Overwrite my prices', prices=Prices(pupil=200))]
     category = builder.build_category('Test Category', meals)
 
     assert category == Category('Test Category', meals=[
