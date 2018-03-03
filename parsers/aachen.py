@@ -4,7 +4,7 @@ from urllib import request
 from bs4 import BeautifulSoup as parse
 from bs4.element import Tag
 
-from model.model_helpers import NotesBuilder
+from model.model_helpers import NotesBuilder, PricesBuilder, PricesCategoryBuilder
 from model.openmensa_model import Canteen, Category, ClosedDay, Day, Meal, Prices
 from pyopenmensa.feed import buildLegend, convertPrice, extractDate
 from utils import Parser
@@ -35,8 +35,9 @@ class AachenParser:
 
     def parse_all_days(self, document):
         days = ('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag',
-                'MontagNaechste', 'DienstagNaechste', 'MittwochNaechste', 'DonnerstagNaechste',
-                'FreitagNaechste')
+                'MontagNaechste', 'DienstagNaechste', 'MittwochNaechste',
+                'DonnerstagNaechste', 'FreitagNaechste')
+
         all_days = []
         for day in days:
             day_container = document.find('div', id=day)
@@ -44,11 +45,13 @@ class AachenParser:
                 continue
             day = self.parse_day(day_container)
             all_days.append(day)
+
         return all_days
 
     def parse_day(self, day_container):
-        day = day_container.find_previous_sibling('h3')
-        date = extractDate(day.text)
+        date_description = day_container.find_previous_sibling('h3')
+        date = extractDate(date_description.text)
+
         if self.is_closed(day_container):
             return ClosedDay(date)
 
@@ -71,36 +74,55 @@ class AachenParser:
     def parse_categories(self, categories_container):
         category_dict = {}
         for meal_entry in categories_container.find_all('tr'):
-            category, price, meal = self.parse_meal(meal_entry)
-            if category and meal:
-                category_dict.setdefault(category, []).append(meal)
+            category_name = meal_entry.find('span', attrs={'class': 'menue-category'}).text.strip()
+            meal = self.parse_meal_entry(meal_entry)
 
-        all_categories = [Category(name, meals) for name, meals in category_dict.items()
-                          if name and meals]
+            if category_name and meal:
+                category_dict.setdefault(category_name, []).append(meal)
+
+        subsidized_categories = [
+            'Tellergericht',
+            'Vegetarisch',
+            'Klassiker',
+            'Empfehlung des Tages'
+        ]
+        supplements = PricesBuilder(student=0, other=150)
+
+        all_categories = []
+        for category_name, meals in category_dict.items():
+            if category_name in subsidized_categories:
+                default_price = meals[0].prices.prices['other']
+                category_builder = PricesCategoryBuilder(
+                    supplements.build_prices(default_price),
+                    overwrite_existing=True
+                )
+                category = category_builder.build_category(category_name, meals)
+            else:
+                category = Category(category_name, meals)
+            all_categories.append(category)
+
         return all_categories
 
-    def parse_meal(self, table_row):
-        category_name = table_row.find('span', attrs={'class': 'menue-category'}).text.strip()
-
-        description_container = table_row.find('span', attrs={'class': 'menue-desc'})
-        clean_description_container = self.get_cleaned_description_container(description_container)
-        name, note_keys = self.parse_description(clean_description_container)
+    def parse_meal_entry(self, meal_entry):
+        description_container = meal_entry.find('span', attrs={'class': 'menue-desc'})
+        clean_description_container = self.extract_description_element(description_container)
+        name, note_keys = self.extract_name_and_note_keys(clean_description_container)
         notes_builder = NotesBuilder(self.legend)
         notes = notes_builder.build_notes(note_keys)
 
-        price_tag = table_row.find('span', attrs={'class': 'menue-price'})
+        price_tag = meal_entry.find('span', attrs={'class': 'menue-price'})
         prices = None
         if price_tag:
             price_tag = convertPrice(price_tag.text.strip())
-            prices = Prices(student=price_tag, other=price_tag + 150)
+            prices = Prices(other=price_tag)
 
         meal = None
         if name:
             meal = Meal(name, prices=prices, notes=notes)
 
-        return category_name, price_tag, meal
+        return meal
 
-    def get_cleaned_description_container(self, description_container):
+    def extract_description_element(self, description_container):
         # "Hauptbeilage" and "Nebenbeilage" are flat,
         # while the others are wrapped in <span class="expand-nutr">
         effective_description_container = description_container.find('span', attrs={
@@ -126,7 +148,7 @@ class AachenParser:
 
         return description_container
 
-    def parse_description(self, description_container):
+    def extract_name_and_note_keys(self, description_container):
         name_parts = []
         note_keys = set()
         for element in description_container:
@@ -134,8 +156,11 @@ class AachenParser:
                 new_note_keys = element.text.strip().split(',')
                 note_keys.update(new_note_keys)
             else:
-                name_parts.append(element.string.strip())
-        name = re.sub(r"\s+", ' ', ' '.join(name_parts))
+                name_parts.append(element.string)
+        note_keys.discard('')
+        raw_name = ' '.join(name_parts)
+        # Remove redundant as well as leading and trailing whitespace:
+        name = re.sub(r"\s+", ' ', raw_name).strip()
         return name, list(note_keys)
 
 
