@@ -4,7 +4,7 @@ from itertools import zip_longest
 import lxml.etree as ET
 import pytest
 
-from openmensa_model import Canteen, Category, ClosedDay, Day, Meal, Notes, Prices
+from model.openmensa_model import Canteen, Category, ClosedDay, Day, Meal, Notes, Prices
 
 
 def test_canteen_to_string():
