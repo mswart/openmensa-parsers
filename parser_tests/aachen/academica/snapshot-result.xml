@@ -42,46 +42,6 @@
           <price role="student">2.60</price>
         </meal>
       </category>
-      <category name="Pizza des Tages">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-      </category>
-      <category name="Express">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">2.60</price>
-        </meal>
-      </category>
-      <category name="Pasta">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-      </category>
       <category name="Wok">
         <meal>
           <name>Thai Red Curry | Gemüse, Rinderstreifen | Korianderreis</name>
@@ -272,46 +232,6 @@
           <note>Weizen</note>
           <price role="other">4.10</price>
           <price role="student">2.60</price>
-        </meal>
-      </category>
-      <category name="Pizza des Tages">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-      </category>
-      <category name="Express">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">2.60</price>
-        </meal>
-      </category>
-      <category name="Pasta">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
         </meal>
       </category>
       <category name="Wok">
@@ -510,46 +430,6 @@
           <price role="student">2.60</price>
         </meal>
       </category>
-      <category name="Pizza des Tages">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-      </category>
-      <category name="Express">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">2.60</price>
-        </meal>
-      </category>
-      <category name="Pasta">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-      </category>
       <category name="Wok">
         <meal>
           <name>Hähnchenfleisch Süß-Sauer | Paprika, Chinakohl, Sojasprossen | Reis</name>
@@ -744,18 +624,6 @@
           <price role="student">2.60</price>
         </meal>
       </category>
-      <category name="Pizza des Tages">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-      </category>
-      <category name="Express">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">2.60</price>
-        </meal>
-      </category>
       <category name="Pasta">
         <meal>
           <name>Farfalloni Verdure | Gemüse, Käse | Tomatensauce | Béchamel</name>
@@ -767,28 +635,6 @@
           <note>Sellerie</note>
           <note>Sojabohnen</note>
           <note>Weizen</note>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
           <price role="other">3.50</price>
         </meal>
       </category>
@@ -986,12 +832,6 @@
           <price role="student">2.60</price>
         </meal>
       </category>
-      <category name="Pizza des Tages">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-      </category>
       <category name="Tellergericht">
         <meal>
           <name>Pfannkuchen mit Quark-Rosinen-Füllung und Waldfruchtsauce</name>
@@ -1001,12 +841,6 @@
           <note>Weizen</note>
           <price role="other">3.00</price>
           <price role="student">1.50</price>
-        </meal>
-      </category>
-      <category name="Express">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">2.60</price>
         </meal>
       </category>
       <category name="Pasta">
@@ -1033,20 +867,6 @@
           <note>Gluten</note>
           <note>Milch</note>
           <note>Weizen</note>
-          <price role="other">3.50</price>
-        </meal>
-      </category>
-      <category name="Pizza Classics">
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
-          <price role="other">3.50</price>
-        </meal>
-        <meal>
-          <name>geschlossen</name>
           <price role="other">3.50</price>
         </meal>
       </category>
@@ -1165,12 +985,6 @@
           <note>Weizen</note>
           <note>geschwärzt</note>
           <price role="other">3.20</price>
-        </meal>
-      </category>
-      <category name="Flammengrill">
-        <meal>
-          <name>Ausverkauft!</name>
-          <price role="other">4.50</price>
         </meal>
       </category>
       <category name="Ofenkartoffel">

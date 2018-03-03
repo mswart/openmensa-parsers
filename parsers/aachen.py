@@ -62,7 +62,10 @@ class AachenParser:
         extras = self.parse_categories(extras_table)
 
         all_categories = [*menues, *extras]
-        return Day(date, all_categories)
+        if len(all_categories) == 0:
+            return ClosedDay(date)
+        else:
+            return Day(date, all_categories)
 
     def is_closed(self, data):
         note = data.find(id='note')
@@ -117,7 +120,7 @@ class AachenParser:
             prices = Prices(other=price_tag)
 
         meal = None
-        if name:
+        if name and not re.search('^geschlossen|ausverkauft|kein \S*angebot', name, re.IGNORECASE):
             meal = Meal(name, prices=prices, notes=notes)
 
         return meal
