@@ -1,4 +1,8 @@
+import os
+
 import lxml.etree as ET
+
+base_directory = os.path.dirname(os.path.realpath(__file__))
 
 
 class Canteen:
@@ -23,7 +27,7 @@ class Canteen:
         ).decode('utf-8')
         feed_string = '<?xml version="1.0" encoding="UTF-8"?>\n' + feed_string
 
-        schema = ET.XMLSchema(file="open-mensa-v2.xsd")
+        schema = ET.XMLSchema(file=os.path.join(base_directory, "open-mensa-v2.xsd"))
         parser = ET.XMLParser(schema=schema)
         ET.fromstring(feed_string.encode("utf-8"), parser)  # will raise error if invalid
 
