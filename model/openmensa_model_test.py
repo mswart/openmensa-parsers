@@ -75,6 +75,11 @@ def test_canteen_xml():
     assert ET.tostring(canteen.to_xml()) == ET.tostring(expected_xml)
 
 
+def test_day_given_empty_category_then_raises():
+    with pytest.raises(ValueError):
+        Day(datetime.date(2018, 2, 19), [])
+
+
 def test_day_xml():
     day = Day(
         datetime.date(2018, 2, 19),

@@ -63,14 +63,16 @@ class Canteen:
 
 
 class Day:
-    def __init__(self, date, categories=None):
+    def __init__(self, date, categories):
         """
 
         :param datetime.date date:
         :param list[Category] categories:
         """
         self.date = date
-        self.categories = categories or []
+        if len(categories) == 0:
+            raise ValueError("Categories cannot be empty. You can use a `ClosedDay` instead.")
+        self.categories = categories
 
     def to_xml(self):
         """
