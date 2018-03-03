@@ -4,52 +4,60 @@ from urllib import request
 from bs4 import BeautifulSoup as parse
 from bs4.element import Tag
 
-from pyopenmensa.feed import OpenMensaCanteen, buildLegend
+from model.model_helpers import NotesBuilder
+from model.openmensa_model import Canteen, Category, ClosedDay, Day, Meal, Prices
+from pyopenmensa.feed import buildLegend, convertPrice, extractDate
 from utils import Parser
+
+notes_builder = None
 
 
 def parse_url(url, today=False):
-    canteen = OpenMensaCanteen()
     document = parse(request.urlopen(url).read(), 'lxml')
 
-    # todo only for: Tellergericht, vegetarisch, Klassiker, Empfehlung des Tages:
-    canteen.setAdditionalCharges('student', {'other': 1.5})
-    # unwanted automatic notes extraction would be done in `OpenMensaCanteen.addMeal()`
-    # if we used `LazyBuilder.setLegendData()`, so we bypass it using a custom attribute
-    canteen.legend = parse_legend(document)
+    legend = parse_legend(document.find(id='additives'))
+    global notes_builder
+    notes_builder = NotesBuilder(legend)
 
-    parse_all_days(canteen, document)
+    all_days = parse_all_days(document)
+    canteen = Canteen(all_days)
 
-    return canteen.toXMLFeed()
-
-
-def parse_legend(document):
-    regex = '\((?P<name>[\dA-Z]+)\)\s*(?P<value>[\w\s]+)'
-    return buildLegend(text=document.find(id='additives').text, regex=regex)
+    return canteen.to_string()
 
 
-def parse_all_days(canteen, document):
+def parse_legend(legend_container):
+    regex = '\((?P<name>[\dA-Z]+)\) (enthält eine )?(?P<value>[\wäöüß\s]+)'
+    return buildLegend(text=legend_container.text, regex=regex)
+
+
+def parse_all_days(document):
     days = ('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag',
             'MontagNaechste', 'DienstagNaechste', 'MittwochNaechste', 'DonnerstagNaechste',
             'FreitagNaechste')
+    all_days = []
     for day in days:
-        day_column = document.find('div', id=day)
-        if day_column is None:  # assume closed?
+        day_container = document.find('div', id=day)
+        if day_container is None:
             continue
-        day_header = day_column.find_previous_sibling('h3')
-        parse_day(canteen, day_header.text, day_column)
+        day = parse_day(day_container)
+        all_days.append(day)
+    return all_days
 
 
-def parse_day(canteen, day, data):
-    if is_closed(data):
-        canteen.setDayClosed(day)
-        return
+def parse_day(day_container):
+    day = day_container.find_previous_sibling('h3')
+    date = extractDate(day.text)
+    if is_closed(day_container):
+        return ClosedDay(date)
 
-    meals_table = data.find(attrs={'class': 'menues'})
-    add_meals_from_table(canteen, meals_table, day)
+    meals_table = day_container.find(attrs={'class': 'menues'})
+    menues = parse_categories(meals_table)
 
-    extras_table = data.find(attrs={'class': 'extras'})
-    add_meals_from_table(canteen, extras_table, day)
+    extras_table = day_container.find(attrs={'class': 'extras'})
+    extras = parse_categories(extras_table)
+
+    all_categories = [*menues, *extras]
+    return Day(date, all_categories)
 
 
 def is_closed(data):
@@ -60,32 +68,44 @@ def is_closed(data):
         return False
 
 
-def add_meals_from_table(canteen, table, day):
-    for item in table.find_all('tr'):
-        category, name, notes, price_tag = parse_meal(item, canteen.legend)
-        if category and name:
-            canteen.addMeal(day, category, name, notes, prices=price_tag)
+def parse_categories(categories_container):
+    category_dict = {}
+    for meal_entry in categories_container.find_all('tr'):
+        category, price, meal = parse_meal(meal_entry)
+        if category and meal:
+            category_dict.setdefault(category, []).append(meal)
+
+    all_categories = [Category(name, meals) for name, meals in category_dict.items() if
+                      name and meals]
+    return all_categories
 
 
-def parse_meal(table_row, legend):
-    category = table_row.find('span', attrs={'class': 'menue-category'}).text.strip()
+def parse_meal(table_row):
+    category_name = table_row.find('span', attrs={'class': 'menue-category'}).text.strip()
 
     description_container = table_row.find('span', attrs={'class': 'menue-desc'})
     clean_description_container = get_cleaned_description_container(description_container)
-    name, notes = parse_description(clean_description_container, legend)
+    name, notes = parse_description(clean_description_container)
 
     price_tag = table_row.find('span', attrs={'class': 'menue-price'})
+    prices = None
     if price_tag:
-        price_tag = price_tag.text.strip()
+        price_tag = convertPrice(price_tag.text.strip())
+        prices = Prices(student=price_tag, other=price_tag + 150)
 
-    return category, name, notes, price_tag
+    meal = None
+    if name:
+        meal = Meal(name, prices=prices, notes=notes)
+
+    return category_name, price_tag, meal
 
 
 def get_cleaned_description_container(description_container):
     # "Hauptbeilage" and "Nebenbeilage" are flat,
     # while the others are wrapped in <span class="expand-nutr">
     effective_description_container = description_container.find('span', attrs={
-        'class': 'expand-nutr'}) or description_container
+        'class': 'expand-nutr'
+    }) or description_container
 
     def is_valid_description_element(element):
         if not isinstance(element, Tag):
@@ -107,7 +127,7 @@ def get_cleaned_description_container(description_container):
     return description_container
 
 
-def parse_description(description_container, legend):
+def parse_description(description_container):
     name_parts = []
     notes = set()
     for element in description_container:
@@ -116,7 +136,7 @@ def parse_description(description_container, legend):
         else:
             name_parts.append(element.string.strip())
     name = re.sub(r"\s+", ' ', ' '.join(name_parts))
-    notes = [legend.get(n, n) for n in sorted(notes) if n]
+    notes = notes_builder.build_notes(notes)
     return name, notes
 
 

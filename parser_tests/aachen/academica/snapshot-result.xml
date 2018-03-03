@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openmensa version="2.1" xmlns="http://openmensa.org/open-mensa-v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://openmensa.org/open-mensa-v2 http://openmensa.org/open-mensa-v2.xsd">
+<openmensa xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://openmensa.org/open-mensa-v2" version="2.1" xsi:schemaLocation="http://openmensa.org/open-mensa-v2 http://openmensa.org/open-mensa-v2.xsd">
   <canteen>
     <day date="2018-02-05">
       <category name="Tellergericht">
@@ -1207,7 +1207,7 @@
       </category>
       <category name="Empfehlung des Tages">
         <meal>
-          <name>Gebratene Hähnchenbrust &quot;Schlesisches Himmelreich&quot; | Penne Rigate | Mischsalat</name>
+          <name>Gebratene Hähnchenbrust "Schlesisches Himmelreich" | Penne Rigate | Mischsalat</name>
           <note>Antioxidationsmittel</note>
           <note>Gluten</note>
           <note>Konservierungsstoff</note>
@@ -1218,7 +1218,7 @@
       </category>
       <category name="Klassiker">
         <meal>
-          <name>Schlemmerfilet &quot;Italiano&quot; | Weißweinsauce</name>
+          <name>Schlemmerfilet "Italiano" | Weißweinsauce</name>
           <note>Fische</note>
           <note>Gluten</note>
           <note>Milch</note>
