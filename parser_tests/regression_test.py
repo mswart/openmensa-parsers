@@ -39,11 +39,6 @@ def parse_mocked(parser, canteen):
         return parsers[parser].parse('', canteen, 'full.xml')
 
 
-def get_canteen_url(parser, canteen):
-    parser = parsers[parser].sources[canteen]
-    return parser.args[0]
-
-
 def get_snapshot_website_path(parser, canteen):
     return os.path.join(base_directory, parser, canteen, 'snapshot-website.json')
 

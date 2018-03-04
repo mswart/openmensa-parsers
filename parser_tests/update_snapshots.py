@@ -7,8 +7,7 @@ from unittest import mock
 from urllib.request import urlopen
 
 from config import parsers
-from parser_tests.regression_test import get_canteen_url, \
-    get_snapshot_result_path, \
+from parser_tests.regression_test import get_snapshot_result_path, \
     get_snapshot_website_path, \
     parse_mocked, parsers_to_test
 
@@ -50,6 +49,11 @@ def generate_snapshot(parser, canteen):
         result_file.write(result)
 
     print("Updated snapshots for {}/{}.".format(parser, canteen))
+
+
+def get_canteen_url(parser, canteen):
+    parser = parsers[parser].sources[canteen]
+    return parser.args[0]
 
 
 def main():
