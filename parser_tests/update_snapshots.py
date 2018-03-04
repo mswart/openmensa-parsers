@@ -10,8 +10,6 @@ from parser_tests.regression_test import get_canteen_url, \
     get_snapshot_website_path, \
     parse_mocked, parsers_to_test
 
-base_directory = os.path.dirname(os.path.realpath(__file__))
-
 
 def generate_all_snapshots():
     for parser, canteen in parsers_to_test:
@@ -53,15 +51,20 @@ def generate_snapshot(parser, canteen):
 
 
 def main():
-    if len(sys.argv) < 2:
-        usage_hint = "Usage: `update_snapshots.py <parser> <canteen>`"
-        print("Missing arguments.", usage_hint)
-
     if len(sys.argv) == 2 and sys.argv[1] == '--all':
         generate_all_snapshots()
-    elif len(sys.argv == 3):
+    elif len(sys.argv) == 3:
         parser, canteen = sys.argv[1:3]
         generate_snapshot(parser, canteen)
+    else:
+        script_name = os.path.basename(sys.argv[0])
+        print(
+            "Wrong amount of arguments passed. \n"
+            "Usage: `{0} --all` or `{0} <parser> <canteen>`."
+                .format(script_name),
+            file=sys.stderr
+        )
+        sys.exit(1)
 
 
 if __name__ == '__main__':
