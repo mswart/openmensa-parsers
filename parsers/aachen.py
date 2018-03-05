@@ -62,7 +62,7 @@ class AachenParser:
         extras_table = day_container.find(attrs={'class': 'extras'})
         extras = self.parse_categories(extras_table)
 
-        all_categories = [*menues, *extras]
+        all_categories = menues + extras
         if len(all_categories) == 0:
             return ClosedDay(date)
         else:
