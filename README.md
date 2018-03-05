@@ -59,14 +59,43 @@ Let's imagine you want to create a parser for the `eatmaginary` canteen located 
    - JSON or CSV downloads are preferred
    - HTML sites are fine
    - PDF is tricky.
-3. Create the new parser in e. g. `parsers/essendorf.py`. It has to have a function that creates a valid XML feed.
-4. Export a `parser` by making it a global variable in `parsers/essendorf.py`. Use the `Parser` class from `utils.py` and pass it the function that creates the XML feed. You can also register multiple canteens with the same parser. Look at some parsers' source code to get a feel for how this works.
-5. Register your parser in `config.py`. Normally it is enough to add your city, e. g. `essendorf`, to the `cities` list.
-5. Submit a PR to GitHub containing these changes. ([Tutorial](https://guides.github.com/activities/hello-world/#pr) for opening a pull request.)
-6. Wait until the PR is reviewed and merged.
-7. Register the new canteens on [openmensa] with the feed from `http://omfeeds.devtation.de/<provider identifier>/<canteen identifier>.xml` and (optional) today feed from `http://omfeeds.devtation.de/<provider identifier>/<canteen identifier>/today.xml`.
+2. Create the new parser in e. g. `parsers/essendorf.py`. It has to have a function that creates a valid XML feed.
+3. Export a `parser` by making it a global variable in `parsers/essendorf.py`. Use the `Parser` class from `utils.py` and pass it the function that creates the XML feed. You can also register multiple canteens with the same parser. Look at some parsers' source code to get a feel for how this works.
+4. Register your parser in `config.py`. Normally it is enough to add your city, e. g. `essendorf`, to the `cities` list.
+5. If you want to refactor your parser, you can create a [regression test](#regression-tests) that will tell you, if you've changed how the parser works.
+6. Submit a PR to GitHub containing these changes. ([Tutorial](https://guides.github.com/activities/hello-world/#pr) for opening a pull request.)
+7. Wait until the PR is reviewed and merged.
+8. Register the new canteens on [openmensa] with the feed from `http://omfeeds.devtation.de/<provider identifier>/<canteen identifier>.xml` and (optional) today feed from `http://omfeeds.devtation.de/<provider identifier>/<canteen identifier>/today.xml`.
    In our example these URLs would be `http://omfeeds.devtation.de/essendorf/eatmaginary.xml`.
 
+## <a name="regression-tests">Regression Tests</a>
+A regression test allows you to detect whether you've broken your parser. If you change your parser and it then accidentally has a different output, that is called a regression.
+
+It can be useful to refactor your code, i. e. to restructure it without changing what it does. In these cases, you will benefit from knowing when you've accidentally changed what your parser outputs—it happens all the time. A regression test will tell you exactly that.
+
+### How It Works
+The regression tests work with snapshots. They will remember what website you called and store them, along with the XML feed that your parser generated.
+
+This means that even in the next week, when the website may display a new menu, you can check your parser with the same menu as before and see if your changes have introduced a regression.
+
+Being able to rerun the parser on a known menu is very valuable, since you only need to check the output for bugs one time. With our regression test, you will know that you have already checked the output and if your parser does something differently, the test will tell you.
+
+### Setup
+   1. Create your first snapshot using the command  `.parser_tests/update_snapshot essendorf eatmaginary`.
+   2. Make sure that the result in `parser_tests/essendorf/eatmaginary/snapshot-result.xml` is correct.
+   3. Register your parser to be tested by adding it to the list in `parser_tests/regression_test.py`. Add it as a tuple `(<parser>, <canteen>)`, so in our example `('essendorf', 'eatmaginary')`.
+   4. If not already done, install `pytest` using `pip install pytest`.
+   5. Run all tests using the command `pytest`.
+
+### Updating Snapshots
+When you've fixed a bug in your parser, the output changes. The regression test will fail, because it doesn't know that this change is wanted.
+
+You can fix this by updating the snapshot. Unfortunately, you will have to manually recheck the output to make sure you didn't change something by accident.
+
+1. Make sure that only the changes you wanted happened by looking at the failed test's diff or checking it manually.
+2. Run the updater using `./parser_tests/update_snapshots.py <parser> <canteen>`, so in our example `./parser_tests/update_snapshots.py essendorf eatmaginary`.
+
+Now your snapshot will use the current menu. Don't forget to double check that the output doesn't contain any errors.
 
 ## Further questions
 * Read the [OpenMensa Documentation]
