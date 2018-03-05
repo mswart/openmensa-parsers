@@ -39,14 +39,18 @@ def generate_snapshot(parser, canteen):
                            "Please use `from urllib import request` "
                            "and `request.urlopen`.".format(parser))
 
+    # Run parser before writing website snapshot,
+    # in order to prevent only the website snapshot being updated,
+    # if the parser fails.
+    parser_result = parse_mocked(parser, canteen)
+
     snapshot_website_path = get_snapshot_website_path(parser, canteen)
     with open(snapshot_website_path, 'w', encoding='utf-8') as file:
         json.dump(intercepted_requests, file, indent=4)
 
     snapshot_result_path = get_snapshot_result_path(parser, canteen)
     with open(snapshot_result_path, 'w', encoding='utf-8') as result_file:
-        result = parse_mocked(parser, canteen)
-        result_file.write(result)
+        result_file.write(parser_result)
 
     print("Updated snapshots for {}/{}.".format(parser, canteen))
 
