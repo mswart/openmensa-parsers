@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import re
 from urllib import request
 
@@ -75,7 +76,7 @@ class AachenParser:
             return False
 
     def parse_categories(self, categories_container):
-        category_dict = {}
+        category_dict = OrderedDict()
         for meal_entry in categories_container.find_all('tr'):
             category_name = meal_entry.find('span', attrs={'class': 'menue-category'}).text.strip()
             meal = self.parse_meal_entry(meal_entry)
