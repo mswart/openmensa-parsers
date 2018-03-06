@@ -9,6 +9,7 @@ setup(name="openmensa-parsers",
       author_email="mswart@devtation.de",
       url="https://github.com/mswart/openmensa-parsers.git",
       packages=find_packages(),
-      py_modules=['config', 'utils', 'parse', 'wsgihandler', 'openmensa_model',
+      py_modules=['config', 'utils', 'parse', 'wsgihandler',
                   'pyopenmensa/__init__', 'pyopenmensa/feed'],
+      include_package_data=True,
       requires=['beautifulsoup4', 'lxml'])
