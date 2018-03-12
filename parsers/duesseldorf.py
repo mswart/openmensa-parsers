@@ -137,6 +137,7 @@ def parse_prices(data):
     prices = {}
     # map roles
     roles = {'Studenten': 'student',
+             'Studierende': 'student',
              'Bedienstete': 'employee',
              'Gäste': 'other'}
     for item in items:
