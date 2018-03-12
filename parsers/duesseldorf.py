@@ -6,8 +6,8 @@ from bs4 import BeautifulSoup as parse
 from pyopenmensa.feed import OpenMensaCanteen
 from utils import Parser
 
-# this will match notes, e.g. "[R]" or "(1,10,12)"
-legend_regex = re.compile('[\[(][ARFSVZ\d\,]+[\])]')
+# this will match notes, e.g. "[R]" or "(1,10,20c)"
+legend_regex = re.compile('[\[(](?:[ARFSVZ\d]+[a-i]?,?)+[\])]')
 
 # this list was compiled from pdf available at http://www.stw-d.de/wp-content/uploads/2017/01/Zeichenerklaerung.pdf
 legend_dict = {'R': 'mit Rindfleisch',
@@ -36,6 +36,15 @@ legend_dict = {'R': 'mit Rindfleisch',
                '18': 'enthält Schwefeldioxid und Sulfite',
                '19': 'Milch und Milcherzeugnisse / enthält Laktose',
                '20': 'Glutenhaltiges Getreide sowie daraus hergestellte Erzeugnisse',
+               '20a': 'Weizen',
+               '20b': 'Roggen',
+               '20c': 'Gerste',
+               '20d': 'Hafer',
+               '20e': 'Dinkel',
+               '20f': 'Kamut',
+               '20g': 'Emmer',
+               '20h': 'Einkorn',
+               '20i': 'Grünkern',
                '21': 'Soja und Sojaerzeugnisse',
                '22': 'Sellerie und Sellerieerzeugnisse',
                '23': 'Senf und Senferzeugnisse',
@@ -46,6 +55,14 @@ legend_dict = {'R': 'mit Rindfleisch',
                '28': 'Krebstiere und Krebstiererzeugnisse',
                '29': 'Weichtiere und Weichtiererzeugnisse',
                '30': 'Schalenfrüchte und Schalenfruchterzeugnisse',
+               '30a': 'Mandeln',
+               '30b': 'Haselnüsse',
+               '30c': 'Walnüsse',
+               '30d': 'Cashewkerne',
+               '30e': 'Pecannüsse',
+               '30f': 'Paranüsse',
+               '30g': 'Pistazien',
+               '30h': 'Macadamia',
                '31': 'Eier und Eierzeugnisse'
                }
 
