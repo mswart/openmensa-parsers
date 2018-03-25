@@ -40,27 +40,49 @@ SPECIAL_NOTICES = [
 ]
 
 
-def get_notices(notices):
+def get_notices(notices, sub_notices=False):
     global base_data
 
     notices_special = []
     notices_allergens = []
     notices_others = []
+    notices_others_last = []
 
     for notice_short in notices:
         notice = base_data['notices'][notice_short]
         if notice['isAllergen']:
-            notices_allergens.append(
-                'enthält %s (Allergen)' % notice['displayName'])
+            if sub_notices:
+                notices_allergens.append(notice['displayName'])
+            else:
+                notices_allergens.append(
+                    'enthält %s' % notice['displayName'])
         else:
             if notice_short == 'nsf':  # ohne Schweinefleisch
-                notices_others.append(notice['displayName'])
+                notices_others_last.append(notice['displayName'])
             elif notice_short in SPECIAL_NOTICES:
                 notices_special.append(notice['displayName'])
             else:
-                notices_others.append('mit %s' % notice['displayName'])
+                if sub_notices:
+                    notices_others.append(notice['displayName'])
+                else:
+                    notices_others.append('mit %s' % notice['displayName'])
 
-    return notices_special + notices_allergens + notices_others
+    if sub_notices:
+        if len(notices_allergens) > 0:
+            notices_allergens[0] = 'enthält %s' % notices_allergens[0]
+        if len(notices_allergens) > 1:
+            notices_allergens[-2] = (
+                '%s und %s' % (notices_allergens[-2], notices_allergens[-1]))
+            del notices_allergens[-1]
+        if len(notices_others) > 0:
+            notices_others[0] = 'mit %s' % notices_others[0]
+        if len(notices_others) > 1:
+            notices_others[-2] = (
+                '%s und %s' % (notices_others[-2], notices_others[-1]))
+            del notices_others[-1]
+
+    return (notices_special + notices_allergens +
+            notices_others + notices_others_last)
 
 
 def build_notes(notices, components):
@@ -73,7 +95,7 @@ def build_notes(notices, components):
     for component in components:
         component_string = 'dazu ' + component['name']
         if len(component['notices']) > 0:
-            component_notices_list = get_notices(component['notices'])
+            component_notices_list = get_notices(component['notices'], True)
             component_string += ' (%s)' % ', '.join(component_notices_list)
         components_all.append(component_string)
 
