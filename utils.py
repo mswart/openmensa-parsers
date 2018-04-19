@@ -5,7 +5,7 @@ import json
 
 from bs4 import BeautifulSoup
 
-from pyopenmensa.feed import LazyBuilder
+from pyopenmensa.feed import LazyBuilder, Feed
 
 
 class Request(object):
@@ -168,7 +168,39 @@ class HandlerSource(Source):
         self.args = args
         self.kwargs = kwargs
 
+    def metadata(self, request):
+        meta = LazyBuilder(version=self.parser.version)
+
+        meta.feeds.append(Feed(
+            name='today',
+            hour='8-14',
+            url='/'.join([request.host, self.parser.name, self.name, 'today.xml']),
+            priority=0,
+            source=None,
+            dayOfMonth='*',
+            dayOfWeek='*',
+            minute='0',
+            retry=None
+        ))
+
+        meta.feeds.append(Feed(
+            name='full',
+            hour='8',
+            url='/'.join([request.host, self.parser.name, self.name, 'full.xml']),
+            priority=0,
+            source=None,
+            dayOfMonth='*',
+            dayOfWeek='*',
+            minute='0',
+            retry=None
+        ))
+
+        return meta.toXMLFeed()
+
     def parse(self, request, feed):
+        if feed == 'metadata.xml':
+            return self.metadata(request)
+
         return self.handler(*self.args, today=feed == 'today.xml', **self.kwargs)
 
 
