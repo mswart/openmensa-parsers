@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from pyopenmensa.feed import LazyBuilder
 
 calendar_week_regex = re.compile('\d{4}-\d{1,2}$')
-week_start_end_date_regex = re.compile('\d{1,2}.\d{1,2}.\d{4}')
+week_start_end_date_regex = re.compile('\d{1,2}\.\d{1,2}\.\d{4}')
 days_regex = re.compile('day_\d$')
 ingredients_regex = re.compile('Inhalt:.*')
 
