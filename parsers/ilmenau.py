@@ -7,6 +7,8 @@ from pyopenmensa.feed import LazyBuilder
 
 calendar_week_regex = re.compile('\d{4}-\d{1,2}$')
 week_start_end_date_regex = re.compile('\d{1,2}\.\d{1,2}\.\d{4}')
+fees_regex = re.compile('Bedienstete.*')
+amount_regex = re.compile('\d{1,2},\d{1,2}')
 days_regex = re.compile('day_\d$')
 ingredients_regex = re.compile('Inhalt:.*')
 
@@ -15,6 +17,17 @@ def parse_url(url, today=False):
 	canteen = LazyBuilder()
 	content = urlopen(url).read()
 	document = parse(content, 'lxml')
+	employees_fee = 1.8
+	guests_fee = 3.2
+	fees = document.find_all('p', {'class': 'MsoNormal'})
+	for fee_candidate in fees:
+		fee_string = fees_regex.findall(fee_candidate.text)
+		for s in fee_string:
+			amount_strings = amount_regex.findall(s)
+			if len(amount_strings) is not 2:
+				continue
+			employees_fee = float(amount_strings[0].replace(',', '.'))
+			guests_fee = float(amount_strings[1].replace(',', '.'))
 	options = document.find_all('option', value=calendar_week_regex)
 	for option in options:
 		try:
@@ -38,7 +51,14 @@ def parse_url(url, today=False):
 					if len(ingredients) > 0:
 						notes.append(ingredients[0].strip())
 					main_dish = ingredients_regex.sub('', meals[1].text).strip()
-					canteen.addMeal(current_date.date(), 'Hauptgerichte', main_dish, notes, {'student': meals[2].text},
+					students_fee_string = amount_regex.findall(meals[2].text)
+					if len(students_fee_string) is not 1:
+						continue
+					students_fee = float(students_fee_string[0].replace(',', '.'))
+					costs = {'student': students_fee,
+							 'employee': students_fee + employees_fee,
+							 'other': students_fee + guests_fee}
+					canteen.addMeal(current_date.date(), 'Hauptgerichte', main_dish, notes, costs,
 									None)
 				if today:
 					return canteen.toXMLFeed()
