@@ -12,8 +12,13 @@ def parse_start_date(document):
 	week_start_end_date_regex = re.compile('\d{1,2}\.\d{1,2}\.\d{4}')
 	calendar_week_regex = re.compile('\d{4}-\d{1,2}$')
 	options = document.find_all('option', value=calendar_week_regex)
-	option = list(filter(lambda x: x.has_attr('selected'), options))[0]
-	start_date_str = week_start_end_date_regex.findall(option.text)[0]
+	assert len(options) > 0
+	options_filtered = list(filter(lambda x: x.has_attr('selected'), options))
+	assert len(options_filtered) is 1
+	option = options_filtered[0]
+	start_date_strings = week_start_end_date_regex.findall(option.text)
+	assert len(start_date_strings) > 0
+	start_date_str = start_date_strings[0]
 	return datetime.strptime(start_date_str, '%d.%m.%Y')
 
 
@@ -29,6 +34,7 @@ def parse_fees(document):
 			employees_fee = float(amount_strings[0].replace(',', '.'))
 			guests_fee = float(amount_strings[1].replace(',', '.'))
 			return employees_fee, guests_fee
+	return -1, -1
 
 
 def parse_meals(day):
@@ -64,7 +70,10 @@ def parse_url(url, today=False):
 	if len(fees) is 2:
 		employees_fee = fees[0]
 		guests_fee = fees[1]
-	mensa_start_date = parse_start_date(document)
+	try:
+		mensa_start_date = parse_start_date(document)
+	except AssertionError:
+		return canteen.toXMLFeed()
 	day_divs = document.find_all('div', id=days_regex)
 	days_open = []
 	for day in day_divs:
@@ -76,8 +85,10 @@ def parse_url(url, today=False):
 			main_dish = meal[0]
 			notes = meal[1]
 			costs = meal[2]
-			costs['employee'] = costs['student'] + employees_fee
-			costs['other'] = costs['student'] + guests_fee
+			if employees_fee is not -1:
+				costs['employee'] = costs['student'] + employees_fee
+			if guests_fee is not -1:
+				costs['other'] = costs['student'] + guests_fee
 			if today:
 				if current_date.day is datetime.today().day:
 					canteen.addMeal(current_date.date(), 'Hauptgerichte', main_dish, notes, costs,
