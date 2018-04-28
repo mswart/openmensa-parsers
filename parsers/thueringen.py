@@ -72,10 +72,32 @@ def parse_url(url, today=False):
 	return canteen.toXMLFeed()
 
 
-parser = Parser('ilmenau',
+parser = Parser('thueringen',
 				handler=parse_url,
-				shared_prefix='http://www.stw-thueringen.de/deutsch/mensen/einrichtungen/ilmenau/')
-parser.define('ehrenberg', suffix='mensa-ehrenberg.html')
-parser.define('cafeteria', suffix='cafeteria-mensa-ehrenberg.html')
-parser.define('nanoteria', suffix='cafeteria-nanoteria.html')
-parser.define('roentgen', suffix='cafeteria-roentgenbau.html')
+				shared_prefix='http://www.stw-thueringen.de/deutsch/mensen/einrichtungen/')
+parser.define('ei-wartenberg', suffix='eisenach/mensa-am-wartenberg-2.html')
+parser.define('ef-nordhaeuser', suffix='erfurt/mensa-nordhaeuser-strasse.html')
+parser.define('ef-altonaer', suffix='erfurt/mensa-altonaer-strasse.html')
+parser.define('ef-schlueterstr', suffix='erfurt/cafeteria-schlueterstrasse.html')
+parser.define('ef-leipzigerstr', suffix='erfurt/cafeteria-leipziger-strasse.html')
+parser.define('ge-freundschaft', suffix='gera/mensa-weg-der-freundschaft.html')
+parser.define('il-ehrenberg', suffix='ilmenau/mensa-ehrenberg.html')
+parser.define('il-cafeteria', suffix='ilmenau/cafeteria-mensa-ehrenberg.html')
+parser.define('il-nanoteria', suffix='ilmenau/cafeteria-nanoteria.html')
+parser.define('ilroentgen', suffix='ilmenau/cafeteria-roentgenbau.html')
+parser.define('je-zeiss', suffix='jena/mensa-carl-zeiss-promenade.html')
+parser.define('je-eah', suffix='jena/cafeteria-eah.html')
+parser.define('je-ernstabbe', suffix='ena/mensa-ernst-abbe-platz.html')
+parser.define('je-vegeTable', suffix='jena/vegetable.html')
+parser.define('je-rosen', suffix='jena/cafeteria-zur-rosen.html')
+parser.define('je-philosophen', suffix='jena/mensa-philosophenweg.html')
+parser.define('je-haupt', suffix='jena/cafeteria-uni-hauptgebaeude.html')
+parser.define('je-bib', suffix='jena/cafeteria-bibliothek-thulb.html')
+parser.define('nh-mensa', suffix='nordhausen/mensa-nordhausen.html')
+parser.define('sk-mensa', suffix='schmalkalden/mensa-schmalkalden.html')
+parser.define('we-horn', suffix='weimar/cafeteria-am-horn.html')
+parser.define('we-park', suffix='weimar/mensa-am-park.html')
+parser.define('we-anna', suffix='weimar/cafeteria-anna-amalia-bibliothek.html')
+parser.define('we-coudray', suffix='weimar/cafeteria-coudraystrasse.html')
+
+

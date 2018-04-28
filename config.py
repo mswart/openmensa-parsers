@@ -12,7 +12,6 @@ cities = [
     'halle',
     'hamburg',
     'hannover',
-    'ilmenau',
     'karlsruhe',
     'leipzig',
     'magdeburg',
@@ -23,6 +22,7 @@ cities = [
     'siegen',
     'wuerzburg',
     'rostock',
+    'thueringen',
 ]
 
 
