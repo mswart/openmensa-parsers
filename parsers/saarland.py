@@ -21,6 +21,7 @@ URL_BASE = (
 URL_BASE_DATA = "getBaseData"
 URL_MENU = "getMenu/"
 
+# mensaar.de always returns an UTC date
 UTC_DATE_STRING = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 ROLES = {
@@ -39,6 +40,10 @@ SPECIAL_NOTICES = [
     'vn'    # vegan
 ]
 
+NOTICES_PREFIX_COMPLEMENT = "dazu"
+NOTICES_PREFIX_ALLERGENS = "enthält"
+NOTICES_PREFIX_OTHERS = "mit"
+
 
 def get_notices(notices, sub_notices=False):
     global base_data
@@ -55,9 +60,9 @@ def get_notices(notices, sub_notices=False):
                 notices_allergens.append(notice['displayName'])
             else:
                 notices_allergens.append(
-                    'enthält %s' % notice['displayName'])
+                    '%s %s' % (NOTICES_PREFIX_ALLERGENS, notice['displayName']))
         else:
-            if notice_short == 'nsf':  # ohne Schweinefleisch
+            if notice['isNegated']:
                 notices_others_last.append(notice['displayName'])
             elif notice_short in SPECIAL_NOTICES:
                 notices_special.append(notice['displayName'])
@@ -65,35 +70,34 @@ def get_notices(notices, sub_notices=False):
                 if sub_notices:
                     notices_others.append(notice['displayName'])
                 else:
-                    notices_others.append('mit %s' % notice['displayName'])
+                    notices_others.append(
+                        '%s %s' % (NOTICES_PREFIX_OTHERS, notice['displayName']))
 
     if sub_notices:
-        if len(notices_allergens) > 0:
-            notices_allergens[0] = 'enthält %s' % notices_allergens[0]
-        if len(notices_allergens) > 1:
-            notices_allergens[-2] = (
-                '%s und %s' % (notices_allergens[-2], notices_allergens[-1]))
-            del notices_allergens[-1]
-        if len(notices_others) > 0:
-            notices_others[0] = 'mit %s' % notices_others[0]
-        if len(notices_others) > 1:
-            notices_others[-2] = (
-                '%s und %s' % (notices_others[-2], notices_others[-1]))
-            del notices_others[-1]
+        notices_allergens = build_subnotices(notices_allergens, NOTICES_PREFIX_ALLERGENS)
+        notices_others = build_subnotices(notices_others, NOTICES_PREFIX_OTHERS)
 
     return (notices_special + notices_allergens +
             notices_others + notices_others_last)
 
 
-def build_notes(notices, components):
-    global base_data
+def build_subnotices(notices, prefix):
+    if len(notices) > 0:
+        notices[0] = '%s %s' % (prefix, notices[0])
+    if len(notices) > 1:
+        notices[-2] = (
+            '%s und %s' % (notices[-2], notices[-1]))
+        del notices[-1]
+    return notices
 
+
+def build_notes(notices, components):
     components_all = []
 
     notices_list = get_notices(notices)
 
     for component in components:
-        component_string = 'dazu ' + component['name']
+        component_string = '%s %s' % (NOTICES_PREFIX_COMPLEMENT, component['name'])
         if len(component['notices']) > 0:
             component_notices_list = get_notices(component['notices'], True)
             component_string += ' (%s)' % ', '.join(component_notices_list)
@@ -103,7 +107,7 @@ def build_notes(notices, components):
 
 
 def build_hours(opening_hours):
-    if not opening_hours:
+    if opening_hours is None:
         return []
 
     start = datetime.datetime.strptime(
@@ -129,20 +133,21 @@ def parse_url(url, today=False):
         data = json.loads(response.read().decode())
 
     for day in data['days']:
-        date = day.get('date')
+        date = datetime.datetime.strptime(day['date'], UTC_DATE_STRING).date()
 
-        if today and (datetime.datetime.now().date() !=
-                      datetime.datetime.strptime(date, UTC_DATE_STRING).date()):
+        if today and (datetime.date.today() != date):
             continue
 
         for counter in day['counters']:
             counter_name = counter['displayName']
             counter_description = counter['description']
             counter_hours = counter.get('openingHours')
-            counter_color = counter.get('color')
 
             for meal in counter['meals']:
                 if 'knownMealId' in meal:
+                    # This is meant to allow recognizing recurring meals,
+                    # for features like marking meals as favorites.
+                    # Up to now, not really used in the mensaar.de API.
                     print('knownMealId: %s' % meal['knownMealId'])
 
                 meal_name = meal['name']
@@ -183,10 +188,12 @@ for loc in data['locations']:
     base_data['locations'].append(loc)
 for role in data['priceTiers']:
     if role not in ROLES:
-        print('New unknown price tier: %s (displayName: %s)' %
-              (role, data['priceTiers'][role]))
-        print('All prices for this price tier will be ignored.')
-        print('Please consider updating the parser!')
+        # Found an unknown price tier
+        # All prices for this price tier will be ignored.
+        # Please consider updating the parser!
+        raise RuntimeError(
+            'Unknown price tier: %s (displayName: %s)' %
+            (role, data['priceTiers'][role]))
     else:
         base_data['roles'][role] = ROLES[role]
 
