@@ -24,6 +24,14 @@ URL_MENU = "getMenu/"
 # mensaar.de always returns an UTC date
 UTC_DATE_STRING = "%Y-%m-%dT%H:%M:%S.%fZ"
 
+LOCATIONS = [
+    'sb',
+    'hom',
+    'musiksb',
+    'htwgtb',
+    'mensagarten'
+]
+
 ROLES = {
     's': 'student',
     'g': 'other',
@@ -128,6 +136,8 @@ def build_location(description):
 def parse_url(url, today=False):
     global base_data
 
+    load_base_data()
+
     canteen = LazyBuilder()
     with urlopen(url) as response:
         data = json.loads(response.read().decode())
@@ -177,30 +187,37 @@ def parse_url(url, today=False):
     return canteen.toXMLFeed()
 
 
-with urlopen(URL_BASE + URL_BASE_DATA) as response:
-    data = json.loads(response.read().decode())
+def load_base_data():
+    with urlopen(URL_BASE + URL_BASE_DATA) as response:
+        data = json.loads(response.read().decode())
+
+    base_data['roles'] = {}
+
+    base_data['notices'] = data['notices']
+    for loc in data['locations']:
+        if loc not in LOCATIONS:
+            # Found an unknown location
+            # Please consider updating the parser!
+            raise RuntimeError(
+                'Unknown location: %s (displayName: %s)' %
+                (loc, data['locations'][loc]))
+    for role in data['priceTiers']:
+        if role not in ROLES:
+            # Found an unknown price tier
+            # All prices for this price tier will be ignored.
+            # Please consider updating the parser!
+            raise RuntimeError(
+                'Unknown price tier: %s (displayName: %s)' %
+                (role, data['priceTiers'][role]))
+        else:
+            base_data['roles'][role] = ROLES[role]
+
+
 base_data = {}
-base_data['locations'] = []
-base_data['roles'] = {}
-
-base_data['notices'] = data['notices']
-for loc in data['locations']:
-    base_data['locations'].append(loc)
-for role in data['priceTiers']:
-    if role not in ROLES:
-        # Found an unknown price tier
-        # All prices for this price tier will be ignored.
-        # Please consider updating the parser!
-        raise RuntimeError(
-            'Unknown price tier: %s (displayName: %s)' %
-            (role, data['priceTiers'][role]))
-    else:
-        base_data['roles'][role] = ROLES[role]
-
 
 parser = Parser('saarland',
                 handler=parse_url,
                 shared_prefix=URL_BASE + URL_MENU)
 
-for loc in base_data['locations']:
+for loc in LOCATIONS:
     parser.define(loc, suffix=loc)
