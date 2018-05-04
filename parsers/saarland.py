@@ -2,6 +2,7 @@ from urllib.request import *
 
 import json
 import datetime
+import sys
 
 from pyopenmensa.feed import LazyBuilder
 
@@ -53,9 +54,7 @@ NOTICES_PREFIX_ALLERGENS = "enthält"
 NOTICES_PREFIX_OTHERS = "mit"
 
 
-def get_notices(notices, sub_notices=False):
-    global base_data
-
+def get_notices(base_data, notices, sub_notices=False):
     notices_special = []
     notices_allergens = []
     notices_others = []
@@ -99,15 +98,15 @@ def build_subnotices(notices, prefix):
     return notices
 
 
-def build_notes(notices, components):
+def build_notes(base_data, notices, components):
     components_all = []
 
-    notices_list = get_notices(notices)
+    notices_list = get_notices(base_data, notices)
 
     for component in components:
         component_string = '%s %s' % (NOTICES_PREFIX_COMPLEMENT, component['name'])
         if len(component['notices']) > 0:
-            component_notices_list = get_notices(component['notices'], True)
+            component_notices_list = get_notices(base_data, component['notices'], True)
             component_string += ' (%s)' % ', '.join(component_notices_list)
         components_all.append(component_string)
 
@@ -134,9 +133,7 @@ def build_location(description):
 
 
 def parse_url(url, today=False):
-    global base_data
-
-    load_base_data()
+    base_data = load_base_data()
 
     canteen = LazyBuilder()
     with urlopen(url) as response:
@@ -157,26 +154,27 @@ def parse_url(url, today=False):
                 if 'knownMealId' in meal:
                     # This is meant to allow recognizing recurring meals,
                     # for features like marking meals as favorites.
-                    # Up to now, not really used in the mensaar.de API.
-                    print('knownMealId: %s' % meal['knownMealId'])
+                    # Up to now, not really used in the mensaar.de API,
+                    # nor functional in this API parser.
+                    # The meal will still be recognized as every other meal.
+                    print('knownMealId: %s' % meal['knownMealId'], file=sys.stderr)
 
                 meal_name = meal['name']
                 if 'category' in meal:
                     meal_name = '%s: %s' % (meal['category'], meal_name)
 
                 meal_notes = (
+                    # The description is typically the location
+                    # (but not required to be by the API specification).
                     build_location(counter_description) +
                     build_hours(counter_hours) +
-                    build_notes(meal['notices'], meal['components']))
+                    build_notes(base_data, meal['notices'], meal['components']))
 
                 meal_prices = {}
                 if 'prices' in meal:
                     prices = meal['prices']
                     for role in prices:
-                        if role in base_data['roles']:
-                            meal_prices[base_data['roles'][role]] = prices[role]
-                        else:
-                            print('Ignoring price for unknown role %s.' % role)
+                        meal_prices[base_data['roles'][role]] = prices[role]
 
                 if 'pricingNotice' in meal:
                     meal_notes.append(meal['pricingNotice'])
@@ -191,6 +189,7 @@ def load_base_data():
     with urlopen(URL_BASE + URL_BASE_DATA) as response:
         data = json.loads(response.read().decode())
 
+    base_data = {}
     base_data['roles'] = {}
 
     base_data['notices'] = data['notices']
@@ -204,7 +203,6 @@ def load_base_data():
     for role in data['priceTiers']:
         if role not in ROLES:
             # Found an unknown price tier
-            # All prices for this price tier will be ignored.
             # Please consider updating the parser!
             raise RuntimeError(
                 'Unknown price tier: %s (displayName: %s)' %
@@ -212,8 +210,8 @@ def load_base_data():
         else:
             base_data['roles'][role] = ROLES[role]
 
+    return base_data
 
-base_data = {}
 
 parser = Parser('saarland',
                 handler=parse_url,
