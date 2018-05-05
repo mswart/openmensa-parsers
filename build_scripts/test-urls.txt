@@ -5,13 +5,6 @@ http://localhost:9090/duesseldorf/mensa-universitaetsstrasse-duesseldorf/full.xm
 http://localhost:9090/hamburg/hcu/full.xml
 http://localhost:9090/hannover/hauptmensa/full.xml
 http://localhost:9090/thueringen/il-ehrenberg/full.xml
-http://localhost:9090/thueringen/ei-wartenberg/full.xml
-http://localhost:9090/thueringen/ef-altonaer/full.xml
-http://localhost:9090/thueringen/ge-freundschaft/full.xml
-http://localhost:9090/thueringen/je-zeiss/full.xml
-http://localhost:9090/thueringen/nh-mensa/full.xml
-http://localhost:9090/thueringen/sk-mensa/full.xml
-http://localhost:9090/thueringen/we-horn/full.xml
 http://localhost:9090/karlsruhe/adenauerring/full.xml
 http://localhost:9090/leipzig/liebigstrasse/full.xml
 http://localhost:9090/magdeburg/ovgu-unten/full.xml
