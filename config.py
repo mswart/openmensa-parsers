@@ -19,6 +19,7 @@ cities = [
     'marburg',
     'niederbayern_oberpfalz',
     'ostniedersachsen',
+    'saarland',
     'siegen',
     'wuerzburg',
     'rostock',
