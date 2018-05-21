@@ -174,7 +174,8 @@ def parse_url(url, today=False):
                 if 'prices' in meal:
                     prices = meal['prices']
                     for role in prices:
-                        meal_prices[base_data['roles'][role]] = prices[role]
+                        if role in ROLES:
+                            meal_prices[base_data['roles'][role]] = prices[role]
 
                 if 'pricingNotice' in meal:
                     meal_notes.append(meal['pricingNotice'])
@@ -197,15 +198,15 @@ def load_base_data():
         if loc not in LOCATIONS:
             # Found an unknown location
             # Please consider updating the parser!
-            raise RuntimeError(
-                'Unknown location: %s (displayName: %s)' %
-                (loc, data['locations'][loc]))
+            sys.stderr.write(
+                'Unknown location: %s (displayName: %s)\n' %
+                (loc, data['locations'][loc]['displayName']))
     for role in data['priceTiers']:
         if role not in ROLES:
             # Found an unknown price tier
             # Please consider updating the parser!
-            raise RuntimeError(
-                'Unknown price tier: %s (displayName: %s)' %
+            sys.stderr.write(
+                'Unknown price tier: %s (displayName: %s)\n' %
                 (role, data['priceTiers'][role]))
         else:
             base_data['roles'][role] = ROLES[role]
