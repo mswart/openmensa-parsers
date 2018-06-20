@@ -6,8 +6,6 @@ from datetime import datetime, timedelta
 from pyopenmensa.feed import LazyBuilder
 
 amount_regex = re.compile('\d{1,2},\d{1,2}')
-employees_fee_default = -1
-guests_fee_default = -1
 
 
 def parse_start_date(document):
@@ -15,6 +13,9 @@ def parse_start_date(document):
 	calendar_week_regex = re.compile('\d{4}-\d{1,2}$')
 
 	option = document.find("option", value=calendar_week_regex, selected=True)
+
+	if option is None:
+		return None
 
 	start_date_str = week_start_end_date_regex.search(option.text)
 
@@ -24,39 +25,96 @@ def parse_start_date(document):
 def parse_fees(document):
 	fees_regex = re.compile('Bedienstete.*')
 
-	fees_p = document.find_all('p', {'class': 'MsoNormal'})
+	fees = document.find_all('p', class_='MsoNormal', string=fees_regex)
 
-	for fee_candidate in fees_p:
-		fee_strings = fees_regex.findall(fee_candidate.text)
-		for amount_candidate in fee_strings:
-			amount_strings = amount_regex.findall(amount_candidate)
+	if len(fees) != 1:
+		return None, None
 
-			if len(amount_strings) != 2:
-				continue
+	fees = fees[0]
 
-			employees_fee = float(amount_strings[0].replace(',', '.'))
-			guests_fee = float(amount_strings[1].replace(',', '.'))
-			return employees_fee, guests_fee
+	fee_strings = fees_regex.findall(fees.text)
+	for amount_candidate in fee_strings:
+		amount_strings = amount_regex.findall(amount_candidate)
+		if len(amount_strings) != 2:
+			continue
 
-	return employees_fee_default, guests_fee_default
+		employees_fee = float(amount_strings[0].replace(',', '.'))
+		guests_fee = float(amount_strings[1].replace(',', '.'))
+		return employees_fee, guests_fee
+
+	return None, None
 
 
-def parse_meals(day):
+def parse_ingredients(document):
+	contextbox = document.find('div', class_='kontextbox')
+
+	shorts = contextbox.find_all('p')
+
+	digits_regex = re.compile('(\d)+: .*')
+	chars_regex = re.compile('(\w)+: .*')
+
+	digits = dict()
+	chars = dict()
+
+	if len(shorts) < 3:
+		return
+	for short in shorts[1].childGenerator():
+		if digits_regex.search(str(short)):
+			n = str(short).strip('\r\n').split(':')
+			digits[n[0]] = n[1]
+
+	for short in shorts[2].childGenerator():
+		if chars_regex.search(str(short)):
+			c = str(short).strip('\r\n').split(':')
+			chars[c[0]] = c[1]
+
+	shorts = contextbox.find_all('td')
+
+	if len(shorts) >= 1:
+		for short in shorts[1].childGenerator():
+			if chars_regex.search(str(short)):
+				c = str(short).strip('\r\n').split(':')
+				chars[c[0]] = c[1]
+
+	return digits, chars
+
+
+def ingredient_list_to_notes(ingredients_list, chars, digits):
+	ingredients = []
+	for ingredient in ingredients_list:
+
+		if digits.get(ingredient) is not None:
+			ingredients.append(digits[ingredient][1:])
+
+		if chars.get(ingredient) is not None:
+			ingredients.append(chars[ingredient][1:])
+
+	return ingredients
+
+
+def parse_meals(day, digits, chars):
 	ingredients_regex = re.compile('Inhalt:.*')
 
-	meals = []
 	meals_t_rows = day.find_all('tr')
 
 	for meal_data in meals_t_rows:
 		meal_t_datas = meal_data.find_all('td')
-		if len(meal_t_datas) is not 3:
+		if len(meal_t_datas) != 3:
 			continue
 
-		notes = [meal_t_datas[0].text]
+		category = [meal_t_datas[0].text]
+		if len(category) == 1:
+			category = category[0]
+		else:
+			category = 'Hauptgerichte'
 
+		notes = []
 		ingredients = ingredients_regex.findall(meal_t_datas[1].text)
+
 		if len(ingredients) > 0:
-			notes.append(ingredients[0].strip())
+			ingredients_list = ingredients[0].strip('Inhalt: ').strip('\r').split(',')
+
+			notes = ingredient_list_to_notes(ingredients_list, chars, digits)
 
 		main_dish = ingredients_regex.sub('', meal_t_datas[1].text).strip()
 
@@ -67,54 +125,55 @@ def parse_meals(day):
 		students_fee = float(students_fee_string[0].replace(',', '.'))
 		costs = {'student': students_fee}
 
-		meals.append((main_dish, notes, costs))
-
-	return meals
+		yield (main_dish, notes, costs, category)
 
 
 def parse_url(url, today=False):
+	year = datetime.now().isocalendar()[0]
+	week = datetime.now().isocalendar()[1]
+
 	days_regex = re.compile('day_\d$')
 
 	canteen = LazyBuilder()
 
-	content = urlopen(url).read()
-	document = parse(content, 'lxml')
+	for i in range(0, 3):
 
-	fees = parse_fees(document)
+		content = urlopen(url+'?selWeek='+str(year)+'-'+str(week + i)).read()
 
-	employees_fee = fees[0]
-	guests_fee = fees[1]
+		document = parse(content, 'lxml')
 
-	mensa_start_date = parse_start_date(document)
+		employees_fee, guests_fee = parse_fees(document)
 
-	day_divs = document.find_all('div', id=days_regex)
-	days_open = []
+		mensa_start_date = parse_start_date(document)
 
-	for day in day_divs:
-		day_id = int(day['id'][-1:])
-		days_open.append(day_id)
+		day_divs = document.find_all('div', id=days_regex)
+		days_open = []
 
-		current_date = mensa_start_date + timedelta(days=day_id-2)
+		for day in day_divs:
+			day_id = int(day['id'][-1:])
+			days_open.append(day_id)
 
-		meals = parse_meals(day)
-		for meal in meals:
-			main_dish, notes, costs = meal
+			current_date = mensa_start_date + timedelta(days=day_id-2)
+			digits, chars = parse_ingredients(document)
+			meals = parse_meals(day, digits, chars)
+			for meal in meals:
+				main_dish, notes, costs, category = meal
 
-			if employees_fee != employees_fee_default:
-				costs['employee'] = costs['student'] + employees_fee
-			if guests_fee != guests_fee_default:
-				costs['other'] = costs['student'] + guests_fee
-			if today and current_date != datetime.today():
-				continue
+				if employees_fee is not None:
+					costs['employee'] = costs['student'] + employees_fee
+				if guests_fee is not None:
+					costs['other'] = costs['student'] + guests_fee
+				if today and current_date != datetime.today():
+					continue
 
-			canteen.addMeal(current_date.date(), 'Hauptgerichte', main_dish, notes, costs,
-								None)
+				canteen.addMeal(current_date.date(), category, main_dish, notes, costs,
+									None)
 
-	for day_id in range(min(days_open or [9]), 9):
-		if day_id not in days_open:
-			closed_date = mensa_start_date + timedelta(days=day_id-2)
-			if not today or closed_date == datetime.today():
-				canteen.setDayClosed(closed_date.date())
+		for day_id in range(min(days_open or [9]), 9):
+			if day_id not in days_open:
+				closed_date = mensa_start_date + timedelta(days=day_id-2)
+				if not today or closed_date == datetime.today():
+					canteen.setDayClosed(closed_date.date())
 
 	return canteen.toXMLFeed()
 
@@ -131,7 +190,7 @@ parser.define('ge-freundschaft', suffix='gera/mensa-weg-der-freundschaft.html')
 parser.define('il-ehrenberg', suffix='ilmenau/mensa-ehrenberg.html')
 parser.define('il-cafeteria', suffix='ilmenau/cafeteria-mensa-ehrenberg.html')
 parser.define('il-nanoteria', suffix='ilmenau/cafeteria-nanoteria.html')
-parser.define('ilroentgen', suffix='ilmenau/cafeteria-roentgenbau.html')
+parser.define('il-roentgen', suffix='ilmenau/cafeteria-roentgenbau.html')
 parser.define('je-zeiss', suffix='jena/mensa-carl-zeiss-promenade.html')
 parser.define('je-eah', suffix='jena/cafeteria-eah.html')
 parser.define('je-ernstabbe', suffix='jena/mensa-ernst-abbe-platz.html')
