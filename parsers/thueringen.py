@@ -147,11 +147,9 @@ def parse_url(url, today=False):
 		mensa_start_date = parse_start_date(document)
 
 		day_divs = document.find_all('div', id=days_regex)
-		days_open = []
 
 		for day in day_divs:
 			day_id = int(day['id'][-1:])
-			days_open.append(day_id)
 
 			current_date = mensa_start_date + timedelta(days=day_id-2)
 			digits, chars = parse_ingredients(document)
@@ -168,12 +166,6 @@ def parse_url(url, today=False):
 
 				canteen.addMeal(current_date.date(), category, main_dish, notes, costs,
 									None)
-
-		for day_id in range(min(days_open or [9]), 9):
-			if day_id not in days_open:
-				closed_date = mensa_start_date + timedelta(days=day_id-2)
-				if not today or closed_date == datetime.today():
-					canteen.setDayClosed(closed_date.date())
 
 	return canteen.toXMLFeed()
 
