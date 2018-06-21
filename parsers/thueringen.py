@@ -2,7 +2,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup as parse
 import re
 from utils import Parser
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from pyopenmensa.feed import LazyBuilder
 
 amount_regex = re.compile('\d{1,2},\d{1,2}')
@@ -12,14 +12,23 @@ def parse_start_date(document):
 	week_start_end_date_regex = re.compile('\d{1,2}\.\d{1,2}\.\d{4}')
 	calendar_week_regex = re.compile('\d{4}-\d{1,2}$')
 
-	option = document.find("option", value=calendar_week_regex, selected=True)
-
-	if option is None:
-		return None
+	option = document.find('option', value=calendar_week_regex, selected=True)
 
 	start_date_str = week_start_end_date_regex.search(option.text)
 
-	return datetime.strptime(start_date_str.group(), '%d.%m.%Y')
+	return datetime.strptime(start_date_str.group(), '%d.%m.%Y').date()
+
+
+def parse_available_weeks(document):
+
+	sel_week = document.find('select', {"name": 'selWeek'})
+
+	options = sel_week.find_all('option')
+
+	for option in options:
+		week = option['value']
+		if week != '0':
+			yield week
 
 
 def parse_fees(document):
@@ -27,72 +36,35 @@ def parse_fees(document):
 
 	fees = document.find_all('p', class_='MsoNormal', string=fees_regex)
 
-	if len(fees) != 1:
-		return None, None
+	for fee in fees:
 
-	fees = fees[0]
+		fee_strings = fees_regex.findall(fee.text)
+		for amount_candidate in fee_strings:
+			amount_strings = amount_regex.findall(amount_candidate)
+			if len(amount_strings) != 2:
+				continue
 
-	fee_strings = fees_regex.findall(fees.text)
-	for amount_candidate in fee_strings:
-		amount_strings = amount_regex.findall(amount_candidate)
-		if len(amount_strings) != 2:
-			continue
-
-		employees_fee = float(amount_strings[0].replace(',', '.'))
-		guests_fee = float(amount_strings[1].replace(',', '.'))
-		return employees_fee, guests_fee
+			employees_fee = float(amount_strings[0].replace(',', '.'))
+			guests_fee = float(amount_strings[1].replace(',', '.'))
+			return employees_fee, guests_fee
 
 	return None, None
 
 
 def parse_ingredients(document):
-	contextbox = document.find('div', class_='kontextbox')
+	groups_regex = re.compile('([\w\d*]+):\s+(.*)')
+	groups = dict()
 
-	shorts = contextbox.find_all('p')
+	for table in document.select('div.kontextbox > table:nth-of-type(1)'):
+		for s in table.stripped_strings:
+			if groups_regex.search(s):
+				split = s.split(':')
+				groups[split[0]] = split[1]
 
-	digits_regex = re.compile('(\d)+: .*')
-	chars_regex = re.compile('(\w)+: .*')
-
-	digits = dict()
-	chars = dict()
-
-	if len(shorts) < 3:
-		return
-	for short in shorts[1].childGenerator():
-		if digits_regex.search(str(short)):
-			n = str(short).strip('\r\n').split(':')
-			digits[n[0]] = n[1]
-
-	for short in shorts[2].childGenerator():
-		if chars_regex.search(str(short)):
-			c = str(short).strip('\r\n').split(':')
-			chars[c[0]] = c[1]
-
-	shorts = contextbox.find_all('td')
-
-	if len(shorts) >= 1:
-		for short in shorts[1].childGenerator():
-			if chars_regex.search(str(short)):
-				c = str(short).strip('\r\n').split(':')
-				chars[c[0]] = c[1]
-
-	return digits, chars
+	return groups
 
 
-def ingredient_list_to_notes(ingredients_list, chars, digits):
-	ingredients = []
-	for ingredient in ingredients_list:
-
-		if digits.get(ingredient) is not None:
-			ingredients.append(digits[ingredient][1:])
-
-		if chars.get(ingredient) is not None:
-			ingredients.append(chars[ingredient][1:])
-
-	return ingredients
-
-
-def parse_meals(day, digits, chars):
+def parse_meals(day, groups):
 	ingredients_regex = re.compile('Inhalt:.*')
 
 	meals_t_rows = day.find_all('tr')
@@ -102,19 +74,14 @@ def parse_meals(day, digits, chars):
 		if len(meal_t_datas) != 3:
 			continue
 
-		category = [meal_t_datas[0].text]
-		if len(category) == 1:
-			category = category[0]
-		else:
-			category = 'Hauptgerichte'
-
+		category = meal_t_datas[0].text
 		notes = []
 		ingredients = ingredients_regex.findall(meal_t_datas[1].text)
 
 		if len(ingredients) > 0:
-			ingredients_list = ingredients[0].strip('Inhalt: ').strip('\r').split(',')
+			ingredients_list = ingredients[0].strip('Inhalt: ').strip().split(',')
 
-			notes = ingredient_list_to_notes(ingredients_list, chars, digits)
+			notes = [groups[note].strip() for note in ingredients_list if note in groups]
 
 		main_dish = ingredients_regex.sub('', meal_t_datas[1].text).strip()
 
@@ -129,20 +96,23 @@ def parse_meals(day, digits, chars):
 
 
 def parse_url(url, today=False):
-	year = datetime.now().isocalendar()[0]
-	week = datetime.now().isocalendar()[1]
 
 	days_regex = re.compile('day_\d$')
 
 	canteen = LazyBuilder()
 
-	for i in range(0, 3):
+	content = urlopen(url).read()
+	document = parse(content, 'lxml')
 
-		content = urlopen(url+'?selWeek='+str(year)+'-'+str(week + i)).read()
+	available_weeks = parse_available_weeks(document)
+	employees_fee, guests_fee = parse_fees(document)
+	groups = parse_ingredients(document)
+
+	for week in available_weeks:
+
+		content = urlopen("{}?selWeek={}".format(url, week)).read()
 
 		document = parse(content, 'lxml')
-
-		employees_fee, guests_fee = parse_fees(document)
 
 		mensa_start_date = parse_start_date(document)
 
@@ -152,8 +122,8 @@ def parse_url(url, today=False):
 			day_id = int(day['id'][-1:])
 
 			current_date = mensa_start_date + timedelta(days=day_id-2)
-			digits, chars = parse_ingredients(document)
-			meals = parse_meals(day, digits, chars)
+
+			meals = parse_meals(day, groups)
 			for meal in meals:
 				main_dish, notes, costs, category = meal
 
@@ -161,10 +131,10 @@ def parse_url(url, today=False):
 					costs['employee'] = costs['student'] + employees_fee
 				if guests_fee is not None:
 					costs['other'] = costs['student'] + guests_fee
-				if today and current_date != datetime.today():
+				if today and current_date != date.today():
 					continue
 
-				canteen.addMeal(current_date.date(), category, main_dish, notes, costs,
+				canteen.addMeal(current_date, category, main_dish, notes, costs,
 									None)
 
 	return canteen.toXMLFeed()
