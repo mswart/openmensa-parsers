@@ -20,7 +20,6 @@ def parse_start_date(document):
 
 
 def parse_available_weeks(document):
-
 	sel_week = document.find('select', {"name": 'selWeek'})
 
 	options = sel_week.find_all('option')
@@ -37,7 +36,6 @@ def parse_fees(document):
 	fees = document.find_all('p', class_='MsoNormal', string=fees_regex)
 
 	for fee in fees:
-
 		fee_strings = fees_regex.findall(fee.text)
 		for amount_candidate in fee_strings:
 			amount_strings = amount_regex.findall(amount_candidate)
@@ -57,9 +55,9 @@ def parse_ingredients(document):
 
 	for table in document.select('div.kontextbox > table:nth-of-type(1)'):
 		for s in table.stripped_strings:
-			if groups_regex.search(s):
-				split = s.split(':')
-				groups[split[0]] = split[1]
+			g = groups_regex.search(s)
+			if g is not None:
+				groups[g.group(1)] = g.group(2).strip()
 
 	return groups
 
@@ -79,9 +77,9 @@ def parse_meals(day, groups):
 		ingredients = ingredients_regex.findall(meal_t_datas[1].text)
 
 		if len(ingredients) > 0:
-			ingredients_list = ingredients[0].strip('Inhalt: ').strip().split(',')
+			ingredients_list = ingredients[0][8:].strip().split(',')
 
-			notes = [groups[note].strip() for note in ingredients_list if note in groups]
+			notes = [groups[note] for note in ingredients_list if note in groups]
 
 		main_dish = ingredients_regex.sub('', meal_t_datas[1].text).strip()
 
@@ -95,10 +93,33 @@ def parse_meals(day, groups):
 		yield (main_dish, notes, costs, category)
 
 
-def parse_url(url, today=False):
-
+def parse_meals_for_canteen(document, canteen, employees_fee, guests_fee, groups, today):
 	days_regex = re.compile('day_\d$')
+	mensa_start_date = parse_start_date(document)
 
+	day_divs = document.find_all('div', id=days_regex)
+
+	for day in day_divs:
+		day_id = int(day['id'][-1:])
+
+		current_date = mensa_start_date + timedelta(days=day_id - 2)
+
+		meals = parse_meals(day, groups)
+		for meal in meals:
+			main_dish, notes, costs, category = meal
+
+			if employees_fee is not None:
+				costs['employee'] = costs['student'] + employees_fee
+			if guests_fee is not None:
+				costs['other'] = costs['student'] + guests_fee
+			if today and current_date != date.today():
+				continue
+
+			canteen.addMeal(current_date, category, main_dish, notes, costs,
+							None)
+
+
+def parse_url(url, today=False):
 	canteen = LazyBuilder()
 
 	content = urlopen(url).read()
@@ -108,34 +129,14 @@ def parse_url(url, today=False):
 	employees_fee, guests_fee = parse_fees(document)
 	groups = parse_ingredients(document)
 
-	for week in available_weeks:
+	for idx, week in enumerate(available_weeks):
+		if idx > 0:
+			content = urlopen("{}?selWeek={}".format(url, week)).read()
+			document = parse(content, 'lxml')
 
-		content = urlopen("{}?selWeek={}".format(url, week)).read()
-
-		document = parse(content, 'lxml')
-
-		mensa_start_date = parse_start_date(document)
-
-		day_divs = document.find_all('div', id=days_regex)
-
-		for day in day_divs:
-			day_id = int(day['id'][-1:])
-
-			current_date = mensa_start_date + timedelta(days=day_id-2)
-
-			meals = parse_meals(day, groups)
-			for meal in meals:
-				main_dish, notes, costs, category = meal
-
-				if employees_fee is not None:
-					costs['employee'] = costs['student'] + employees_fee
-				if guests_fee is not None:
-					costs['other'] = costs['student'] + guests_fee
-				if today and current_date != date.today():
-					continue
-
-				canteen.addMeal(current_date, category, main_dish, notes, costs,
-									None)
+		parse_meals_for_canteen(document, canteen, employees_fee, guests_fee, groups, today)
+		if today:
+			break
 
 	return canteen.toXMLFeed()
 
