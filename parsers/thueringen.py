@@ -14,6 +14,8 @@ def parse_start_date(document):
 
 	option = document.find('option', value=calendar_week_regex, selected=True)
 
+	assert option is not None
+
 	start_date_str = week_start_end_date_regex.search(option.text)
 
 	return datetime.strptime(start_date_str.group(), '%d.%m.%Y').date()
@@ -126,11 +128,19 @@ def parse_url(url, today=False):
 	document = parse(content, 'lxml')
 
 	available_weeks = parse_available_weeks(document)
+
+	# for the case that the start date is not auto set by the page e.g. on weekends
+	noskip = False
+	try:
+		parse_start_date(document)
+	except AssertionError:
+		noskip = True
+
 	employees_fee, guests_fee = parse_fees(document)
 	groups = parse_ingredients(document)
 
 	for idx, week in enumerate(available_weeks):
-		if idx > 0:
+		if idx > 0 or noskip:
 			content = urlopen("{}?selWeek={}".format(url, week)).read()
 			document = parse(content, 'lxml')
 
