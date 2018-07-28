@@ -8,14 +8,16 @@ from pyopenmensa.feed import LazyBuilder
 amount_regex = re.compile('\d{1,2},\d{1,2}')
 
 
-def parse_start_date(document):
-	week_start_end_date_regex = re.compile('\d{1,2}\.\d{1,2}\.\d{4}')
+def find_start_date(document):
 	calendar_week_regex = re.compile('\d{4}-\d{1,2}$')
 
-	option = document.find('option', value=calendar_week_regex, selected=True)
+	return document.find('option', value=calendar_week_regex, selected=True)
 
-	assert option is not None
 
+def parse_start_date(document):
+	week_start_end_date_regex = re.compile('\d{1,2}\.\d{1,2}\.\d{4}')
+
+	option = find_start_date(document)
 	start_date_str = week_start_end_date_regex.search(option.text)
 
 	return datetime.strptime(start_date_str.group(), '%d.%m.%Y').date()
@@ -130,11 +132,7 @@ def parse_url(url, today=False):
 	available_weeks = parse_available_weeks(document)
 
 	# for the case that the start date is not auto set by the page e.g. on weekends
-	noskip = False
-	try:
-		parse_start_date(document)
-	except AssertionError:
-		noskip = True
+	noskip = find_start_date(document) is None
 
 	employees_fee, guests_fee = parse_fees(document)
 	groups = parse_ingredients(document)
