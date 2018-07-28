@@ -23,6 +23,7 @@ cities = [
     'siegen',
     'wuerzburg',
     'rostock',
+    'thueringen',
 ]
 
 

@@ -4,6 +4,7 @@ http://localhost:9090/dresden/reichenbachstrasse/full.xml
 http://localhost:9090/duesseldorf/mensa-universitaetsstrasse-duesseldorf/full.xml
 http://localhost:9090/hamburg/hcu/full.xml
 http://localhost:9090/hannover/hauptmensa/full.xml
+http://localhost:9090/thueringen/il-ehrenberg/full.xml
 http://localhost:9090/karlsruhe/adenauerring/full.xml
 http://localhost:9090/leipzig/liebigstrasse/full.xml
 http://localhost:9090/magdeburg/ovgu-unten/full.xml
