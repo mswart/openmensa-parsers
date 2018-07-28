@@ -6,7 +6,7 @@ from utils import Parser
 
 from pyopenmensa.feed import LazyBuilder
 
-# http://www.swcz.de/fileadmin/mediamanager/Formulare_Dokumente/Verpflegung/Zusatzstoffe_und_Allergene.pdf
+# https://www.swcz.de/de/verpflegung/informationen/
 
 legend = {
     '1': 'mit Farbstoff',
@@ -112,7 +112,7 @@ def parse_url(url, today=False):
 
 
 parser = Parser('chemnitz_zwickau', handler=parse_url,
-                shared_prefix='http://www.swcz.de/bilderspeiseplan/xml.php?plan=')
+                shared_prefix='https://www.swcz.de/bilderspeiseplan/xml.php?plan=')
 parser.define('mensa-reichenhainer-strasse', suffix='1479835489')
 parser.define('mensa-strasse-der-nationen', suffix='773823070')
 parser.define('mensa-ring', suffix='4')
