@@ -8,54 +8,55 @@ from utils import Parser
 from pyopenmensa.feed import LazyBuilder
 
 day_regex = re.compile('(?P<day>\d{2})\.(?P<month>\d{2})\.')
-price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
-extra_regex = re.compile('[0-9,]+=(?P<note>\w+(\s|\w)*)')
-
+price_map = {
+    'default': 'student',
+    'bed': 'employee',
+    'guest': 'other',
+}
 
 def parse_url(url, today=False):
     canteen = LazyBuilder()
-    document = parse(urlopen(url).read())
-    for day_div in document.find_all('div', 'day') + document.find_all('article', attrs={'data-day': True}):
+    document = parse(urlopen(url).read(), 'lxml')
+
+    for day_div in document.find_all('div', attrs={'data-day': True}):
         # parse date, warning: calculate year number needed
         date_test = day_regex.search(day_div['data-day'])
         if not date_test:
-            print('Error: unable to parse date')
+            print('Error: unable to parse date "{}"'.format(day_div['data-day']))
             continue
         else:
             year = datetime.datetime.now().year
             if datetime.datetime.now().month > int(date_test.group('month')):
                 year += 1  # date from next year
-            date = "{}-{}-{}".format(year, date_test.group('month'), date_test.group('day'), )
-        if 'nodata' in day_div.attrs.get('class', []) or 'GESCHLOSSEN' in day_div.text:
-            canteen.setDayClosed(date)
-            continue
-        closed_candidate = False
+            date = '{}-{}-{}'.format(year, date_test.group('month'), date_test.group('day'))
+
+        closed_candidate = day_div.find('div', 'holiday') is not None
+
         for meal_article in day_div.find_all('article', 'menu'):
             name = meal_article.find('div', 'title').text
             if not name:
                 continue
-            if 'geschlossen' in name:
-                closed_candidate = True
-                continue
-            category = meal_article.find('div')['title']
-            notes = [v['title'] for v in meal_article.find_all('div', 'theicon') if v['title']]
-            if meal_article.find('div', 'additive'):
-                notes += [v[0] for v in extra_regex.findall(meal_article.find('div', 'additive').text)]
-            price_div = meal_article.find('div', 'price')
-            if price_div is None:
-                canteen.addMeal(date, category, name, notes)
-                continue
+
+            category = meal_article.find('div', 'icon')['title']
+            notes = []
             prices = {}
-            for v, r in (('default', 'student'), ('bed', 'employee'), ('guest', 'other')):
-                price = price_regex.search(price_div['data-' + v])
-                if price:
-                    prices[r] = price.group('price')
-                elif v == 'default':
-                    prices = {}
-                    break
+
+            additives = meal_article.find('div', 'additnr')
+            if additives:
+                notes += [additive.text for additive in additives.find_all('li')]
+            notes += [v['title'] for v in meal_article.find_all('div', 'theicon') if v['title'] and v['title'] not in notes]
+
+            price_div = meal_article.find('div', 'price')
+            if price_div:
+                for k, v in price_map.items():
+                    price = price_div['data-' + k]
+                    if price:
+                        prices[v] = price
             canteen.addMeal(date, category, name, notes, prices)
+
         if closed_candidate and not canteen.hasMealsFor(date):
             canteen.setDayClosed(date)
+
     return canteen.toXMLFeed()
 
 
