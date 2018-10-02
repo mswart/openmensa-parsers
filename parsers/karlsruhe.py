@@ -14,7 +14,7 @@ roles = ('student', 'other', 'employee', 'pupil')
 
 
 def parse_week(canteen, url, place_class=None):
-    content = urlopen(url).read()
+    content = urlopen(url).read().decode('utf-8', errors='ignore')
     document = parse(content)
     legends = document.find_all('div', {'class': 'legende'})
     if len(legends) > 0:
