@@ -18,7 +18,11 @@ categories = {
     107: 'Aktionsteller Vegan',
     108: 'Grillstation',
     116: 'Beilage',
+    120: 'Menü 1',
+    121: 'Menü 2',
+    122: 'Menü 3',
     123: 'Menü 3',
+    124: 'Vegetarisches Menü',
     125: 'Vegan',
     128: 'Schnelle Theke',
     130: 'Sonstige',
@@ -84,7 +88,10 @@ def parse_day(canteen, soup, wdate):
             cl1 = item['class'][1]
             if cl1 == 'category':
                 catNumber = int(re.findall('[0-9]{3}', item['class'][2])[0])
-                category = categories[catNumber]
+                if catNumber in categories:
+                    category = categories[catNumber]
+                else:
+                    category = categories[130]
             elif cl1 == 'description':
                 description = item.text.strip()
             elif cl1 == 'supplies':
