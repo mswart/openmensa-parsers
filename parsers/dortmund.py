@@ -86,8 +86,7 @@ def parse_legend(url):
 
 def parse_day(canteen, soup, wdate):
     global categories
-    menu = soup.find('div', { 'class' : 'meals-wrapper' })
-    mealsBody = menu.find('div', { 'class' : 'meals-body' })
+    mealsBody = soup.find('div', { 'class' : 'meals-body' })
 
     for meal in mealsBody.find_all('div', { 'class' : 'meal-item' }):
         for item in meal.find_all('div', { 'class' : 'item' }):
@@ -120,7 +119,7 @@ parser.define('hauptmensa', suffix='tu-dortmund/hauptmensa/')
 parser.define('mensa-sued', suffix='tu-dortmund/mensa-sued/')
 parser.define('vital', suffix='tu-dortmund/vital/')
 parser.define('archeteria', suffix='tu-dortmund/archeteria/')
-parser.define('mensa-max-ophuels-platz', suffix='fh-dortmund/mensa-max-ophuels-platz/')
+parser.define('mensa-max-ophuels-platz', suffix='fh-dortmund/max-ophuels-platz/')
 parser.define('mensa-sonnenstrasse', suffix='fh-dortmund/sonnenstrasse/')
 parser.define('kostbar', suffix='fh-dortmund/mensa-kostbar/')
 parser.define('food-fakultaet', suffix='tu-dortmund/food-fakultaet/')
