@@ -17,6 +17,7 @@ categories = {
     106: 'Aktionsteller Fisch',
     107: 'Aktionsteller Vegan',
     108: 'Grillstation',
+    109: 'Selfservice Station',
     116: 'Beilage',
     120: 'Menü 1',
     121: 'Menü 2',
@@ -27,7 +28,9 @@ categories = {
     128: 'Schnelle Theke',
     130: 'Sonstige',
     131: 'Low Carb Teller',
-    135: 'Pastatheke',
+    135: 'Pastatheke Pastaauswahl',
+    136: 'Pastatheke Toppings',
+    137: 'Pastatheke Saucen',
 }
 
 def getAndFormatPrice(price):
@@ -119,3 +122,8 @@ parser.define('mensa-sonnenstrasse', suffix='fh-dortmund/sonnenstrasse/')
 parser.define('kostBar', suffix='fh-dortmund/mensa-kostbar/')
 parser.define('food-fakultaet', suffix='tu-dortmund/food-fakultaet/')
 parser.define('mensa-ism', suffix='ism/mensa-der-ism/')
+parser.define('hagen-fernuni', suffix='hagen')
+parser.define('fsw-snackit', suffix='fh-suedwestfalen/hagen/')
+parser.define('fsw-canape', suffix='fh-suedwestfalen/iserlohn/')
+parser.define('fsw-davinci', suffix='fh-suedwestfalen/meschede/')
+parser.define('fsw-mensa', suffix='fh-sueadwestfalen/soest/')
