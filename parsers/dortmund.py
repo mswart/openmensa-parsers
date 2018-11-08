@@ -35,8 +35,11 @@ categories = {
 
 def getAndFormatPrice(price):
     price = re.search('(\d+,\d{1,2})', price)
-    formatted = re.sub('(\d+),(\d+)', r'\1.\2', price.group(0))
-    return float(formatted)
+    if price != None:
+        formatted = re.sub('(\d+),(\d+)', r'\1.\2', price.group(0))
+        return float(formatted)
+    else:
+        return '-' 
 
 def getWeekdays(day):
     currentWeekday = day.weekday()
