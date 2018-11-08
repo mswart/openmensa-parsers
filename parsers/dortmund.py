@@ -25,6 +25,7 @@ categories = {
     123: 'Menü 3',
     124: 'Vegetarisches Menü',
     125: 'Vegan',
+    127: 'Aktionsteller',
     128: 'Schnelle Theke',
     130: 'Sonstige',
     131: 'Low Carb Teller',
