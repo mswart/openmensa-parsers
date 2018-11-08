@@ -102,8 +102,6 @@ def parse_day(canteen, soup, wdate):
                     guest_price = price
         canteen.addMeal(wdate, category, description, notes=supplies, prices={'student': student_price, 'employee': staff_price, 'other': guest_price})
 
-print(parse_url('https://www.stwdo.de/mensa-co/tu-dortmund/hauptmensa/'))
-
 parser = Parser('dortmund', handler=parse_url, shared_prefix='https://www.stwdo.de/mensa-co/')
 parser.define('hauptmensa', suffix='tu-dortmund/hauptmensa/')
 parser.define('mensa-sued', suffix='tu-dortmund/mensa-sued/')
