@@ -18,6 +18,7 @@ categories = {
     107: 'Aktionsteller Vegan',
     108: 'Grillstation',
     109: 'Selfservice Station',
+    115: 'Restaurant',
     116: 'Beilage',
     120: 'Menü 1',
     121: 'Menü 2',
