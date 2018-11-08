@@ -3,7 +3,7 @@ import re
 
 from bs4 import BeautifulSoup
 import datetime
-# from utils import Parser
+from utils import Parser
 
 from pyopenmensa.feed import LazyBuilder
 
@@ -104,13 +104,13 @@ def parse_day(canteen, soup, wdate):
 
 print(parse_url('https://www.stwdo.de/mensa-co/tu-dortmund/hauptmensa/'))
 
-# parser = Parser('dortmund', handler=parse_url, shared_prefix='https://www.stwdo.de/mensa-co/')
-# parser.define('hauptmensa', suffix='tu-dortmund/hauptmensa/')
-# parser.define('mensa-sued', suffix='tu-dortmund/mensa-sued/')
-# parser.define('vital', suffix='tu-dortmund/vital/')
-# parser.define('archeteria', suffix='tu-dortmund/archeteria/')
-# parser.define('mensa-max-ophuels-platz', suffix='fh-dortmund/mensa-max-ophuels-platz/')
-# parser.define('mensa-sonnenstrasse', suffix='fh-dortmund/sonnenstrasse/')
-# parser.define('kostBar', suffix='fh-dortmund/mensa-kostbar/')
-# parser.define('food-fakultaet', suffix='tu-dortmund/food-fakultaet/')
-# parser.define('mensa-ism', suffix='ism/mensa-der-ism/')
+parser = Parser('dortmund', handler=parse_url, shared_prefix='https://www.stwdo.de/mensa-co/')
+parser.define('hauptmensa', suffix='tu-dortmund/hauptmensa/')
+parser.define('mensa-sued', suffix='tu-dortmund/mensa-sued/')
+parser.define('vital', suffix='tu-dortmund/vital/')
+parser.define('archeteria', suffix='tu-dortmund/archeteria/')
+parser.define('mensa-max-ophuels-platz', suffix='fh-dortmund/mensa-max-ophuels-platz/')
+parser.define('mensa-sonnenstrasse', suffix='fh-dortmund/sonnenstrasse/')
+parser.define('kostBar', suffix='fh-dortmund/mensa-kostbar/')
+parser.define('food-fakultaet', suffix='tu-dortmund/food-fakultaet/')
+parser.define('mensa-ism', suffix='ism/mensa-der-ism/')

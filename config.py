@@ -6,6 +6,7 @@ cities = [
     'aachen',
     'chemnitz_zwickau',
     'darmstadt',
+    'dortmund',
     'dresden',
     'duesseldorf',
     'erlangen_nuernberg',
