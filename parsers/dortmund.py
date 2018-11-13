@@ -1,8 +1,9 @@
-import requests
 import re
-
-from bs4 import BeautifulSoup
 import datetime
+import urllib.request as rq
+
+from urllib.parse import urlencode as urlencode
+from bs4 import BeautifulSoup
 from utils import Parser
 
 from pyopenmensa.feed import LazyBuilder
@@ -60,9 +61,10 @@ def parse_url(url, today=False):
     week = getWeekdays(day)
 
     for d in range(7):
-        payload = {'tx_pamensa_mensa[date]' : week[d]}
-        data = requests.get(url, payload)
-        soup = BeautifulSoup(data.text, 'html.parser')
+        py = {'tx_pamensa_mensa[date]' : week[d]}
+        payload = urlencode(py).encode('ascii')
+        data = rq.urlopen(url, payload).read().decode('utf-8')
+        soup = BeautifulSoup(data, 'lxml')
 
         parse_day(canteen, soup, week[d])
 
@@ -72,8 +74,8 @@ def parse_url(url, today=False):
     return canteen.toXMLFeed()
 
 def parse_legend(url):
-    data = requests.get(url)
-    soup = BeautifulSoup(data.text, 'html.parser')
+    data = rq.urlopen(url).read().decode('utf-8')
+    soup = BeautifulSoup(data, 'lxml')
 
     table = soup.find('table', { 'class' : 'ce-table' })
     tbody = soup.find('tbody')
