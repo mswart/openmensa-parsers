@@ -106,7 +106,8 @@ def parse_day(canteen, soup, wdate):
             elif cl1 == 'supplies':
                 supplies = []
                 for supply in item.find_all('img'):
-                    supplies.append(supply['title'][0])
+                    if supply['title']:
+                        supplies.append(supply['title'])
             elif cl1 == 'price':
                 cl2 = item['class'][2]
                 price = getAndFormatPrice(item.text)
