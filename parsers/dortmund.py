@@ -64,7 +64,7 @@ def parse_url(url, today=False):
         py = {'tx_pamensa_mensa[date]' : week[d]}
         payload = urlencode(py).encode('ascii')
         data = rq.urlopen(url, payload).read().decode('utf-8')
-        soup = BeautifulSoup(data, 'lxml')
+        soup = BeautifulSoup(data, 'html.parser')
 
         parse_day(canteen, soup, week[d])
 
@@ -75,7 +75,7 @@ def parse_url(url, today=False):
 
 def parse_legend(url):
     data = rq.urlopen(url).read().decode('utf-8')
-    soup = BeautifulSoup(data, 'lxml')
+    soup = BeautifulSoup(data, 'html.parser')
 
     table = soup.find('table', { 'class' : 'ce-table' })
     tbody = soup.find('tbody')
