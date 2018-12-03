@@ -84,7 +84,8 @@ def parse_legend(url):
 
     for tr in tbody.find_all('tr'):
         td = tr.find_all('td')
-        legend[td[0].text] = td[1].text
+        key = td[0].text.strip(' ')
+        legend[key] = td[1].text
 
     return legend
 
