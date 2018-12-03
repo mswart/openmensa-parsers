@@ -56,8 +56,11 @@ def getWeekdays(day):
 
 def parse_url(url, today=False):
     canteen = LazyBuilder()
-    day = datetime.date.today()
 
+    legend_url = 'https://www.stwdo.de/mensa-co/allgemein/zusatzstoffe/'
+    canteen.legend = parse_legend(legend_url)
+
+    day = datetime.date.today()
     week = getWeekdays(day)
 
     for d in range(7):
@@ -67,9 +70,6 @@ def parse_url(url, today=False):
         soup = BeautifulSoup(data, 'html.parser')
 
         parse_day(canteen, soup, week[d])
-
-    legend_url = 'https://www.stwdo.de/mensa-co/allgemein/zusatzstoffe/'
-    canteen.legend = parse_legend(legend_url)
 
     return canteen.toXMLFeed()
 
@@ -96,10 +96,7 @@ def parse_day(canteen, soup, wdate):
             cl1 = item['class'][1]
             if cl1 == 'category':
                 catNumber = int(re.findall('[0-9]{3}', item['class'][2])[0])
-                if catNumber in categories:
-                    category = categories[catNumber]
-                else:
-                    category = categories[130]
+                category = categories.get(catNumber, 130)
             elif cl1 == 'description':
                 description = item.text.strip()
             elif cl1 == 'supplies':
