@@ -49,6 +49,9 @@ def getWeekdays(day):
 def parse_url(url, today=False):
     canteen = LazyBuilder()
 
+    canteen.extra_regex = re.compile('\((?P<extra>[0-9a-zA-Z]{1,3}'
+                                     '(?:,[0-9a-zA-Z]{1,3})*)\)', re.UNICODE)
+
     legend_url = 'https://www.stwdo.de/mensa-co/allgemein/zusatzstoffe/'
     canteen.legend = parse_legend(legend_url)
 
@@ -81,14 +84,21 @@ def parse_legend(url):
 
     return legend
 
+def define_category(item, img):
+    if len(img['title']) == 0:
+        return item['title']
+    else:
+        catNumber = int(re.findall('[0-9]{3}', item['class'][2])[0])
+        return categories.get(catNumber, 130)
+
 def parse_day(canteen, soup, wdate):
     mealsBody = soup.find('div', { 'class' : 'meals-body' })
 
     for meal in mealsBody.find_all('div', { 'class' : 'meal-item' }):
         for item in meal.find_all('div', { 'class' : 'item' }):
             if 'category' in item['class']:
-                catNumber = int(re.findall('[0-9]{3}', item['class'][2])[0])
-                category = categories.get(catNumber, 130)
+                img = item.find('img')
+                category = define_category(item, img)
             elif 'description' in item['class']:
                 description = item.text.strip()
             elif 'supplies'in item['class']:
