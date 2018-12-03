@@ -94,8 +94,7 @@ def parse_day(canteen, soup, wdate):
 
     for meal in mealsBody.find_all('div', { 'class' : 'meal-item' }):
         for item in meal.find_all('div', { 'class' : 'item' }):
-            cl1 = item['class'][1]
-            if cl1 == 'category':
+            if 'category' in item['class']:
                 catNumber = int(re.findall('[0-9]{3}', item['class'][2])[0])
                 category = categories.get(catNumber, 130)
             elif cl1 == 'description':
