@@ -36,14 +36,6 @@ categories = {
     137: 'Pastatheke Saucen',
 }
 
-def getAndFormatPrice(price):
-    price = re.search('(\d+,\d{1,2})', price)
-    if price != None:
-        formatted = re.sub('(\d+),(\d+)', r'\1.\2', price.group(0))
-        return float(formatted)
-    else:
-        return '-' 
-
 def getWeekdays(day):
     currentWeekday = day.weekday()
     week = []
@@ -97,21 +89,20 @@ def parse_day(canteen, soup, wdate):
             if 'category' in item['class']:
                 catNumber = int(re.findall('[0-9]{3}', item['class'][2])[0])
                 category = categories.get(catNumber, 130)
-            elif cl1 == 'description':
+            elif 'description' in item['class']:
                 description = item.text.strip()
-            elif cl1 == 'supplies':
+            elif 'supplies'in item['class']:
                 supplies = []
                 for supply in item.find_all('img'):
                     if supply['title']:
                         supplies.append(supply['title'])
-            elif cl1 == 'price':
-                cl2 = item['class'][2]
-                price = getAndFormatPrice(item.text)
-                if cl2 == 'student':
+            elif 'price'in item['class']:
+                price = item.text
+                if 'student' in item['class']:
                     student_price = price
-                elif cl2 == 'staff':
+                elif 'staff' in item['class']:
                     staff_price = price
-                elif cl2 == 'guest':
+                elif 'guest' in item['class']:
                     guest_price = price
         canteen.addMeal(wdate, category, description, notes=supplies, prices={'student': student_price, 'employee': staff_price, 'other': guest_price})
 
