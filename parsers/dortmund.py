@@ -89,7 +89,6 @@ def parse_legend(url):
     return legend
 
 def parse_day(canteen, soup, wdate):
-    global categories
     mealsBody = soup.find('div', { 'class' : 'meals-body' })
 
     for meal in mealsBody.find_all('div', { 'class' : 'meal-item' }):
