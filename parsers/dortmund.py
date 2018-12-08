@@ -92,9 +92,9 @@ def define_category(item, img):
         return categories.get(catNumber, fallback)
 
 def getAndFormatPrice(price):
-    price = re.search('(\d+,\d{1,2})', price)
+    price = re.search('(\d+),(\d{2})', price)
     if price is not None:
-        formatted = re.sub('(\d+),(\d+)', r'\1.\2', price.group(0))
+        formatted = int(price.group(1) + price.group(2))
         return formatted
     else:
         return '-'
