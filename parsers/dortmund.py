@@ -58,13 +58,12 @@ def parse_url(url, today=False):
     day = datetime.date.today()
     week = getWeekdays(day)
 
-    for d in range(7):
-        py = {'tx_pamensa_mensa[date]' : week[d]}
+    for wDay in week:
+        py = {'tx_pamensa_mensa[date]' : wDay}
         payload = urlencode(py).encode('ascii')
         data = rq.urlopen(url, payload).read().decode('utf-8')
         soup = BeautifulSoup(data, 'html.parser')
-
-        parse_day(canteen, soup, week[d])
+        parse_day(canteen, soup, wDay)
 
     return canteen.toXMLFeed()
 
@@ -85,11 +84,20 @@ def parse_legend(url):
     return legend
 
 def define_category(item, img):
-    if len(img['title']) == 0:
-        return item['title']
+    if img is not None and len(img['title']) > 0:
+        return img['title']
     else:
         catNumber = int(re.findall('[0-9]{3}', item['class'][2])[0])
-        return categories.get(catNumber, 130)
+        fallback = categories.get(130)
+        return categories.get(catNumber, fallback)
+
+def getAndFormatPrice(price):
+    price = re.search('(\d+,\d{1,2})', price)
+    if price is not None:
+        formatted = re.sub('(\d+),(\d+)', r'\1.\2', price.group(0))
+        return formatted
+    else:
+        return '-'
 
 def parse_day(canteen, soup, wdate):
     mealsBody = soup.find('div', { 'class' : 'meals-body' })
@@ -109,11 +117,11 @@ def parse_day(canteen, soup, wdate):
             elif 'price'in item['class']:
                 price = item.text
                 if 'student' in item['class']:
-                    student_price = price
+                    student_price = getAndFormatPrice(price)
                 elif 'staff' in item['class']:
-                    staff_price = price
+                    staff_price = getAndFormatPrice(price)
                 elif 'guest' in item['class']:
-                    guest_price = price
+                    guest_price = getAndFormatPrice(price)
         canteen.addMeal(wdate, category, description, notes=supplies, prices={'student': student_price, 'employee': staff_price, 'other': guest_price})
 
 parser = Parser('dortmund', handler=parse_url, shared_prefix='https://www.stwdo.de/mensa-co/')
