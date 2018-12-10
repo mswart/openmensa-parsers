@@ -54,7 +54,7 @@ def parse_url(url, today=False):
 
     legend_url = 'https://www.stwdo.de/mensa-co/allgemein/zusatzstoffe/'
     legend = parse_legend(legend_url)
-    canteen.setLegendData(legend))
+    canteen.setLegendData(legend)
 
     day = datetime.date.today()
     week = getWeekdays(day)
