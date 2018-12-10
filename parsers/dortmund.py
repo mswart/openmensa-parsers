@@ -53,7 +53,8 @@ def parse_url(url, today=False):
                                      '(?:,[0-9a-zA-Z]{1,3})*)\)', re.UNICODE)
 
     legend_url = 'https://www.stwdo.de/mensa-co/allgemein/zusatzstoffe/'
-    canteen.legend = parse_legend(legend_url)
+    legend = parse_legend(legend_url)
+    canteen.setLegendData(legend))
 
     day = datetime.date.today()
     week = getWeekdays(day)
