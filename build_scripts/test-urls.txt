@@ -15,3 +15,4 @@ http://localhost:9090/wuerzburg/austrasse/full.xml
 http://localhost:9090/erlangen_nuernberg/ansbach/full.xml
 http://localhost:9090/rostock/mensa-sued/full.xml
 http://localhost:9090/saarland/sb/full.xml
+http://localhost:9090/dortmund/tu-hauptmensa/full.xml
