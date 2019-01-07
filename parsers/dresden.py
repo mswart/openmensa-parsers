@@ -6,53 +6,84 @@ from utils import Parser
 
 from pyopenmensa.feed import LazyBuilder, extractDate
 
-price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
+price_regex = re.compile(r'(?P<price>\d+[,.]\d{2}) ?€')
+speiseplan_regex = re.compile(r'^Speiseplan\s+')
+kein_angebot_regex = re.compile(r'kein Angebot')
 
 roles = ('student', 'employee')
 
 
 def parse_week(url, canteen):
-    document = parse(urlopen(url).read())
-    for day_table in document.find_all('table', 'speiseplan'):
-        try:
-            date = extractDate(day_table.thead.tr.th.text)
-        except ValueError:
-            # There was no valid date in the table header, which happens eg
-            # for special "Aktionswoche" tables.
-            # TODO: check if this table contains any meals, which was not the
-            #       case when it was used for the first time.
-            continue
-        if day_table.find('td', 'keinangebot'):
-            canteen.setDayClosed(date)
-            continue
-        for meal_tr in day_table.tbody.children:
-            if len(meal_tr.find_all('a') or []) < 1:
+    data = urlopen(url).read().decode('utf-8')
+    document = parse(data, 'lxml')
+
+    # The day plans are in a div with no special class or id. Thus
+    # we try to find a div with a heading "Speiseplan "
+    for week_heading in document(class_='swdd-ueberschrift',
+                                 text=speiseplan_regex):
+        week_div = week_heading.parent
+
+        # The meals for each day a in card. Again there is no class or id to
+        # select the meal cards. Thus we lookung for all card with a card-header
+        # which stores the date
+        for card_header in week_div.find_all(class_='card-header'):
+            day_card = card_header.parent
+
+            try:
+                date = extractDate(card_header.text)
+            except ValueError:
+                # There was no valid date in the table header, which happens eg
+                # for special "Aktionswoche" cards.
+                # TODO: check if this card contains any meals, which was not the
+                #       case when it was used for the first time.
                 continue
-            name = meal_tr.td.text
-            if ': ' in name:
-                category, name = name.split(': ', 1)
-            else:
-                category = 'Angebote'
-            if len(name) > 200:
-                name = name[:200] + ' ...'
-            notes = []
-            for img in meal_tr.contents[1].find_all('img'):
-                notes.append(img['title'])
-            canteen.addMeal(date, category, name, notes,
-                            price_regex.findall(meal_tr.contents[2].text), roles)
+
+            # Check if there is a "kein Angebot" item
+            if day_card.find(class_='list-group-item', text=kein_angebot_regex):
+                canteen.setDayClosed(date)
+                continue
+
+            # Iterate over the list-group-item within the card which are used
+            # for individual meals
+            for meal in day_card.find_all(class_='list-group-item'):
+
+                name = meal.find(name='span')
+                if name is not None:
+                    name = name.text
+                else:
+                    continue
+
+                if ': ' in name:
+                    category, name = name.split(': ', 1)
+                else:
+                    category = 'Angebote'
+
+                notes = [img['alt'] for img in meal.find_all(class_='swdd-spl-symbol')]
+
+                if '* ' in name:
+                    name, note = name.split('* ', 1)
+                    notes.append(note)
+
+                if meal.strong is not None:
+                    prices = price_regex.findall(meal.strong.text)
+                else:
+                    prices = []
+
+                canteen.addMeal(date, category, name, notes,
+                                prices, roles)
 
 
 def parse_url(url, today=False):
     canteen = LazyBuilder()
-    parse_week(url + '.html', canteen)
+    parse_week(url + '.html?view=list', canteen)
     if not today:
-        parse_week(url + '-w1.html', canteen)
-        parse_week(url + '-w2.html', canteen)
+        parse_week(url + '-w1.html?view=list', canteen)
+        parse_week(url + '-w2.html?view=list', canteen)
     return canteen.toXMLFeed()
 
 
 parser = Parser('dresden', handler=parse_url,
-                shared_prefix='http://www.studentenwerk-dresden.de/mensen/speiseplan/')
+                shared_prefix='https://www.studentenwerk-dresden.de/mensen/speiseplan/')
 parser.define('reichenbachstrasse', suffix='mensa-reichenbachstrasse')
 parser.define('zeltschloesschen', suffix='zeltschloesschen')
 parser.define('alte-mensa', suffix='alte-mensa')
