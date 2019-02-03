@@ -63,7 +63,7 @@ def parse_week(url, canteen):
                 continue
             notes.append(legends[notematch])
         canteen.addMeal(date, category, name, notes,
-                        price_regex.findall(line), roles)
+                        price_regex.findall(line)[-3:], roles)
 
 
 def parse_url(url, today=False):
