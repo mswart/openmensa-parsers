@@ -19,9 +19,14 @@ def handler(eniron, start_response):
         return ['<xml version="1.0"><info>{provider}/{canteen}/{feed}.xml</info></xml>']
     request = utils.Request(eniron)
     try:
-        content = parse(request, *(match.group('dirs').split('/') + [match.group('file')]))
+        file = match.group('file')
+        content = parse(request, *(match.group('dirs').split('/') + [file]))
         content = content.encode('utf8')
-        start_response('200 OK', [('Content-Type', 'application/xml; charset=utf-8'),
+        if file.endswith(".json"):
+            content_type = 'application/json'
+        else:
+            content_type = 'application/xml'
+        start_response('200 OK', [('Content-Type', content_type + '; charset=utf-8'),
                                   ('Content-Length', str(len(content)))])
         return (content,)
     except utils.Redirect as e:
