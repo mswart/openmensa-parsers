@@ -5,11 +5,11 @@ from utils import Parser, EsaySource, Source
 
 
 class Canteen(EsaySource):
-    def __init__(self, *args, location, needed_title, not_halle=False):
+    def __init__(self, *args, location, needed_title, meta):
         super(Canteen, self).__init__(*args)
         self.location = location
         self.needed_title = needed_title
-        self.not_halle = not_halle
+        self.meta = meta
 
     def parse_data(self, **kwargs):
         kwargs['selected_locations[]'] = self.location
@@ -44,30 +44,23 @@ class Canteen(EsaySource):
             self.feed.addMeal(date, category, name, prices=prices)
 
     def extract_metadata(self):
-        url_template = 'http://www.studentenwerk-halle.de/hochschulgastronomie/{}/{}/'
-        if self.not_halle:
-            url = url_template.format(self.name, 'mensa-' + self.name)
-        else:
-            name = self.name
-            if 'mensa' not in name:
-                name = 'mensa-' + name
-            url = url_template.format(self.parser.local_name, name)
+        url_template = 'http://www.studentenwerk-halle.de/mensen-cafebars/{}/'
+        url = url_template.format(self.meta)
         document = self.parse_remote(url)
-        attachment = document.find(id='attachContact')
+
+        contactInfo = document.find('div', attrs={'itemprop': 'areaServed'})
+        member = document.find('div', attrs={'itemprop': 'member'})
+        address = contactInfo.find(attrs={'itemprop': 'address'})
+        street = address.find(attrs={'itemprop': 'streetAddress'}).text
+        postalCode = address.find(attrs={'itemprop': 'postalCode'}).text
+        city = address.find(attrs={'itemprop': 'addressLocality'}).text
 
         canteen = self.feed
-        canteen.name = document.find('li', attrs={'class': 'current'}).text
+        canteen.name = contactInfo.find(attrs={'itemprop': 'name'}).text
         canteen.availability = 'public'
-        canteen.address = attachment.find(attrs={'class': 'address'}).text + ', ' + attachment.find(attrs={'class': 'city'}).text
-        canteen.city = re.search('\d{5}\s+(?P<city>.+)', canteen.address).group('city')
-        canteen.phone = attachment.find(attrs={'class': 'fon'}).text.split(':')[1].strip()
-        #email_span = attachment.find(attrs={'class': 'email'})
-        #if email_span:
-        #    canteen.email = email_span.text
-
-        script = document.find(id='attachMap').find('script').find_all(text=True)[0]
-        match = re.search('\[\s*(?P<long>\d+\.\d+)\s*,\s*(?P<lat>\d+\.\d+)\s*]', script)
-        canteen.location(match.group('lat'), match.group('long'))
+        canteen.address = '{}, {} {}'.format(street, postalCode, city)
+        canteen.city = city
+        canteen.phone = member.find(attrs={'itemprop': 'telephone'}).text
 
     @Source.today_feed
     def today(self, request):
@@ -89,25 +82,25 @@ class Canteen(EsaySource):
 
 
 parser = Parser(name='halle', version=1.0)
-Canteen('harzmensa', parser, location=3, needed_title='Harzmensa')
-Canteen('weinbergmensa', parser, location=5, needed_title='Weinbergmensa')
-#Canteen('cafebar-weinberg', parser, location=, needed_title='')
-Canteen('tulpe', parser, location=10, needed_title='Mensa Tulpe')
-Canteen('heidemensa', parser, location=17, needed_title='Heidemensa')
-Canteen('burg', parser, location=12, needed_title='Mensa Burg')
-Canteen('neuwerk', parser, location=9, needed_title='Neuwerk')
-Canteen('franckesche-stiftungen', parser, location=14, needed_title='Franckesche Stiftungen')
+Canteen('harzmensa', parser, location=3, needed_title='Harzmensa', meta='mensen-in-halle/harzmensa')
+Canteen('weinbergmensa', parser, location=5, needed_title='Weinbergmensa', meta='mensen-in-halle/weinbergmensa-mit-cafebar')
+#Canteen('cafebar-weinberg', parser, location=, needed_title='', meta='')
+Canteen('tulpe', parser, location=10, needed_title='Mensa Tulpe', meta='mensen-in-halle/mensa-tulpe')
+Canteen('heidemensa', parser, location=17, needed_title='Heidemensa', meta='mensen-in-halle/heidemensa-mit-cafebar')
+Canteen('burg', parser, location=12, needed_title='Mensa Burg', meta='mensen-in-halle/mensa-burg')
+Canteen('neuwerk', parser, location=9, needed_title='Neuwerk', meta='mensen-in-halle/mensa-neuwerk')
+Canteen('franckesche-stiftungen', parser, location=14, needed_title='Franckesche Stiftungen', meta='mensen-in-halle/mensa-franckesche-stiftungen')
 
 #merseburg = parser.sub('merseburg')
-Canteen('merseburg', parser, location=16, needed_title='Mensa Merseburg', not_halle=True)
+Canteen('merseburg', parser, location=16, needed_title='Mensa Merseburg', meta='mensa-merseburg-mit-cafebar')
 #Canteen('cafebar-merseburg', merseburg, location=, needed_title=)
 
 #dessau = parser.sub('dessau')
-Canteen('dessau', parser, location=13, needed_title='Mensa Dessau', not_halle=True)
+Canteen('dessau', parser, location=13, needed_title='Mensa Dessau', meta='mensa-dessau')
 
-koethen = parser.sub('koethen')
-Canteen('fasanerieallee', koethen, location=7, needed_title='Mensa Köthen')
+#koethen = parser.sub('koethen')
+Canteen('fasanerieallee', parser, location=7, needed_title='Mensa Köthen', meta='mensen-in-koethen/mensa-fasanerieallee')
 #Canteen('lohmannstrasse', koethen, location=, needed_title=None)
 
 #bernburg = parser.sub('bernburg')
-Canteen('bernburg', parser, location=8, needed_title='Mensa Bernburg', not_halle=True)
+Canteen('bernburg', parser, location=8, needed_title='Mensa Bernburg', meta='mensa-bernburg')
