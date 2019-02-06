@@ -1,10 +1,10 @@
 import re
 import datetime
 
-from utils import Parser, EsaySource, Source
+from utils import Parser, EasySource, Source
 
 
-class Canteen(EsaySource):
+class Canteen(EasySource):
     def __init__(self, *args, location, needed_title, meta):
         super(Canteen, self).__init__(*args)
         self.location = location

@@ -120,7 +120,7 @@ class Source(object):
         return '/'.join([request.host, source.parser.name, source.name, name + '.xml'])
 
 
-class EsaySource(Source):
+class EasySource(Source):
     @property
     def feed(self):
         if not hasattr(self, '_feed'):
