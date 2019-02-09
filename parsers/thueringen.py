@@ -94,6 +94,10 @@ def parse_meals(day, groups):
 		students_fee = float(students_fee_string[0].replace(',', '.'))
 		costs = {'student': students_fee}
 
+		# Skip empty meals
+		if len(main_dish) == 0:
+			continue
+
 		yield (main_dish, notes, costs, category)
 
 
