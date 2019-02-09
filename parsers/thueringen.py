@@ -170,7 +170,7 @@ class Canteen(EasySource):
 
 		canteen = self.feed
 		canteen.name = name
-		canteen.address = re.sub(r'^(.*)\s+([^\s]+)\s+(\d{5})$', r'\1, \3 \2', address)
+		canteen.address = re.sub(r'^(.*)\s+([^\s]+)\s+(\d{5})\s*$', r'\1, \3 \2', address)
 		canteen.city = city.capitalize()
 		canteen.location(*location.split(','))
 
