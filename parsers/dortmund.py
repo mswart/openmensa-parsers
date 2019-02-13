@@ -123,7 +123,8 @@ def parse_day(canteen, soup, wdate):
                     staff_price = getAndFormatPrice(price)
                 elif 'guest' in item['class']:
                     guest_price = getAndFormatPrice(price)
-        canteen.addMeal(wdate, category, description, notes=supplies, prices={'student': student_price, 'employee': staff_price, 'other': guest_price})
+        if description != "":
+            canteen.addMeal(wdate, category, description, notes=supplies, prices={'student': student_price, 'employee': staff_price, 'other': guest_price})
 
 parser = Parser('dortmund', handler=parse_url, shared_prefix='https://www.stwdo.de/mensa-co/')
 
