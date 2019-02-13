@@ -16,7 +16,8 @@ script:
   - wget --output-document=/dev/null --input-file=build_scripts/test-urls.txt
   - wget --output-document=/dev/null --input-file=build_scripts/maybe-urls.txt || true
 after_success:
-  - 'test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && build_scripts/travis-publish-package.sh'
+# disabled because apt.dxtt.de currently always returns 406 Not Acceptable (see mswart/openmensa-parsers#89)
+#  - 'test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && build_scripts/travis-publish-package.sh'
 after_script:
   - sudo cat /var/log/uwsgi/app/openmensa-parsers.log
 env:

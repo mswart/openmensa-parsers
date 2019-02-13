@@ -9,7 +9,7 @@ from pyopenmensa.feed import LazyBuilder
 from utils import Parser, Source
 
 
-API_VERSION = "1"
+API_VERSION = "2"
 # please don't copy this key, contact felix@fefrei.de to get your own instead
 API_KEY = "A1RT5M56" + "ibsGaGNZBJQg"
 APP_VERSION = "1"
@@ -30,7 +30,9 @@ LOCATIONS = [
     'hom',
     'musiksb',
     'htwgtb',
-    'mensagarten'
+    'mensagarten',
+    'htwcrb',
+    'htwcas'
 ]
 
 ROLES = {

@@ -116,11 +116,15 @@ class Source(object):
         return Source.feed(name='today', hour='8-14')(fnc)
 
     @staticmethod
+    def full_feed(fnc):
+        return Source.feed(name='full', hour='8')(fnc)
+
+    @staticmethod
     def buildFeedUrl(name, source, request):
         return '/'.join([request.host, source.parser.name, source.name, name + '.xml'])
 
 
-class EsaySource(Source):
+class EasySource(Source):
     @property
     def feed(self):
         if not hasattr(self, '_feed'):
@@ -159,6 +163,10 @@ class EsaySource(Source):
             if callable(args['url']):
                 args['url'] = args['url'](args['name'], self, request)
             self.feed.define(**args)
+
+    def extract_metadata(self):
+        """Can be implemented to provide more information about the canteen."""
+        pass
 
 
 class HandlerSource(Source):

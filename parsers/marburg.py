@@ -1,61 +1,85 @@
 from urllib.request import urlopen
 from bs4 import BeautifulSoup as parse
-from bs4.element import Tag
 import re
 
 from utils import Parser
 
-from pyopenmensa.feed import LazyBuilder, extractWeekDates
+from pyopenmensa.feed import LazyBuilder, extractDate
 
-employeePrice = re.compile('Unibedienstetenzuschlag:? ?(?P<price>\d+[,.]\d{2}) ?€?')
-otherPrice = re.compile('Gästezuschlag:? ?(?P<price>\d+[,.]\d{2}) ?€?')
+notes_regex = re.compile(r'\((\d+,?\s*)*\)\s*')
+price_regex = re.compile(r'(?P<price>\d+[,.]\d{2}) ?€')
+whitspace_regex = re.compile(r'\s+')
+comma_regex = re.compile(r'\s*,\s*')
+bracket_regex = re.compile(r'\s*\(\s*')
 
-
-def parse_week(url, canteen, mensa):
-    document = parse(urlopen(url).read())
-    # extra legends information
-    canteen.setLegendData(text=document.find(text='Kennzeichnung: ').parent.next_sibling.get_text().replace('&nbsp;', ' '))
-    # additional charges
-    prices = {}
-    for p in document.find_all('p'):
-        match = employeePrice.search(p.text)
-        if match:
-            prices['employee'] = match.group('price')
-        match = otherPrice.search(p.text)
-        if match:
-            prices['other'] = match.group('price')
-    if len(prices) != 2:
-        print('Could not extract addtional charges for employee and others')
-    canteen.setAdditionalCharges('student', prices)
-    # find
-    mensa_data = document.find('h1', text=re.compile(mensa)).parent
-    while type(mensa_data) != Tag or mensa_data.name != 'div'\
-            or 'tx-cagcafeteria-pi1' not in mensa_data.get('class', []):
-        mensa_data = mensa_data.next_sibling
-    weekDays = extractWeekDates(mensa_data.find('h2').text)
-    for day_headline in mensa_data.find_all('h3'):
-        date = weekDays[day_headline.text]
-        day_table = day_headline.next_sibling.next_sibling
-        for tr_menu in day_table.tbody.find_all('tr'):
-            category = tr_menu.find_all('td')[0].text.strip()
-            name = tr_menu.find_all('td')[1].text.replace('\r\n', ' ').strip()
-            canteen.addMeal(date, category, name, [], tr_menu.find_all('td')[2].text)
+roles = ('student',)
 
 
-def parse_url(url, mensa, *weeks, today):
+def parse_dish(dish, canteen):
+
+    date = extractDate(dish['data-date'])
+
+    name = dish.find(class_='neo-menu-single-title')
+    if name is not None:
+        notes = set(x['title'] for x in name.find_all(name='abbr'))
+    else:
+        return
+
+    name = re.sub(notes_regex, '', name.text.strip())
+    if len(name) == 0:
+        return
+
+    # Fix formating issues:
+    name = re.sub(whitspace_regex, ' ', name)  # Multiple Whitespace
+    name = re.sub(comma_regex, ', ', name.strip(', '))  # No whitspace after comma
+    name = re.sub(bracket_regex, ' (', name)
+
+    category = dish.find(class_='neo-menu-single-type')
+    if category is not None:
+        category = category.text
+    elif dish.find_previous(name='h2') is not None:
+        # A side
+        category = 'Beilagen: ' + dish.find_previous(name='h2').text.capitalize()
+    else:
+        # Just in case
+        category = 'Unbekannt'
+
+    price = dish.find(class_='neo-menu-single-price')
+    if price is not None:
+        prices = price_regex.findall(price.text)
+    else:
+        prices = {}
+
+    canteen.addMeal(date, category, name, notes, prices, roles)
+    return
+
+
+def parse_url(url, data_canteen, today=False):
     canteen = LazyBuilder()
-    for week in weeks:
-        parse_week(url + week, canteen, mensa)
-        if today:
-            break
+
+    data = urlopen(url).read().decode('utf-8')
+    document = parse(data, 'lxml')
+
+    dish = document.find(class_='neo-menu-single-dishes')
+    if dish is not None:
+        dishes = dish.find_all(name='tr', attrs={"data-canteen": data_canteen})
+    else:
+        dishes = []
+
+    side = document.find(class_='neo-menu-single-modals')
+    if side is not None:
+        dishes = dishes + side.find_all(name='tr', attrs={"data-canteen": data_canteen})
+
+    for dish in dishes:
+        parse_dish(dish, canteen)
+
     return canteen.toXMLFeed()
 
 
 parser = Parser('marburg', handler=parse_url,
-                shared_args=['http://www.studentenwerk-marburg.de/essen-trinken/speiseplan/'])
-parser.define('bistro', args=['Speiseplan.*Bistro', 'diese-woche-bistro.html', 'naechste-woche-bistro.html'])
-parser.define('mos-diner', args=['Speiseplan.*Diner', 'diese-woche-mos-diner.html'])
-parser.define('erlenring', args=['Mensa Erlenring', 'diese-woche-mensa-erlenring-und-lahnberge.html',
-              'naechste-woche-mensa-erlenring-und-lahnberge.html'])
-parser.define('lahnberge', args=['Mensa Lahnberge', 'diese-woche-mensa-erlenring-und-lahnberge.html',
-              'naechste-woche-mensa-erlenring-und-lahnberge.html'])
+                shared_args=['https://studentenwerk-marburg.de/essen-trinken/speisekarte/'])
+parser.define('bistro', args=[460])
+parser.define('mos-diner', args=[420])
+parser.define('erlenring', args=[330])
+parser.define('lahnberge', args=[340])
+parser.define('cafeteria-lahnberge', args=[490])
