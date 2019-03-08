@@ -12,6 +12,7 @@ price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
 notes_regex = re.compile('\[(?:(([A-Za-z0-9]+),?)+)\]$')
 legend_number_regex = re.compile('\((?P<number>\d+)\)\s+-?\s*(?P<text>.+?)(?:\||$)')
 legend_letters_regex = re.compile('(?P<tag>[A-Z]+)\s+-?\s*(?P<text>.+?)(?:\||$)')
+closed_regex = re.compile('Geschlossen\s+.+?(?P<from>\d+\.\d+\.).+?(?P<to>\d+\.\d+\.)')
 
 roles = ('student', 'other', 'employee', 'pupil')
 
@@ -123,6 +124,8 @@ def parse_week(canteen, url, place_class=None):
         if day_table.tbody:
             day_table = day_table.tbody
         canteen.clearDay(date)  # remove old data about this day
+        found_meals = False
+        closed_date_match = None
         for category_tr in day_table.children:
             if category_tr.name != 'tr':
                 continue
@@ -137,9 +140,13 @@ def parse_week(canteen, url, place_class=None):
                     continue
                 if len(list(meal_tr.children)) != 3:
                     #print('skipping category, unable to parse meal_table: {} tds'.format(len(list(meal_tr.children))))
+                    if len(list(meal_tr.contents)) > 1 and closed_regex.search(meal_tr.contents[1].text):
+                        # Remember closed "meal"
+                        closed_date_match = closed_regex.search(meal_tr.contents[1].text)
                     continue
+                found_meals = True
                 if meal_tr.contents[1].find('span'):
-                    name = meal_tr.contents[1].find('span').text  # Name without notes
+                    name = meal_tr.contents[1].find('span').text  # Name without notes in <sup>
                 else:
                     name = meal_tr.contents[1].text
                 # Add notes:
@@ -156,6 +163,21 @@ def parse_week(canteen, url, place_class=None):
 
                 canteen.addMeal(date, category, name, notes,
                                 price_regex.findall(meal_tr.contents[2].text), roles)
+
+        if not found_meals and closed_date_match:
+            m = closed_date_match
+            now = datetime.datetime.now()
+            year_from = year_to = now.year
+            if now.month == 12:
+                if m['from'].endswith('01.'):
+                    year_from += 1
+                if m['to'].endswith('01.'):
+                    year_to += 1
+            fromdate = datetime.datetime.strptime('%s%d' % (m['from'], year_from), '%d.%m.%Y')
+            todate = datetime.datetime.strptime('%s%d' % (m['to'], year_to), '%d.%m.%Y')
+            while fromdate <= todate:
+                canteen.setDayClosed(fromdate.strftime('%d.%m.%Y'))
+                fromdate += datetime.timedelta(1)
 
 
 def parse_url(url, place_class=None, today=False):
