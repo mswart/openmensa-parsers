@@ -93,7 +93,6 @@ def parse_week(canteen, url, place_class=None):
         # Update legend
         legend_content = legend.find('br').parent
         current_img = None
-        extraLegend2 = {}
         for child in legend_content.children:
             if isinstance(child, str):
                 if current_img:
