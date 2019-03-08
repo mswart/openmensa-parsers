@@ -10,6 +10,8 @@ from pyopenmensa.feed import OpenMensaCanteen
 day_regex = re.compile('(?P<date>\d{4}-\d{2}-\d{2})')
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
 notes_regex = re.compile('\[(?:(([A-Za-z0-9]+),?)+)\]$')
+legend_number_regex = re.compile('\((?P<number>\d+)\)\s+-?\s*(?P<text>.+?)(?:\||$)')
+legend_letters_regex = re.compile('(?P<tag>[A-Z]+)\s+-?\s*(?P<text>.+?)(?:\||$)')
 
 roles = ('student', 'other', 'employee', 'pupil')
 
@@ -86,8 +88,26 @@ def parse_week(canteen, url, place_class=None):
     content = urlopen(url).read().decode('utf-8', errors='ignore')
     document = parse(content, features='lxml')
     legend = document.find('div', {'id': 'leg'})
-    if legend:
-        pass  # TODO Update legend
+    if legend and legend.find('br'):
+        # Update legend
+        legend_content = legend.find('br').parent
+        current_img = None
+        extraLegend2 = {}
+        for child in legend_content.children:
+            if isinstance(child, str):
+                if current_img:
+                    s = child.strip()
+                    if s.startswith('- '):
+                        s = s[2:].strip()
+                    extraLegend[current_img] = s
+                    current_img = None
+                else:
+                    for n, text in legend_number_regex.findall(child):
+                        extraLegend[n] = text
+                    for tag, text in legend_letters_regex.findall(child):
+                        extraLegend[tag] = text
+            elif hasattr(child, 'name') and child.name == 'img':
+                current_img = icon(child['src'])
 
     if place_class:
         document = document.find(id=place_class)
