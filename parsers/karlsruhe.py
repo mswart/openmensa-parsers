@@ -165,16 +165,17 @@ def parse_week(canteen, url, place_class=None):
                                 price_regex.findall(meal_tr.contents[2].text), roles)
 
         if not found_meals and closed_date_match:
-            m = closed_date_match
+            match_from = closed_date_match.group(1)
+            match_to = closed_date_match.group(2)
             now = datetime.datetime.now()
             year_from = year_to = now.year
             if now.month == 12:
-                if m['from'].endswith('01.'):
+                if  match_from.endswith('01.'):
                     year_from += 1
-                if m['to'].endswith('01.'):
+                if match_to.endswith('01.'):
                     year_to += 1
-            fromdate = datetime.datetime.strptime('%s%d' % (m['from'], year_from), '%d.%m.%Y')
-            todate = datetime.datetime.strptime('%s%d' % (m['to'], year_to), '%d.%m.%Y')
+            fromdate = datetime.datetime.strptime('%s%d' % ( match_from, year_from), '%d.%m.%Y')
+            todate = datetime.datetime.strptime('%s%d' % (match_to, year_to), '%d.%m.%Y')
             while fromdate <= todate:
                 canteen.setDayClosed(fromdate.strftime('%d.%m.%Y'))
                 fromdate += datetime.timedelta(1)
