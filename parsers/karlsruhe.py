@@ -183,15 +183,18 @@ def parse_week(canteen, url, place_class=None):
 
             now = datetime.datetime.now()
             year_from = year_to = now.year
-
+            month_from = int(match_from.split(".")[1])
+            month_to = int(match_to.split(".")[1])
             if now.month > 9:
-                if now.month > int(match_to.split(".")[1]):
+                if now.month > month_to:
                     year_to += 1
-                    if now.month > int(match_from.split(".")[1]):
+                    if now.month > month_from:
                         year_from += 1
 
             fromdate = datetime.datetime.strptime('%s%d' % (match_from, year_from), '%d.%m.%Y')
             todate = datetime.datetime.strptime('%s%d' % (match_to, year_to), '%d.%m.%Y')
+            if fromdate < now:
+                fromdate = now
 
             while fromdate <= todate:
                 canteen.setDayClosed(fromdate.strftime('%d.%m.%Y'))
