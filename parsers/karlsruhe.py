@@ -95,7 +95,7 @@ def parse_week(canteen, url, place_class=None):
         current_img = None
         for child in legend_content.children:
             if isinstance(child, str):
-                if current_img:
+                if current_img is not None:
                     s = child.strip()
                     if s.startswith('- '):
                         s = s[2:].strip()
