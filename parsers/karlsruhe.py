@@ -180,14 +180,19 @@ def parse_week(canteen, url, place_class=None):
             # let's assume the whole canteen is closed on the mentioned dates
             match_from = closed_date_match.group("from")
             match_to = closed_date_match.group("to")
+
             now = datetime.datetime.now()
             year_from = year_to = now.year
-            if now.month < int(match_from.split(".")[1]):
-                year_from += 1
-            if now.month < int(match_to.split(".")[1]):
-                year_to += 1
+
+            if now.month > 9:
+                if now.month > int(match_to.split(".")[1]):
+                    year_to += 1
+                    if now.month > int(match_from.split(".")[1]):
+                        year_from += 1
+
             fromdate = datetime.datetime.strptime('%s%d' % (match_from, year_from), '%d.%m.%Y')
             todate = datetime.datetime.strptime('%s%d' % (match_to, year_to), '%d.%m.%Y')
+
             while fromdate <= todate:
                 canteen.setDayClosed(fromdate.strftime('%d.%m.%Y'))
                 fromdate += datetime.timedelta(1)
