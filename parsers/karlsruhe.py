@@ -170,7 +170,7 @@ def parse_week(canteen, url, place_class=None):
                 if img:
                     key = icon(img['src'])
                     if key in extraLegend:
-                        notes.insert(0, extraLegend[key])
+                        notes.append(extraLegend[key])
 
                 canteen.addMeal(date, category, name, notes,
                                 price_regex.findall(meal_tr.contents[2].text), roles)
