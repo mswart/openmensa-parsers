@@ -96,17 +96,20 @@ def parse_week(canteen, url, place_class=None):
         for child in legend_content.children:
             if isinstance(child, str):
                 if current_img is not None:
+                    # Last child was a icon, this must be its label
                     s = child.strip()
                     if s.startswith('- '):
                         s = s[2:].strip()
                     extraLegend[current_img] = s
                     current_img = None
                 else:
+                    # Text notes
                     for n, text in legend_number_regex.findall(child):
                         extraLegend[n] = text
                     for tag, text in legend_letters_regex.findall(child):
                         extraLegend[tag] = text
             elif hasattr(child, 'name') and child.name == 'img':
+                # Icon
                 current_img = icon(child['src'])
 
     if place_class:
@@ -147,14 +150,18 @@ def parse_week(canteen, url, place_class=None):
                 if meal_tr.contents[1].find('span'):
                     name = meal_tr.contents[1].find('span').text  # Name without notes in <sup>
                 else:
-                    name = meal_tr.contents[1].text
-                # Add notes:
+                    name = meal_tr.contents[1].text  # Fallback value: whole line
+
+                # Add notes from <sup>[Ab,Cd,Ef]</sup>
                 sup = meal_tr.find('sup')
                 if sup:
-                    keys = sup.text.strip()[1:-1] if sup.text and sup.text.startswith('[') > 3 else ''
-                    notes = [extraLegend[key] if key in extraLegend else key for key in keys.split(',') if key]
+                    keys = sup.text.strip("[] ") if "[" in sup.text else ''
+                    keys_list = [key.strip() for key in keys.split(',')]
+                    notes = [extraLegend[key] if key in extraLegend else key for key in keys_list if key]
                 else:
                     notes = []
+
+                # Find icons and convert to notes
                 if meal_tr.contents[0].find('img'):
                     key = icon(meal_tr.contents[0].find('img')['src'])
                     if key in extraLegend:
@@ -164,16 +171,17 @@ def parse_week(canteen, url, place_class=None):
                                 price_regex.findall(meal_tr.contents[2].text), roles)
 
         if not found_meals and closed_date_match:
-            match_from = closed_date_match.group(1)
-            match_to = closed_date_match.group(2)
+            # If there were no meals and there's a "geschlossen von .. bis .." message,
+            # let's assume the whole canteen is closed on the mentioned dates
+            match_from = closed_date_match.group("from")
+            match_to = closed_date_match.group("to")
             now = datetime.datetime.now()
             year_from = year_to = now.year
-            if now.month == 12:
-                if  match_from.endswith('01.'):
-                    year_from += 1
-                if match_to.endswith('01.'):
-                    year_to += 1
-            fromdate = datetime.datetime.strptime('%s%d' % ( match_from, year_from), '%d.%m.%Y')
+            if now.month < int(match_from.split(".")[1]):
+                year_from += 1
+            if now.month < int(match_to.split(".")[1]):
+                year_to += 1
+            fromdate = datetime.datetime.strptime('%s%d' % (match_from, year_from), '%d.%m.%Y')
             todate = datetime.datetime.strptime('%s%d' % (match_to, year_to), '%d.%m.%Y')
             while fromdate <= todate:
                 canteen.setDayClosed(fromdate.strftime('%d.%m.%Y'))
