@@ -82,8 +82,10 @@ extraLegend = {
     'ICON=4457_icon_mensavital.jpg': 'Mensa Vital'
 }
 
+
 def icon(src):
     return 'ICON=' + src.rsplit('/', 1).pop()
+
 
 def parse_week(canteen, url, place_class=None):
     content = urlopen(url).read().decode('utf-8', errors='ignore')
@@ -147,10 +149,12 @@ def parse_week(canteen, url, place_class=None):
                         closed_date_match = closed_regex.search(meal_tr.contents[1].text)
                     continue
                 found_meals = True
-                if meal_tr.contents[1].find('span'):
-                    name = meal_tr.contents[1].find('span').text  # Name without notes in <sup>
+                td1 = meal_tr.contents[1]
+                span = td1.find('span')
+                if span:
+                    name = span.text  # Name without notes in <sup>
                 else:
-                    name = meal_tr.contents[1].text  # Fallback value: whole line
+                    name = td1.text  # Fallback value: whole line
 
                 # Add notes from <sup>[Ab,Cd,Ef]</sup>
                 sup = meal_tr.find('sup')
@@ -161,9 +165,10 @@ def parse_week(canteen, url, place_class=None):
                 else:
                     notes = []
 
-                # Find icons and convert to notes
-                if meal_tr.contents[0].find('img'):
-                    key = icon(meal_tr.contents[0].find('img')['src'])
+                # Find and convert icons to notes
+                img = meal_tr.find('img')
+                if img:
+                    key = icon(img['src'])
                     if key in extraLegend:
                         notes.insert(0, extraLegend[key])
 
