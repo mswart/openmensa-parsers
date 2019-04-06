@@ -4,7 +4,7 @@ import os
 import sys
 
 from config import parsers
-from parser_tests.regression_test import get_snapshot_result_path
+from snapshot_tests.snapshot_test import get_snapshot_result_path
 
 
 def generate_snapshot(parser, canteen):

@@ -73,12 +73,12 @@ If you want to refactor your parser, that is you want to change the code, but th
 
 To create or update a snapshot for the parser `aachen/academica`, you need to be in this repository's root directory (this README is in that directory) and run
 ```bash
-python -m parser_tests.update_snapshots aachen academica
+python -m snapshot_tests.update aachen academica
 ```
 
 To test for changes, install pytest (`pip install pytest`) and run
 ```bash
-pytest parser_tests
+pytest snapshot_tests
 ```
 
 ## Further questions
