@@ -12,10 +12,4 @@ setup(name="openmensa-parsers",
       py_modules=['config', 'utils', 'parse', 'wsgihandler',
                   'pyopenmensa/__init__', 'pyopenmensa/feed'],
       include_package_data=True,
-      requires=['beautifulsoup4', 'lxml'],
-      extra_require={
-          'dev': [
-              'pytest',
-              'request-mock',
-          ],
-      })
+      requires=['beautifulsoup4', 'lxml'])

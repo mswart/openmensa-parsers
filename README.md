@@ -68,34 +68,18 @@ Let's imagine you want to create a parser for the `eatmaginary` canteen located 
 8. Register the new canteens on [openmensa] with the feed from `http://omfeeds.devtation.de/<provider identifier>/<canteen identifier>.xml` and (optional) today feed from `http://omfeeds.devtation.de/<provider identifier>/<canteen identifier>/today.xml`.
    In our example these URLs would be `http://omfeeds.devtation.de/essendorf/eatmaginary.xml`.
 
-## <a name="regression-tests">Regression Tests</a>
-A regression test allows you to detect whether you've broken your parser. If you change your parser and it then accidentally has a different output, that is called a regression.
+## <a name="snapshot-tests">Snapshot tests</a>
+If you want to refactor your parser, that is you want to change the code, but the output should stay the same, then you can make use of snapshot tests. First, you create a snapshot of the current result. Then you make changes to your parser and test if the changed parser has a new result. If the result really is different, you might have an error in your code. Or you might find that the new result is better, in which case you can simply create a new snapshot that will be used for future tests.
 
-It can be useful to refactor your code, i. e. to restructure it without changing what it does. In these cases, you will benefit from knowing when you've accidentally changed what your parser outputs—it happens all the time. A regression test will tell you exactly that.
+To create or update a snapshot for the parser `aachen/academica`, you need to be in this repository's root directory (this README is in that directory) and run
+```bash
+python -m snapshot_tests.update aachen academica
+```
 
-### How It Works
-The regression tests work with snapshots. They will remember what website you called and store them, along with the XML feed that your parser generated.
-
-This means that even in the next week, when the website may display a new menu, you can check your parser with the same menu as before and see if your changes have introduced a regression.
-
-Being able to rerun the parser on a known menu is very valuable, since you only need to check the output for bugs one time. With our regression test, you will know that you have already checked the output and if your parser does something differently, the test will tell you.
-
-### Setup
-   1. Create your first snapshot using the command  `.parser_tests/update_snapshot essendorf eatmaginary`.
-   2. Make sure that the result in `parser_tests/essendorf/eatmaginary/snapshot-result.xml` is correct.
-   3. Register your parser to be tested by adding it to the list in `parser_tests/regression_test.py`. Add it as a tuple `(<parser>, <canteen>)`, so in our example `('essendorf', 'eatmaginary')`.
-   4. If not already done, install `pytest` using `pip install pytest`.
-   5. Run all tests using the command `pytest`.
-
-### Updating Snapshots
-When you've fixed a bug in your parser, the output changes. The regression test will fail, because it doesn't know that this change is wanted.
-
-You can fix this by updating the snapshot. Unfortunately, you will have to manually recheck the output to make sure you didn't change something by accident.
-
-1. Make sure that only the changes you wanted happened by looking at the failed test's diff or checking it manually.
-2. Run the updater using `./parser_tests/update_snapshots.py <parser> <canteen>`, so in our example `./parser_tests/update_snapshots.py essendorf eatmaginary`.
-
-Now your snapshot will use the current menu. Don't forget to double check that the output doesn't contain any errors.
+To test for changes, install pytest (`pip install pytest`) and run
+```bash
+pytest snapshot_tests
+```
 
 ## Further questions
 * Read the [OpenMensa Documentation]
