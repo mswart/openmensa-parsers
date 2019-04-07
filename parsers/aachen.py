@@ -25,7 +25,7 @@ def parse(document):
 
 
 def parse_legend(legend_container):
-    regex = '\((?P<name>[\dA-Z]+)\) (enthält eine )?(?P<value>[\wäöüß\s]+)'
+    regex = r'\((?P<name>[\dA-Z]+)\) (enthält eine )?(?P<value>[\wäöüß\s]+)'
     return buildLegend(text=legend_container.text, regex=regex)
 
 
@@ -120,7 +120,7 @@ def parse_meal_entry(meal_entry, legend):
         prices = Prices(other=price_tag)
 
     meal = None
-    if name and not re.search('^geschlossen|ausverkauft|kein \S*angebot', name, re.IGNORECASE):
+    if name and not re.search(r'^geschlossen|ausverkauft|kein \S*angebot', name, re.IGNORECASE):
         meal = Meal(name, prices=prices, notes=notes)
 
     return meal
