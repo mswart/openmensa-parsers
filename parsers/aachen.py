@@ -53,10 +53,12 @@ def parse_day(day_container, legend):
         return ClosedDay(date)
 
     meals_table = day_container.find(attrs={'class': 'menues'})
-    menues = parse_categories(meals_table, legend)
+    menue_categories = parse_categories(meals_table)
+    menues = create_categories(menue_categories, legend)
 
     extras_table = day_container.find(attrs={'class': 'extras'})
-    extras = parse_categories(extras_table, legend)
+    extra_categories = parse_categories(extras_table)
+    extras = create_categories(extra_categories, legend)
 
     all_categories = menues + extras
     if len(all_categories) == 0:
@@ -73,15 +75,37 @@ def is_closed(data):
         return False
 
 
-def parse_categories(categories_container, legend):
+def parse_categories(categories_container):
     category_dict = OrderedDict()
     for meal_entry in categories_container.find_all('tr'):
         category_name = meal_entry.find('span', attrs={'class': 'menue-category'}).text.strip()
-        meal = parse_meal_entry(meal_entry, legend)
+        meal = parse_meal_entry(meal_entry)
 
         if category_name and meal:
             category_dict.setdefault(category_name, []).append(meal)
 
+    return category_dict
+
+
+def create_categories(category_dict, legend):
+    all_categories = []
+    for category_name, meals in category_dict.items():
+        if len(meals) == 0:
+            continue
+        else:
+            def make_meal(meal):
+                prices = create_prices(category_name, meal["prices"])
+                notes = NotesBuilder(legend).build_notes(meal["note_keys"])
+                return Meal(meal["name"], prices=prices, notes=notes)
+
+            model_meals = list(map(make_meal, meals))
+            category = Category(category_name, meals=model_meals)
+            all_categories.append(category)
+
+    return all_categories
+
+
+def create_prices(category_name, default_price):
     subsidized_categories = [
         'Tellergericht',
         'Vegetarisch',
@@ -90,38 +114,27 @@ def parse_categories(categories_container, legend):
     ]
     supplements = PricesBuilder(student=0, other=150)
 
-    all_categories = []
-    for category_name, meals in category_dict.items():
-        if category_name in subsidized_categories and meals[0].prices:
-            default_price = meals[0].prices.prices['other']
-            category_builder = PricesCategoryBuilder(
-                supplements.build_prices(default_price),
-                overwrite_existing=True
-            )
-            category = category_builder.build_category(category_name, meals)
-        else:
-            category = Category(category_name, meals)
-        all_categories.append(category)
-
-    return all_categories
+    if default_price is None:
+        return None
+    elif category_name in subsidized_categories:
+        return supplements.build_prices(default_price)
+    else:
+        return Prices(other=default_price)
 
 
-def parse_meal_entry(meal_entry, legend):
+def parse_meal_entry(meal_entry):
     description_container = meal_entry.find('span', attrs={'class': 'menue-desc'})
     clean_description_container = extract_description_element(description_container)
     name, note_keys = extract_name_and_note_keys(clean_description_container)
-    notes_builder = NotesBuilder(legend)
-    notes = notes_builder.build_notes(note_keys)
 
     price_tag = meal_entry.find('span', attrs={'class': 'menue-price'})
     prices = None
     if price_tag:
-        price_tag = convertPrice(price_tag.text.strip())
-        prices = Prices(other=price_tag)
+        prices = convertPrice(price_tag.text.strip())
 
     meal = None
     if name and not re.search(r'^geschlossen|ausverkauft|kein \S*angebot', name, re.IGNORECASE):
-        meal = Meal(name, prices=prices, notes=notes)
+        meal = {"name": name, "note_keys": note_keys, "prices": prices}
 
     return meal
 
