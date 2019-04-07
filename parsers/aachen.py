@@ -92,7 +92,7 @@ def parse_categories(categories_container, legend):
 
     all_categories = []
     for category_name, meals in category_dict.items():
-        if category_name in subsidized_categories:
+        if category_name in subsidized_categories and meals[0].prices:
             default_price = meals[0].prices.prices['other']
             category_builder = PricesCategoryBuilder(
                 supplements.build_prices(default_price),
