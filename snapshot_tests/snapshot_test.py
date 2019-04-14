@@ -6,9 +6,10 @@ from config import parsers
 from .utils import get_snapshot_result_path, snapshots_directory
 
 # List all snapshots subdirectories, e. g. `aachen/academica` becomes ("aachen", "academica").
+cities = os.listdir(snapshots_directory) if os.path.exists(snapshots_directory) else []
 parsers_to_test = [
     (parser, canteen)
-    for parser in os.listdir(snapshots_directory)
+    for parser in cities
     for canteen in os.listdir(os.path.join(snapshots_directory, parser))
 ]
 
