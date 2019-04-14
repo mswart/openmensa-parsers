@@ -4,14 +4,12 @@ import os
 import sys
 
 from config import parsers
-from snapshot_tests.snapshot_test import get_snapshot_result_path
+from .utils import get_canteen_url, get_snapshot_result_path
 
 
 def generate_snapshot(parser, canteen):
     url = get_canteen_url(parser, canteen)
-    parsers[parser].parse(url, canteen, 'full.xml')
-
-    result = parsers[parser].parse('', canteen, 'full.xml')
+    result = parsers[parser].parse(url, canteen, 'full.xml')
 
     snapshot_result_path = get_snapshot_result_path(parser, canteen)
     os.makedirs(os.path.dirname(snapshot_result_path), exist_ok=True)
@@ -19,11 +17,6 @@ def generate_snapshot(parser, canteen):
         result_file.write(result)
 
     print("Updated snapshots for {}/{}.".format(parser, canteen))
-
-
-def get_canteen_url(parser, canteen):
-    parser = parsers[parser].sources[canteen]
-    return parser.args[0]
 
 
 def main():
