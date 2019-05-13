@@ -45,7 +45,7 @@ def parse_week(url, canteen):
 
             # Iterate over the list-group-item within the card which are used
             # for individual meals
-            for meal in day_card.find_all(class_='list-group-item'):
+            for meal in day_card.find_all(class_='swdd-link-list-item'):
 
                 name = meal.find(name='span')
                 if name is not None:
