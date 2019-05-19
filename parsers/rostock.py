@@ -65,7 +65,7 @@ parser = Parser('rostock', handler=parse_url, shared_prefix='https://www.stw-rw.
 parser.define('mensa-sued', suffix='#mensa_id_1')
 parser.define('campus-cafeteria-einstein', suffix='#mensa_id_13')
 parser.define('mensa-kantilene', suffix='#mensa_id_15')
-parser.define('mensa-st-georg-straße', suffix='#mensa_id_2')
+parser.define('mensa-st-georg-strasse', suffix='#mensa_id_2')
 parser.define('mensa-multiple-choice', suffix='#mensa_id_14')
 parser.define('mensa-ulme', suffix='#mensa_id_3')
 parser.define('campus-mensa-wismar', suffix='#mensa_id_5')
