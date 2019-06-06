@@ -132,6 +132,10 @@ class EasySource(Source):
         return self._feed
 
     def parse(self, request, feed):
+        # Reset feed before every request
+        if hasattr(self, '_feed'):
+            del self._feed
+
         if feed == 'metadata.xml':
             return self.metadata(request)
         elif os.path.splitext(feed)[1] != '.xml':
