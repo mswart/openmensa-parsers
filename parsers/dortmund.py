@@ -123,8 +123,10 @@ def parse_day(canteen, soup, wdate):
                     staff_price = getAndFormatPrice(price)
                 elif 'guest' in item['class']:
                     guest_price = getAndFormatPrice(price)
-        if description != "":
+        try:
             canteen.addMeal(wdate, category, description, notes=supplies, prices={'student': student_price, 'employee': staff_price, 'other': guest_price})
+        except ValueError as e:
+            if str(e) != "Meal names must not be empty": raise
 
 parser = Parser('dortmund', handler=parse_url, shared_prefix='https://www.stwdo.de/mensa-co/')
 
