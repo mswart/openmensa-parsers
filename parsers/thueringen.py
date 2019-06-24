@@ -156,6 +156,11 @@ class Canteen(EasySource):
 		doc = self.parse_remote(self.BASE_URL + city)
 		data = doc.find(id='tpl_form')
 
+		# The map this data was intended for was removed along with
+		# all data, so this will always be None currently.
+		if data is None:
+			return
+
 		link = data.find(attrs={
 			'name': re.compile(r'^link_'),
 			'value': re.compile(r'{}$'.format(re.escape(self.suffix))),
