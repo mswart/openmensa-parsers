@@ -1,132 +1,179 @@
+from bs4 import BeautifulSoup
+import datetime
 import re
+import sys
 from urllib.request import urlopen
-from bs4 import BeautifulSoup as parse
 
-from utils import Parser
+from utils import Parser, EasySource, Source
 
-from pyopenmensa.feed import LazyBuilder, extractDate, buildLegend
+# Taken from the filter menu on the website
+note_descriptions = {
+    "VEGT": "Vegetarisch",
+    "VEGA": "Vegan",
+    "SCHW": "Schwein",
+    "WILD": "Wild",
+    "RIND": "Rind",
+    "LAMM": "Lamm",
+    "GEFL": "Geflügel",
+    "FISH": "Fisch",
+    "AT": "Artgerechte Tierhaltung",
+    "BIO": "EU BIO Logo",
+    "MV": "mensaVital",
+    "NEU": "Neu!",
+# Allergens
+    "1": "Farbstoff",
+    "2": "Konservierungsstoff",
+    "3": "Antioxidationsmittel",
+    "4": "",
+    "5": "geschwefelt",
+    "6": "geschwärzt",
+    "7": "gewachst",
+    "8": "Phosphat",
+    "9": "Süßungsmittel",
+    "10": "Phenylalaninquelle",
+    "11": "koffeinhaltig",
+    "20": "Milcheiweiß",
+    "21": "Milchpulver",
+    "22": "Molkeneiweiß",
+    "23": "Eiklar",
+    "24": "Milch",
+    "25": "Sahne",
+    "53": "Erzeugnisse tierischen Ursprungs",
+    "60": "Zucker und Süßungsmittel",
+    "62": "konserviert mit Thiabendazol und Imazalil",
+    "64": "kakaohaltige Fettglasur",
+# Additives
+    "GL": "glutenhaltiges Getreide",
+    "GL1": "Weizen",
+    "GL2": "Roggen",
+    "GL3": "Gerste",
+    "GL4": "Hafer",
+    "GL5": "Dinkel",
+    "GL6": "Kamut",
+    "KR": "Krebstiere",
+    "EI": "Eier",
+    "FI": "Fisch",
+    "EN": "Erdnüsse",
+    "SO": "Soja(bohnen)",
+    "ML": "Milch (Laktose)",
+    "SE": "Sesamsamen",
+    "NU": "Schalenfrüchte",
+    "NU1": "Mandeln",
+    "NU2": "Haselnüsse",
+    "NU3": "Walnüsse",
+    "NU4": "Kaschunüsse",
+    "NU5": "Pecanüsse",
+    "NU6": "Paranüsse",
+    "NU7": "Pistazien",
+    "NU8": "Macadamianüsse",
+    "SF": "Senf",
+    "SL": "Sellerie",
+    "SW": "Schwefeldioxid/Sulfite",
+    "LU": "Lupine",
+    "WT": "Weichtiere",
+}
 
+class Canteen(EasySource):
+    def __init__(self, *args, id, open_id=None):
+        super(Canteen, self).__init__(*args)
+        self.id = id
+        self.open_id = open_id
+        self._data = None
 
-def parse_week(url, canteen, type, allergene={}, zusatzstoffe={}):
-    document = parse(urlopen(url).read(), 'lxml')
-    for day_table in document.find_all('table', 'swbs_speiseplan'):
-        caption = day_table.find('th', 'swbs_speiseplan_head').text
-        if type not in caption:
-            continue
-        date = extractDate(caption)
-        meals = day_table.find_all('tr')
-        pos = 0
-        while pos < len(meals):
-            meal_tr = meals[pos]
-            if not meal_tr.find('td'):  # z.B Headline
-                pos += 1
-                continue
-            tds = meal_tr.find_all('td')
-            category = re.sub(r' \(\d\)', '', tds[0].text.strip())
-            name = tds[1].text.strip()
-            if tds[1].find('a', href='http://www.stw-on.de/mensavital'):
-                notes = ['MensaVital']
-            else:
-                notes = []
-            for img in tds[2].find_all('img'):
-                title = img['title']
-                if ':' in title:
-                    kind, value = title.split(':')
-                    if kind == 'Allergene':
-                        for allergen in value.split(','):
-                            notes.append(allergene.get(allergen.strip()) or allergene[allergen.strip()[:-1]])
-                    elif kind == 'Zusatzstoffe':
-                        for zusatzstoff in value.split(','):
-                            notes.append(zusatzstoffe[zusatzstoff.strip()])
-                    else:
-                        print('Unknown image type "{}"'.format(kind))
-                else:
-                    notes.append(title.replace('enthält ', ''))
-            prices = {
-                'student':  tds[3].text.strip(),
-                'employee': tds[4].text.strip(),
-                'other':    tds[5].text.strip()
-            }
-            if pos < len(meals) - 1:
-                nextTds = meals[pos+1].find_all('td')
-                if nextTds[0].text.strip() == '':
-                    pos += 1
-                    for img in nextTds[1].find_all('img'):
-                        notes.append(img['title'])
-            pos += 1
-            canteen.addMeal(date, category or 'Sonstiges', name, notes, prices)
+    @Source.full_feed
+    def parse_data(self, request):
+        data = self.load_data()
 
+        mensa = data.find("mensa", id=self.id)
 
-def parse_url(url, today=False, canteentype='Mittagsmensa', this_week='', next_week=True, legend_url=None):
-    canteen = LazyBuilder()
-    canteen.legendKeyFunc = lambda v: v.lower()
-    if not legend_url:
-        legend_url = url[:url.find('essen/') + 6] + 'wissenswertes/lebensmittelkennzeichnung'
-    legend_doc = parse(urlopen(legend_url), 'lxml').find(id='artikel')
-    allergene = buildLegend(
-        text=legend_doc.text.replace('\xa0', ' '),
-        regex=r'(?P<name>[A-Z]+) {3,}enthält (?P<value>\w+( |\t|\w)*)'
-    )
-    allergene['EI'] = 'Ei'
-    zusatzstoffe = buildLegend(
-        text=legend_doc.text.replace('\xa0', ' '),
-        regex=r'(?P<name>\d+) {3,} (enthält )?(?P<value>\w+( |\t|\w)*)'
-    )
-    suballergene = re.compile(r'(?P<name>[0-9A-Z]+)[^a-zA-Z]*enthält (?P<value>\w+( |\t|\w)*)')
-    for tr in legend_doc.find_all('tr'):
-        tds = tr.find_all('td')
-        if len(tds) != 2:
-            continue
-        title = tds[0].find('strong')
-        if title is None:
-            continue
-        else:
-            title = title.text
-        lines = tds[1].text.split('\n')
-        for line in lines[1:]:
-            try_allergine = suballergene.match(line)
-            if try_allergine:
-                allergene[try_allergine.group('name')] = try_allergine.group('value')
-        text = lines[0].replace('enthält', '').strip()
-        if title.isdigit():
-            zusatzstoffe[title] = text
-        else:
-            allergene[title] = text
-    parse_week(url + this_week, canteen, canteentype,
-               allergene=allergene, zusatzstoffe=zusatzstoffe)
-    if not today and next_week is True:
-        parse_week(url + '-kommende-woche', canteen, canteentype,
-                   allergene=allergene, zusatzstoffe=zusatzstoffe)
-    if not today and type(next_week) is str:
-        parse_week(url + next_week, canteen, canteentype,
-                   allergene=allergene, zusatzstoffe=zusatzstoffe)
-    return canteen.toXMLFeed()
+        for day in mensa.find_all("day"):
+            date = day["date"]
+            for meal in day.find_all("meal"):
+                if self.open_id is not None and meal["oeffnung"].strip() != self.open_id:
+                    continue
 
+                name = meal["meal"].strip()
+                category = meal["kindname"].strip()
+                if not name or not category:
+                    continue
 
-parser = Parser('ostniedersachsen', handler=parse_url,
-                shared_prefix='http://www.stw-on.de')
+                notes = set()
+                for key in ["kennzeichnung", "allergen_text", "zusatz_text"]:
+                    if not meal[key]:
+                        continue
+                    for note in map(lambda e: e.strip(), meal[key].split(",")):
+                        if not note:
+                            continue
+                        if note in note_descriptions:
+                            notes.add(note_descriptions[note])
+                        else:
+                            print("Unknown note {}: {}, {}".format(note, date, name), file=sys.stderr)
+                            notes.add(note)
 
-sub = parser.sub('braunschweig',
-                 shared_prefix='/braunschweig/essen/menus/')
-sub.define('mensa1-mittag', suffix='mensa-1', extra_args={'canteentype': 'Mittagsmensa'})
-sub.define('mensa1-abend', suffix='mensa-1', extra_args={'canteentype': 'Abendmensa'})
-sub.define('mensa360', suffix='360', extra_args={'canteentype': 'Pizza', 'this_week': '-2', 'next_week': '-nachste-woche'})
-sub.define('mensa2', suffix='mensa-2')
-sub.define('hbk', suffix='mensa-hbk')
+                prices = {
+                    'student': meal["price_stud"],
+                    'employee': meal["price_empl"],
+                    'other': meal["price_guest"],
+                }
+                self.feed.addMeal(date, category, name, notes=notes, prices=prices)
 
-parser.define('clausthal', suffix='/clausthal/essen/menus/mensa-clausthal',
-              extra_args={'next_week': '-kommend-woche'})
+        return self.feed.toXMLFeed()
 
-sub = parser.sub('hildesheim', shared_prefix='/hildesheim/essen/menus/')
-sub.define('uni', suffix='mensa-uni')
-sub.define('hohnsen', suffix='mensa-hohnsen')
-sub.define('luebecker-strasse', suffix='luebecker-strasse', extra_args={'canteentype': 'Mittagsausgabe'})
+    def extract_metadata(self):
+        data = self.load_data()
+        mensa = data.find("mensa", id=self.id)
 
-parser.sub('suderburg').define('campus', suffix='/suderburg/essen/menus/mensa-suderburg')
-parser.sub('wolfenbuettel').define('ostfalia', suffix='/wolfenbuettel/essen/menus/mensa-ostfalia')
-parser.sub('holzminden', shared_prefix='/holzminden/essen/menus/') \
-    .define('hawk', suffix='mensa-hawk', extra_args={'next_week': False})
+        address = re.match(
+            r'^(?P<street>.*)\s+(?P<postcode>\d{5})\s+(?P<city>.+)$',
+            mensa["address"]
+        )
 
-sub = parser.sub('lueneburg', shared_prefix='/lueneburg/essen/speiseplaene/')
-sub.define('campus', suffix='mensa-campus')
-sub.define('rotes-feld', suffix='rotes-feld')
+        canteen = self.feed
+        canteen.name = mensa["showname"]
+        if address is not None:
+            canteen.address = "{}, {} {}".format(
+                address.group("street").strip(),
+                address.group("postcode"),
+                address.group("city").strip(),
+            )
+            canteen.city = address.group("city").strip().capitalize()
+        pass
+
+    def load_data(self):
+        # Cache the data for 15 min to not stress the API too much
+        now = datetime.datetime.now()
+        if self._data is None or now - self._data[1] > datetime.timedelta(minutes=15):
+            content = urlopen(self.parser.shared_prefix).read()
+            data = BeautifulSoup(content.decode('utf-8'), 'xml')
+            self._data = (data, now)
+        return self._data[0]
+
+parser = Parser('ostniedersachsen', version="1.0", shared_prefix='http://api.stw-on.de/xml/mensa.xml')
+
+braunschweig = parser.sub('braunschweig')
+Canteen('mensa1-mittag', braunschweig, id="101", open_id="2")
+Canteen('mensa1-abend', braunschweig, id="101", open_id="3")
+Canteen('mensa360', braunschweig, id="111")
+Canteen('mensa2', braunschweig, id="105")
+Canteen('mensa2-cafeteria', braunschweig, id="106")
+Canteen('hbk', braunschweig, id="120")
+Canteen('bistro-nff', braunschweig, id="109")
+
+Canteen('clausthal', parser, id="171")
+
+hildesheim = parser.sub('hildesheim')
+Canteen('uni', hildesheim, id="150")
+Canteen('hohnsen', hildesheim, id="160")
+Canteen('luebecker-strasse', hildesheim, id="153")
+
+Canteen('holzminden', parser, id="163")
+
+Canteen('lueneburg', parser, id="140")
+
+Canteen('salzgitter', parser, id="200")
+
+Canteen('suderburg', parser, id="134")
+
+Canteen('wolfenbuettel', parser, id="130")
+
+Canteen('wolfsburg', parser, id="112")
