@@ -12,7 +12,7 @@ http://localhost:9090/marburg/erlenring/full.xml
 http://localhost:9090/muenchen/leopoldstrasse/full.xml
 http://localhost:9090/niederbayern_oberpfalz/uni-regensburg/full.xml
 http://localhost:9090/braunschweig/mensa1-mittag/full.xml
-http://localhost:9090/wuerzburg/austrasse/full.xml
+http://localhost:9090/wuerzburg/burse/full.xml
 http://localhost:9090/erlangen_nuernberg/ansbach/full.xml
 http://localhost:9090/rostock/mensa-sued/full.xml
 http://localhost:9090/saarland/sb/full.xml

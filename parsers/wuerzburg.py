@@ -61,8 +61,9 @@ def parse_url(url, today=False):
 
 
 parser = Parser('wuerzburg', handler=parse_url,
-                shared_prefix='https://www.studentenwerk-wuerzburg.de/essen-trinken/speiseplaene/plan/')
-parser.define('austrasse', suffix='austrasse-bamberg.html')
+                shared_prefix='https://www.studentenwerk-wuerzburg.de/essen-trinken/speiseplaene/')
+#parser.define('austrasse', suffix='austrasse-bamberg.html')
+parser.define('markusplatz', suffix='interimsmensa-markusplatz-bamberg.html')
 parser.define('burse', suffix='burse-am-studentenhaus-wuerzburg.html')
 parser.define('feldkirchenstrasse', suffix='feldkirchenstrasse-bamberg.html')
 #parser.define('frankenstube', suffix='frankenstube-wuerzburg.html')
@@ -73,5 +74,5 @@ parser.define('augenklinik', suffix='mensa-roentgenring-wuerzburg.html')
 parser.define('josef-schneider', suffix='mensa-josef-schneider-strasse-wuerzburg.html')
 parser.define('schweinfurt', suffix='mensa-schweinfurt.html')
 parser.define('mensateria', suffix='mensateria-campus-hubland-nord-wuerzburg.html')
-parser.define('philo', suffix='philosophie-wuerzburg.html')
+parser.define('philo', suffix='essensausgabe-philo-wuerzburg.html')
 parser.define('sprachenzentrum', suffix='interimsmensa-im-sprachenzentrum-ab-9-april-2018.html')
