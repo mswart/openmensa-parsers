@@ -53,7 +53,7 @@ def parsePlan(url, internalMensaId, today):
         if nextPageLink == None or today:
             url = None
         else:
-            url = 'https://www.studentenwerk-rostock.de/' + nextPageLink['href']
+            url = 'https://www.stw-rw.de/' + nextPageLink['href']
     return canteen.toXMLFeed()
 
 def parse_url(url, today=False):
