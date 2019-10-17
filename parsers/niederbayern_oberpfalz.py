@@ -151,6 +151,12 @@ def parse_url(url, today=False):
         # Decode data from ISO charset
         f = f.read().decode('iso8859-1')
 
+        # Fix incorrectly placed newlines
+        f = re.sub(r'\n{2,}', r' ', f)
+
+        # Fix spaces
+        f = re.sub(r' {2,}', r' ', f)
+
         # Set roles for prices
         roles = ('student', 'employee', 'other')
 
