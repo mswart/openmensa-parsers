@@ -77,6 +77,12 @@ def parse_meal(table_row, legend):
     if price_tag:
         price_tag = price_tag.text.strip()
 
+    # Add extra notes for vegetarian and vegan meals
+    if table_row.has_attr('class') and 'vegan' in table_row['class']:
+        notes.append('vegan')
+    if table_row.has_attr('class') and 'OLV' in table_row['class']:
+        notes.append('OLV')
+
     return category, name, notes, price_tag
 
 
