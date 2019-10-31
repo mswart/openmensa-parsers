@@ -91,6 +91,12 @@ def parse_url(url, today=False):
                 name = name.replace('(GQB)', '').strip()
                 notes.append('GQB')
 
+            # add vegetarian/vegan notes
+            if meal.find('span', attrs={'class': 'fleischlos'}):
+                notes.append('vegetarisch')
+            if meal.find('span', attrs={'class': 'vegan'}):
+                notes.append('vegan')
+
             # the price for both meals is specified as Bio-/Aktionsgericht
             price_category = category \
                 .replace('Aktionsessen', 'Bio-/Aktionsgericht') \
