@@ -66,7 +66,7 @@ def parse_url(url, today=False):
 
 parser = Parser('magdeburg',
                 handler=parse_url,
-                shared_prefix='http://www.studentenwerk-magdeburg.de/')
+                shared_prefix='https://www.studentenwerk-magdeburg.de/')
 parser.define('ovgu-unten', suffix='mensen-cafeterien/mensa-unicampus/speiseplan-unten/')
 parser.define('ovgu-oben', suffix='mensen-cafeterien/mensa-unicampus/speiseplan-oben/')
 parser.define('herrenkrug', suffix='mensen-cafeterien/mensa-herrenkrug/speiseplan/')
