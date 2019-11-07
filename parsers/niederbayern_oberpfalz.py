@@ -19,9 +19,6 @@
 #
 #
 
-# TODO:
-#   - find out new legend for "Aktionsgericht"
-
 # Usable locations (urls) (based on http://www.stwno.de/joomla/de/gastronomie/speiseplan):
 # HS-DEG - TH Deggendorf
 # HS-LA - HS Landshut
@@ -116,14 +113,15 @@ def parse_url(url, today=False):
         'O':     'Nitrat',
         'P':     'Nitritpökelsalz',
         'ZTA':   'Alkohol',
-        'ZTB':   'mit ausschließlich biologisch erzeugten Rohstoffen',
+        'ZTB':   'DE-ÖKO-006 mit ausschließlich biologisch erzeugten Rohstoffen',
         'ZTF':   'Fisch',
         'ZTG':   'Geflügel',
+        'ZTJ':   'Juradistl',
         'ZTL':   'Lamm',
-        'ZTMSC': 'zertifizierte nachhaltige Fischerei (MSC-C-53400)',
         'ZTMV':  'Mensa Vital',
         'ZTR':   'Rindfleisch',
         'ZTS':   'Schweinefleisch',
+        'ZTBL':  'Bioland',
         'ZTV':   'vegetarisch',
         'ZTVG':  'vegan',
         'ZTW':   'Wild'
@@ -152,6 +150,12 @@ def parse_url(url, today=False):
 
         # Decode data from ISO charset
         f = f.read().decode('iso8859-1')
+
+        # Fix incorrectly placed newlines
+        f = re.sub(r'\n{2,}', r' ', f)
+
+        # Fix spaces
+        f = re.sub(r' {2,}', r' ', f)
 
         # Set roles for prices
         roles = ('student', 'employee', 'other')
