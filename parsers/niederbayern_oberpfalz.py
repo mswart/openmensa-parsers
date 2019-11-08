@@ -61,6 +61,26 @@ from utils import Parser
 from pyopenmensa.feed import LazyBuilder
 
 
+# Only allow a newline after 8 separators
+def replace_invalid_newlines(s):
+    output = ''
+    i = 0
+
+    for c in list(s):
+        if c == ';':
+            if i == 8:
+                raise RuntimeError('Too many seperators in input')
+            i += 1
+        elif c == '\n':
+            if i == 8:
+                i = 0
+            else:
+                c = ' '
+        output += c
+
+    return output
+
+
 def parse_url(url, today=False):
     canteen = LazyBuilder()
     legend = {
@@ -152,7 +172,7 @@ def parse_url(url, today=False):
         f = f.read().decode('iso8859-1')
 
         # Fix incorrectly placed newlines
-        f = re.sub(r'\n{2,}', r' ', f)
+        f = replace_invalid_newlines(f)
 
         # Fix spaces
         f = re.sub(r' {2,}', r' ', f)
