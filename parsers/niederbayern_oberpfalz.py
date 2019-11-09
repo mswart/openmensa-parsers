@@ -2,7 +2,7 @@
 #
 #  niederbayern_oberpfalz.py
 #
-#  Copyright 2016 Alex Flierl <shad0w73@vmail.me>
+#  Copyright 2019 Alex Flierl <shad0w73@freenet.de>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,36 +18,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #
-
-# Usable locations (urls) (based on http://www.stwno.de/joomla/de/gastronomie/speiseplan):
-# HS-DEG - TH Deggendorf
-# HS-LA - HS Landshut
-# HS-SR - WZ Straubing
-# Uni Passau:
-#   UNI-P - Uni Passau
-#   Cafeteria-Nikolakloster - Cafeteria Nikolakloster
-# OTH Regensburg:
-#   HS-R-tag - Seybothstraße (mittags)
-#   HS-R-abend - Seybothstraße (abends)
-#   Cafeteria-Pruefening - Prüfeningerstr. (mittags)
-# Uni Regensburg:
-#   UNI-R - Mensa (mittags)
-#   Cafeteria-PT - Cafeteria PT (mittags)
-#   Cafeteria-Chemie - Cafeteria Chemie
-#   Cafeteria-Milchbar - Cafeteria Milchbar
-#   Cafeteria-Sammelgebaeude - Cafeteria Sammelgebäude
-#   Cafeteria-Sport - Cafeteria Sport
-
-# header:
-# 1 - datum
-# 2 - tag
-# 3 - warengruppe
-# 4 - name
-# 5 - kennz
-# 6 - preis
-# 7 - stud
-# 8 - bed
-# 9 - gast
 
 import sys
 from csv import reader
@@ -184,6 +154,16 @@ def parse_url(url, today=False):
         mealreader = reader(f.splitlines(), delimiter=';')
         next(mealreader)
         for row in mealreader:
+            # # - CSV header  - example
+            # 0 - datum       - 01.01.1970
+            # 1 - tag         - Do
+            # 2 - warengruppe - HG1
+            # 3 - name        - Putengulasch an Bio-Nudeln (3,A,AA,I)
+            # 4 - kennz       - G,BL
+            # 5 - preis       - 2,80 / 3,40 / 4,40
+            # 6 - stud        - 2,80
+            # 7 - bed         - 3,40
+            # 8 - gast        - 4,40
             mdate = row[0]
             category = row[2]
             mname = row[3]
@@ -249,19 +229,21 @@ def parse_url(url, today=False):
     return canteen.toXMLFeed()
 
 
+# Usable locations (urls) (based on https://www.stwno.de/de/gastronomie/speiseplan):
 parser = Parser('niederbayern_oberpfalz', handler=parse_url,
                 shared_prefix='http://www.stwno.de/infomax/daten-extern/csv/')
+parser.define('european-campus-pfarrkirchen', suffix='HS-PAN')
 parser.define('th-deggendorf', suffix='HS-DEG')
 parser.define('hs-landshut', suffix='HS-LA')
-parser.define('wz-straubing', suffix='HS-SR')
+parser.define('tum-straubing', suffix='HS-SR')
 parser.define('uni-passau', suffix='UNI-P')
 parser.define('unip-cafeteria-nikolakloster', suffix='Cafeteria-Nikolakloster')
 parser.define('oth-regensburg', suffix='HS-R-tag')
 parser.define('oth-regensburg-abends', suffix='HS-R-abend')
 parser.define('othr-cafeteria-pruefening', suffix='Cafeteria-Pruefening')
 parser.define('uni-regensburg', suffix='UNI-R')
+# uni-regensburg-gaestesaal has most of the time no data
+parser.define('uni-regensburg-gaestesaal', suffix='UNI-R-Gs')
 parser.define('unir-cafeteria-pt', suffix='Cafeteria-PT')
 parser.define('unir-cafeteria-chemie', suffix='Cafeteria-Chemie')
-parser.define('unir-cafeteria-milchbar', suffix='Cafeteria-Milchbar')
-parser.define('unir-cafeteria-sammelgebaeude', suffix='Cafeteria-Sammelgebaeude')
 parser.define('unir-cafeteria-sport', suffix='Cafeteria-Sport')
