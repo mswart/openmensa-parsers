@@ -4,6 +4,7 @@ import re
 from utils import EasySource, Parser, Source
 from datetime import datetime, timedelta, date
 from pyopenmensa.feed import LazyBuilder
+import ssl
 
 amount_regex = re.compile('\d{1,2},\d{1,2}')
 
@@ -127,14 +128,21 @@ def parse_meals_for_canteen(document, canteen, employees_fee, guests_fee, groups
 							None)
 
 class Canteen(EasySource):
-	BASE_URL = 'http://www.stw-thueringen.de/deutsch/mensen/einrichtungen/'
+	BASE_URL = 'https://www.stw-thueringen.de/deutsch/mensen/einrichtungen/'
 
 	def __init__(self, *args, suffix):
 		super().__init__(*args)
 		self.suffix = suffix
 
+		# www.stw-thueringen.de is currently not providing the intermediate
+		# cert in its chain, so we just disable any cert checking, see:
+		# https://github.com/mswart/openmensa-parsers/issues/109
+		self.tls_context = ssl.create_default_context()
+		self.tls_context.check_hostname = False
+		self.tls_context.verify_mode = ssl.CERT_NONE
+
 	def parse_url(self, url, today=False):
-		document = self.parse_remote(url)
+		document = self.parse_remote(url, tls_context=self.tls_context)
 
 		employees_fee, guests_fee = parse_fees(document)
 		groups = parse_ingredients(document)
@@ -145,7 +153,7 @@ class Canteen(EasySource):
 
 		for idx, week in enumerate(available_weeks):
 			if idx > 0 or noskip:
-				document = self.parse_remote("{}?selWeek={}".format(url, week))
+				document = self.parse_remote("{}?selWeek={}".format(url, week), tls_context=self.tls_context)
 
 			parse_meals_for_canteen(document, self.feed, employees_fee, guests_fee, groups, today)
 			if today:
@@ -153,7 +161,7 @@ class Canteen(EasySource):
 
 	def extract_metadata(self):
 		city = self.suffix.split('/')[0]
-		doc = self.parse_remote(self.BASE_URL + city)
+		doc = self.parse_remote(self.BASE_URL + city, tls_context=self.tls_context)
 		data = doc.find(id='tpl_form')
 
 		# The map this data was intended for was removed along with

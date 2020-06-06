@@ -146,10 +146,10 @@ class EasySource(Source):
                 return feed(self, request)
         raise FeedNotFound(feedname, self.name, self.parser.name)
 
-    def parse_remote(self, url, args=None):
+    def parse_remote(self, url, args=None, tls_context=None):
         if args is not None:
             args = urlencode(args).encode('utf-8')
-        return BeautifulSoup(urlopen(url, data=args).read(), 'lxml')
+        return BeautifulSoup(urlopen(url, data=args, context=tls_context).read(), 'lxml')
 
     def metadata(self, request):
         self.extract_metadata()
