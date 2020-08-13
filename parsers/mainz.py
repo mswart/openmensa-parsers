@@ -8,13 +8,13 @@ from utils import Parser
 from pyopenmensa.feed import OpenMensaCanteen
 
 
-day_regex = re.compile('(?P<date>\d{4}-\d{2}-\d{2})')
+day_regex = re.compile('(\d{2}.\s\w+\s\d{4})')
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
 notes_regex = re.compile('\[(?:(([A-Za-z0-9]+),?)+)\]$')
 extract_legend = re.compile('\((\w+,?)+\)')
 extract_legend_notes = re.compile('(?<=[\(,])(\w{1,2})')
 
-canteenLegend = {
+canteens = {
   # API Extraction: https://github.com/kreativmonkey/jgu-mainz-openmensa/issues/1
   '0' : 'all',
   '1' : 'zentralmensa',
@@ -86,14 +86,14 @@ extraLegend = {
     
 }
 
-def build_meal_name(meal_name):
+def build_meal_name(meal):
   # There are the extras of the meal inside the meal name
   # This will remove the extras and the unnecessary spaces
   # Example: 6 gebackene Fischstäbchen (Gl,Fi,We) mit Reis und veganem Joghurt-Kräuter-Dip (3,Gl,So,Sf,Ge)
   # Output: 6 gebackene Fischstäbchen mit Reis und veganem Joghurt-Kräuter-Dip
-	name = ' '.join(re.sub(r'\((\w+,?)+\)', '', str(meal_name)).split())
+	name = ' '.join(re.sub(r'\((\w+,?)+\)', '', str(meal)).split())
   
-  # Shorten the meal name to 250 characters
+  # Shorten the meal name to 250 characters like the api specification: https://doc.openmensa.org/feed/v2/#name
 	if len(name) > 250:
 			name = name[:245] + '...' 
 	
@@ -128,14 +128,6 @@ def build_meal_price(meal):
 	meal_prices["other"] = prices[1].replace(',', '.')
 	
 	return meal_prices
-
-def build_meal_date(meal):
-	# Print the String of Date
-	# Format: Montag, 12. August 2020
-	# Output: 12. August 2020
-	
-	return meal
-	
 	
 def parse_data(canteen, data):	
 	for v in data.find_all('div'):
@@ -143,18 +135,15 @@ def parse_data(canteen, data):
 		  continue
 
 		if v['class'][0] == 'speiseplan_date':
-		  date = build_meal_date(str(v.string).strip())
+		  date = day_regex.findall(str(v.string).strip())[0]
 				  
 		if v['class'][0] == 'speiseplan_bldngall_name':
-		  # Get Mensa Name
 		  canteen_name = str(v.string).strip()
 		  
 		if v['class'][0] == 'speiseplancounter':
-		  # Get Counter
 		  counter_name = str(v.string).strip()
 		  
 		if v['class'][0] == 'menuspeise':
-		  # Name des Gerichts
 		  meal_name = build_meal_name(v.find('div', class_="speiseplanname").string)
 		  meal_notes = build_meal_notes(v)
 		  meal_prices = build_meal_price(v)
@@ -166,10 +155,9 @@ def parse_data(canteen, data):
 
 
 def parse_url(url, today=False):
-	#base_data = load_base_data()
-
 	canteen = OpenMensaCanteen()
-		
+  
+  # There are two displays one for the current and one for the next week
 	for d in display:
 		with urlopen(url + '&display_type=' + d) as resp:
 			resp = parse(resp.read().decode('utf-8', errors='ignore'), features='lxml')
@@ -184,6 +172,6 @@ parser = Parser('mainz',
 				handler=parse_url,
 				shared_prefix='https://www.studierendenwerk-mainz.de/speiseplan/frontend/index.php')
 
-for canteen in canteenLegend:
-	parser.define(canteenLegend[canteen], suffix='?building_id='+canteen) 
+for canteen in canteens:
+	parser.define(canteens[canteen], suffix='?building_id='+canteen) 
 
