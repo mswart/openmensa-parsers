@@ -12,8 +12,7 @@ day_regex = re.compile('(?P<date>\d{4}-\d{2}-\d{2})')
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
 notes_regex = re.compile('\[(?:(([A-Za-z0-9]+),?)+)\]$')
 extract_legend = re.compile('\((\w+,?)+\)')
-extract_legend_notes = re.compile('(?:([A-Za-z0-9]+))')
-extract_notes_regex = re.compile('(?:([A-Za-z0-9]+)[,|\)])')
+extract_legend_notes = re.compile('(?<=[\(,])(\w{1,2})')
 
 canteenLegend = {
   # API Extraction: https://github.com/kreativmonkey/jgu-mainz-openmensa/issues/1
@@ -87,53 +86,43 @@ extraLegend = {
     
 }
 
-def build_meal_name(meal):
-	# Name des Gerichts
-	name = str(meal).strip()
-	# Remove the notes from Mealname and delete unnecessary spaces
-	name = ' '.join(re.sub(r'\((\w+,?)+\)', '', name).split())
+def build_meal_name(meal_name):
+  # There are the extras of the meal inside the meal name
+  # This will remove the extras and the unnecessary spaces
+  # Example: 6 gebackene Fischstäbchen (Gl,Fi,We) mit Reis und veganem Joghurt-Kräuter-Dip (3,Gl,So,Sf,Ge)
+  # Output: 6 gebackene Fischstäbchen mit Reis und veganem Joghurt-Kräuter-Dip
+	name = ' '.join(re.sub(r'\((\w+,?)+\)', '', str(meal_name)).split())
+  
+  # Shorten the meal name to 250 characters
 	if len(name) > 250:
 			name = name[:245] + '...' 
 	
 	return name
 	
-def extract_meal_notes(meal):
-	# extracting the legend
-	legpart = extract_legend.findall(str(meal).strip())
-	legend = []
-	for l in legpart:
-		legend.extend(extract_legend_notes.findall(l))
-	
-	notes = set()
-	for l in legend:
-		if extraLegend[l]:
-			notes.add(extraLegend[l])
-	
-	return notes
-	
 def build_meal_notes(meal):
-	notes = set()
-			
-	for icon in meal.find_all('img'):
-		#<img src="/fileadmin/templates/images/speiseplan/Fi.png"/>
-		#<img src="/fileadmin/templates/images/speiseplan/La.png"/>
-		if "icon:"+path.basename(icon['src']) in extraLegend:
-			notes.add(extraLegend["icon:"+path.basename(icon['src'])])
-			
-	# extracting the legend
-	notes.update(extract_meal_notes(meal.find('div', class_="speiseplanname").string))
-	
-	return list(notes)
+  meal_name = str(meal.find('div', class_="speiseplanname").string).strip()
+  images = meal.find_all('img')
+
+  # Use a set for easy elimination of duplicates
+  notes = set()
+      
+  # extracting the icons with spezial informations about the meal
+  # Example: <img src="/fileadmin/templates/images/speiseplan/Veggi.png"/>
+  for icon in images:
+    if "icon:"+path.basename(icon['src']) in extraLegend:
+      notes.add(extraLegend["icon:"+path.basename(icon['src'])])
+
+  for l in extract_legend_notes.findall(meal_name):
+    if extraLegend[l]:
+      notes.add(extraLegend[l])
+
+  return list(notes)
 	
 def build_meal_price(meal):
-	# Preis aus v extrahieren
-	# 3,40 € / 5,65 €
 	meal_prices = {}
 	
 	prices = price_regex.findall(str(meal))
-	# s = student
-	# g = other
-	# m = employee
+  # The pricing for employee and others are the same!
 	meal_prices["student"] = prices[0].replace(',', '.')
 	meal_prices["employee"] = prices[1].replace(',', '.')
 	meal_prices["other"] = prices[1].replace(',', '.')
