@@ -75,7 +75,7 @@ def parse_url(url, today=False):
 
 
 parser = Parser('darmstadt', handler=parse_url,
-                shared_prefix='http://studierendenwerkdarmstadt.de/hochschulgastronomie/speisekarten/')
+                shared_prefix='http://studierendenwerkdarmstadt.de/hochschulgastronomie/speisen/')
 parser.define('stadtmitte', suffix='stadtmitte/')
 parser.define('lichtwiese', suffix='lichtwiese/')
 parser.define('schoefferstrasse', suffix='schoefferstrasse/')
