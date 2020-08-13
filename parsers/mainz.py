@@ -113,7 +113,7 @@ def build_meal_notes(meal):
       notes.add(extraLegend["icon:"+path.basename(icon['src'])])
 
   for l in extract_legend_notes.findall(meal_name):
-    if extraLegend[l]:
+    if l in extraLegend:
       notes.add(extraLegend[l])
 
   return list(notes)
