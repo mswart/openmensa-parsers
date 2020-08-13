@@ -1,6 +1,5 @@
 from urllib.request import urlopen
 from bs4 import BeautifulSoup as parse
-from bs4.element import Tag
 import re
 import datetime
 import os.path as path
@@ -19,15 +18,15 @@ extract_notes_regex = re.compile('(?:([A-Za-z0-9]+)[,|\)])')
 canteenLegend = {
   # API Extraction: https://github.com/kreativmonkey/jgu-mainz-openmensa/issues/1
   '0' : 'all',
-  '1' : 'Zentralmensa',
-  '2' : 'Mensa-Georg-Foster',
-  '3' : 'Cafe-Rewi',
-  '4' : 'Mensa-Bingen',
-  '5' : 'Mensa-K3',
-  '6' : 'Mensa-Holzstraße',
-  '7' : 'Mensarium',
-  '8' : 'Cafe-Bingen-Rochusberg',
-  '9' : 'Mensablitz'
+  '1' : 'zentralmensa',
+  '2' : 'mensa-georg-foster',
+  '3' : 'cafe-rewi',
+  '4' : 'mensa-bingen',
+  '5' : 'mensa-K3',
+  '6' : 'mensa-holzstraße',
+  '7' : 'mensarium',
+  '8' : 'cafe-bingen-rochusberg',
+  '9' : 'mensablitz'
 }
 
 display = {
