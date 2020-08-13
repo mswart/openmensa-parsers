@@ -218,7 +218,7 @@ def parse_url(url, place_class=None, today=False):
 
 
 parser = Parser('karlsruhe', handler=parse_url,
-                shared_args=['http://www.studentenwerk-karlsruhe.de/de/essen/'])
+                shared_args=['https://www.sw-ka.de/de/essen/'])
 parser.define('adenauerring', args=['canteen_place_1'])
 parser.define('moltke', args=['canteen_place_2'])
 parser.define('erzbergerstrasse', args=['canteen_place_3'])
