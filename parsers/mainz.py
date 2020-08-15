@@ -8,11 +8,11 @@ from utils import Parser
 from pyopenmensa.feed import OpenMensaCanteen
 
 
-day_regex = re.compile('(\d{2}.\s\w+\s\d{4})')
-price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
-notes_regex = re.compile('\[(?:(([A-Za-z0-9]+),?)+)\]$')
-extract_legend = re.compile('\((\w+,?)+\)')
-extract_legend_notes = re.compile('(?<=[\(,])(\w{1,2})')
+day_regex = re.compile(r'(\d{2}.\s\w+\s\d{4})')
+price_regex = re.compile(r'(?P<price>\d+[,.]\d{2}) ?€')
+notes_regex = re.compile(r'\[(?:(([A-Za-z0-9]+),?)+)\]$')
+extract_legend = re.compile(r'\((\w+,?)+\)')
+extract_legend_notes = re.compile(r'(?<=[\(,])(\w{1,2})')
 
 canteens = {
   # API Extraction: https://github.com/kreativmonkey/jgu-mainz-openmensa/issues/1
@@ -36,54 +36,56 @@ display = {
 roles = ('student', 'other', 'employee')
 
 extraLegend = {
-    # Source: https://www.studierendenwerk-mainz.de/essentrinken/speiseplan/
-    '1': 'mit Farbstoff',
-    '2': 'mit Konservierungsstoff',
-    '3': 'mit Antioxidationsmittel',
-    '4': 'mit Geschmacksverstärker',
-    '5': 'geschwefelt',
-    '6': 'geschwärzt',
-    '7': 'gewachst',
-    '8': 'Phosphat',
-    '9': 'mit Süßungsmitteln',
-    '10': 'enthält eine Phenylalaninquelle',
-    'S' : 'Schweinefleisch',
-    'G' : 'Geflügelfleisch',
-    'R' : 'Rindfleisch',
-    'Gl' : 'Gluten',
-    'We' : 'Weizen (inkl. Dinkel)',
-    'Ro' : 'Roggen',
-    'Ge' : 'Gerste',
-    'Haf': 'Hafer',
-    'Kr' : 'Krebstiere und Krebstiererzeugnisse',
-    'Ei' : 'Eier und Eiererzeugnisse',
-    'Fi' : 'Fisch und Fischerzeugnisse',
-    'En' : 'Erdnüsse und Erdnusserzeugnisse',
-    'So' : 'Soja und Sojaerzeugnisse',
-    'La' : 'Milch und Milcherzeugnisse',
-    'Sl' : 'Sellerie und Sellerieerzeugnisse',
-    'Sf' : 'Senf und Senferzeugnisse',
-    'Se' : 'Sesamsamen und Sesamsamenerzeugnisse',
-    'Sw' : 'Schwefeldioxid und Sulfite > 10mg/kg',
-    'Lu' : 'Lupine und Lupinerzeugnisse',
-    'Wt' : 'Weichtiere und Weichtiererzeugnisse',
-    'Nu' : 'Schalenfrüchte',
-    'Man': 'Mandel',
-    'Has': 'Haselnüsse',
-    'Wa' : 'Walnüsse',
-    'Ka' : 'Kaschunüsse',
-    'Pe' : 'Pecanüsse',
-    'Pa' : 'Paranüsse',
-    'Pi' : 'Pistatien',
-    'Mac': 'Macadamianüsse',
-    'icon:S.png' : 'Scheinefleisch',
-    'icon:R.png' : 'Rindfleisch',
-    'icon:Fi.png' : 'Fisch',
-    'icon:Gl.png' : 'Glutenfrei',
-    'icon:La.png' : 'Lactosefrei',
-    'icon:Vegan.png' : 'Vegan',
-    'icon:Veggi.png' : 'Vegetarisch'
-    
+  # Source: https://www.studierendenwerk-mainz.de/essen-trinken/speiseplan
+  '1': 'mit Farbstoff',
+  '2': 'mit Konservierungsstoff',
+  '3': 'mit Antioxidationsmittel',
+  '4': 'mit Geschmacksverstärker',
+  '5': 'geschwefelt',
+  '6': 'geschwärzt',
+  '7': 'gewachst',
+  '8': 'Phosphat',
+  '9': 'mit Süßungsmitteln',
+  '10': 'enthält eine Phenylalaninquelle',
+  'S' : 'Schweinefleisch',
+  'G' : 'Geflügelfleisch',
+  'R' : 'Rindfleisch',
+  'Gl' : 'Gluten',
+  'We' : 'Weizen (inkl. Dinkel)',
+  'Ro' : 'Roggen',
+  'Ge' : 'Gerste',
+  'Haf': 'Hafer',
+  'Kr' : 'Krebstiere und Krebstiererzeugnisse',
+  'Ei' : 'Eier und Eiererzeugnisse',
+  'Fi' : 'Fisch und Fischerzeugnisse',
+  'En' : 'Erdnüsse und Erdnusserzeugnisse',
+  'So' : 'Soja und Sojaerzeugnisse',
+  'La' : 'Milch und Milcherzeugnisse',
+  'Sl' : 'Sellerie und Sellerieerzeugnisse',
+  'Sf' : 'Senf und Senferzeugnisse',
+  'Se' : 'Sesamsamen und Sesamsamenerzeugnisse',
+  'Sw' : 'Schwefeldioxid und Sulfite > 10mg/kg',
+  'Lu' : 'Lupine und Lupinerzeugnisse',
+  'Wt' : 'Weichtiere und Weichtiererzeugnisse',
+  'Nu' : 'Schalenfrüchte',
+  'Man': 'Mandel',
+  'Has': 'Haselnüsse',
+  'Wa' : 'Walnüsse',
+  'Ka' : 'Kaschunüsse',
+  'Pe' : 'Pecanüsse',
+  'Pa' : 'Paranüsse',
+  'Pi' : 'Pistatien',
+  'Mac': 'Macadamianüsse',
+}
+
+iconLegend = {
+  'icon:S.png' : 'Scheinefleisch',
+  'icon:R.png' : 'Rindfleisch',
+  'icon:Fi.png' : 'Fisch',
+  'icon:Gl.png' : 'Glutenfrei',
+  'icon:La.png' : 'Lactosefrei',
+  'icon:Vegan.png' : 'Vegan',
+  'icon:Veggi.png' : 'Vegetarisch'
 }
 
 def build_meal_name(meal):
@@ -91,13 +93,13 @@ def build_meal_name(meal):
   # This will remove the extras and the unnecessary spaces
   # Example: 6 gebackene Fischstäbchen (Gl,Fi,We) mit Reis und veganem Joghurt-Kräuter-Dip (3,Gl,So,Sf,Ge)
   # Output: 6 gebackene Fischstäbchen mit Reis und veganem Joghurt-Kräuter-Dip
-	name = ' '.join(re.sub(r'\((\w+,?)+\)', '', str(meal)).split())
-  
+  name = ' '.join(re.sub(r'\((\w+,?)+\)', '', str(meal)).split())
+
   # Shorten the meal name to 250 characters like the api specification: https://doc.openmensa.org/feed/v2/#name
-	if len(name) > 250:
-			name = name[:245] + '...' 
-	
-	return name
+  if len(name) > 250:
+    name = name[:245] + '...' 
+
+  return name
 	
 def build_meal_notes(meal):
   meal_name = str(meal.find('div', class_="speiseplanname").string).strip()
@@ -106,15 +108,16 @@ def build_meal_notes(meal):
   # Use a set for easy elimination of duplicates
   notes = set()
       
-  # extracting the icons with spezial informations about the meal
+  # Extracting the icons with special informations about the meal
   # Example: <img src="/fileadmin/templates/images/speiseplan/Veggi.png"/>
   for icon in images:
-    if "icon:"+path.basename(icon['src']) in extraLegend:
-      notes.add(extraLegend["icon:"+path.basename(icon['src'])])
+    icon_name = path.basename(icon['src'])
+    if icon_name in iconLegend:
+      notes.add(iconLegend[icon_name])
 
-  for l in extract_legend_notes.findall(meal_name):
-    if l in extraLegend:
-      notes.add(extraLegend[l])
+  for extra in extract_legend_notes.findall(meal_name):
+    if extra in extraLegend:
+      notes.add(extraLegend[extra])
 
   return list(notes)
 	
@@ -128,30 +131,32 @@ def build_meal_price(meal):
 	meal_prices["other"] = prices[1].replace(',', '.')
 	
 	return meal_prices
-	
+	  
 def parse_data(canteen, data):	
-	for v in data.find_all('div'):
-		if not v.has_attr('class'):
-		  continue
+  # We assume that the `div`s appear in a certain order and will associate each meal to the previously encountered date and category.
+  for v in data.find_all('div'):
+    if not v.has_attr('class'):
+      continue
 
-		if v['class'][0] == 'speiseplan_date':
-		  date = day_regex.findall(str(v.string).strip())[0]
-				  
-		if v['class'][0] == 'speiseplan_bldngall_name':
-		  canteen_name = str(v.string).strip()
-		  
-		if v['class'][0] == 'speiseplancounter':
-		  counter_name = str(v.string).strip()
-		  
-		if v['class'][0] == 'menuspeise':
-		  meal_name = build_meal_name(v.find('div', class_="speiseplanname").string)
-		  meal_notes = build_meal_notes(v)
-		  meal_prices = build_meal_price(v)
+    if v['class'][0] == 'speiseplan_date':
+      date = day_regex.findall(str(v.string).strip())[0]
+          
+    if v['class'][0] == 'speiseplan_bldngall_name':
+      canteen_name = str(v.string).strip()
+      
+    if v['class'][0] == 'speiseplancounter':
+      # Save the countername as category to list meals by counter
+      category = str(v.string).strip()
+      
+    if v['class'][0] == 'menuspeise':
+      meal_name = build_meal_name(v.find('div', class_="speiseplanname").string)
+      meal_notes = build_meal_notes(v)
+      meal_prices = build_meal_price(v)
 
-		  canteen.addMeal(date, counter_name,
-							  meal_name, meal_notes, meal_prices)
+      canteen.addMeal(date, category,
+              meal_name, meal_notes, meal_prices)
 	
-	return canteen
+  return canteen
 
 
 def parse_url(url, today=False):
