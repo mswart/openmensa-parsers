@@ -79,13 +79,13 @@ extraLegend = {
 }
 
 iconLegend = {
-  'icon:S.png' : 'Scheinefleisch',
-  'icon:R.png' : 'Rindfleisch',
-  'icon:Fi.png' : 'Fisch',
-  'icon:Gl.png' : 'Glutenfrei',
-  'icon:La.png' : 'Lactosefrei',
-  'icon:Vegan.png' : 'Vegan',
-  'icon:Veggi.png' : 'Vegetarisch'
+  'S.png' : 'Scheinefleisch',
+  'R.png' : 'Rindfleisch',
+  'Fi.png' : 'Fisch',
+  'Gl.png' : 'Glutenfrei',
+  'La.png' : 'Lactosefrei',
+  'Vegan.png' : 'Vegan',
+  'Veggi.png' : 'Vegetarisch'
 }
 
 def build_meal_name(meal):
