@@ -1,22 +1,16 @@
-from urllib.request import urlopen
-from bs4 import BeautifulSoup as parse
 import re
-import datetime
 import os.path as path
+from urllib.request import urlopen
+
+from bs4 import BeautifulSoup as parse
 
 from utils import Parser
-from pyopenmensa.feed import OpenMensaCanteen
+from pyopenmensa.feed import LazyBuilder, extractNotes
 
-
-day_regex = re.compile(r'(\d{2}.\s\w+\s\d{4})')
 price_regex = re.compile(r'(?P<price>\d+[,.]\d{2}) ?€')
-notes_regex = re.compile(r'\[(?:(([A-Za-z0-9]+),?)+)\]$')
-extract_legend = re.compile(r'\((\w+,?)+\)')
-extract_legend_notes = re.compile(r'(?<=[\(,])(\w{1,2})')
 
 canteens = {
   # API Extraction: https://github.com/kreativmonkey/jgu-mainz-openmensa/issues/1
-  '0' : 'all',
   '1' : 'zentralmensa',
   '2' : 'mensa-georg-foster',
   '3' : 'cafe-rewi',
@@ -26,14 +20,12 @@ canteens = {
   '7' : 'mensarium',
   '8' : 'cafe-bingen-rochusberg',
   '9' : 'mensablitz'
-}
+  }
 
 display = {
   '2' : 'Aktuelle Woche',
   '3' : 'Nächste Woche'
-}
-
-roles = ('student', 'other', 'employee')
+  }
 
 extraLegend = {
   # Source: https://www.studierendenwerk-mainz.de/essen-trinken/speiseplan
@@ -76,107 +68,99 @@ extraLegend = {
   'Pa' : 'Paranüsse',
   'Pi' : 'Pistatien',
   'Mac': 'Macadamianüsse',
-}
+  }
 
 iconLegend = {
-  'S.png' : 'Scheinefleisch',
-  'R.png' : 'Rindfleisch',
-  'Fi.png' : 'Fisch',
+  # Removed parts are in the extrasLegend!
+  #'S.png' : 'Scheinefleisch',
+  #'R.png' : 'Rindfleisch',
+  #'Fi.png' : 'Fisch',
   'Gl.png' : 'Glutenfrei',
   'La.png' : 'Lactosefrei',
   'Vegan.png' : 'Vegan',
   'Veggi.png' : 'Vegetarisch'
-}
+  }
 
-def build_meal_name(meal):
-  # There are the extras of the meal inside the meal name
-  # This will remove the extras and the unnecessary spaces
-  # Example: 6 gebackene Fischstäbchen (Gl,Fi,We) mit Reis und veganem Joghurt-Kräuter-Dip (3,Gl,So,Sf,Ge)
-  # Output: 6 gebackene Fischstäbchen mit Reis und veganem Joghurt-Kräuter-Dip
-  name = ' '.join(re.sub(r'\((\w+,?)+\)', '', str(meal)).split())
-
-  # Shorten the meal name to 250 characters like the api specification: https://doc.openmensa.org/feed/v2/#name
-  if len(name) > 250:
-    name = name[:245] + '...' 
-
-  return name
-	
-def build_meal_notes(meal):
-  meal_name = str(meal.find('div', class_="speiseplanname").string).strip()
+def get_icon_notes(meal):
   images = meal.find_all('img')
 
-  # Use a set for easy elimination of duplicates
-  notes = set()
+  notes = []
       
   # Extracting the icons with special informations about the meal
   # Example: <img src="/fileadmin/templates/images/speiseplan/Veggi.png"/>
   for icon in images:
     icon_name = path.basename(icon['src'])
     if icon_name in iconLegend:
-      notes.add(iconLegend[icon_name])
+      notes.append(iconLegend[icon_name])
 
-  for extra in extract_legend_notes.findall(meal_name):
-    if extra in extraLegend:
-      notes.add(extraLegend[extra])
+  return notes
 
-  return list(notes)
-	
 def build_meal_price(meal):
-	meal_prices = {}
-	
-	prices = price_regex.findall(str(meal))
+  meal_prices = {}
+
+  prices = price_regex.findall(str(meal))
   # The pricing for employee and others are the same!
-	meal_prices["student"] = prices[0].replace(',', '.')
-	meal_prices["employee"] = prices[1].replace(',', '.')
-	meal_prices["other"] = prices[1].replace(',', '.')
-	
-	return meal_prices
-	  
-def parse_data(canteen, data):	
+  meal_prices["student"] = prices[0].replace(',', '.')
+  meal_prices["employee"] = prices[1].replace(',', '.')
+  meal_prices["other"] = prices[1].replace(',', '.')
+
+  return meal_prices
+    
+def parse_data(canteen, data):
+  date = None
+  category = None
+
   # We assume that the `div`s appear in a certain order and will associate each meal to the previously encountered date and category.
   for v in data.find_all('div'):
     if not v.has_attr('class'):
       continue
 
-    if v['class'][0] == 'speiseplan_date':
-      date = day_regex.findall(str(v.string).strip())[0]
+    if 'speiseplan_date' in v['class']:
+      date = str(v.string).strip()
           
-    if v['class'][0] == 'speiseplan_bldngall_name':
+    if 'speiseplan_bldngall_name' in v['class']:
+      # used for the display type 'all'
       canteen_name = str(v.string).strip()
       
-    if v['class'][0] == 'speiseplancounter':
+    if 'speiseplancounter' in v['class']:
       # Save the countername as category to list meals by counter
       category = str(v.string).strip()
       
-    if v['class'][0] == 'menuspeise':
-      meal_name = build_meal_name(v.find('div', class_="speiseplanname").string)
-      meal_notes = build_meal_notes(v)
+    if 'menuspeise' in v['class']:
+      meal_name = str(v.find('div', class_="speiseplanname").string).strip()
+      meal_notes = [canteen_name] + get_icon_notes(v)
       meal_prices = build_meal_price(v)
 
-      canteen.addMeal(date, category,
-              meal_name, meal_notes, meal_prices)
-	
-  return canteen
+      if date and category:
+        canteen.addMeal(date, category,
+                meal_name, meal_notes, meal_prices)
+ 
+def parse_url(url, today):
+  canteen = LazyBuilder()
+  canteen.setLegendData(extraLegend)
 
+  # For today display:
+  if today:
+    with urlopen(url + '&display_type=1') as resp:
+        resp = parse(resp.read().decode('utf-8', errors='ignore'), features='lxml')
+        speiseplan = resp.find('div', class_='speiseplan')
+      
+    parse_data(canteen, speiseplan)
+  # For week display:
+  else:
+    for d in display:
+      with urlopen(url + '&display_type=' + d) as resp:
+        resp = parse(resp.read().decode('utf-8', errors='ignore'), features='lxml')
+        speiseplan = resp.find('div', class_='speiseplan')
+    
+      parse_data(canteen, speiseplan)
+    
+  return canteen.toXMLFeed()
 
-def parse_url(url, today=False):
-	canteen = OpenMensaCanteen()
-  
-  # There are two displays one for the current and one for the next week
-	for d in display:
-		with urlopen(url + '&display_type=' + d) as resp:
-			resp = parse(resp.read().decode('utf-8', errors='ignore'), features='lxml')
-			speiseplan = resp.find('div', class_='speiseplan')
-		
-		canteen = parse_data(canteen, speiseplan)
-
-
-	return canteen.toXMLFeed()
-
+# The shared_prefix is the page where the Website it self gets its data from.
 parser = Parser('mainz',
-				handler=parse_url,
-				shared_prefix='https://www.studierendenwerk-mainz.de/speiseplan/frontend/index.php')
+      handler=parse_url,
+      shared_prefix='https://www.studierendenwerk-mainz.de/speiseplan/frontend/index.php')
 
 for canteen in canteens:
-	parser.define(canteens[canteen], suffix='?building_id='+canteen) 
-
+  parser.define(canteens[canteen], suffix='?building_id='+canteen) 
