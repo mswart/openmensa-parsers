@@ -8,6 +8,7 @@ http://localhost:9090/thueringen/il-ehrenberg/full.xml
 http://localhost:9090/karlsruhe/adenauerring/full.xml
 http://localhost:9090/leipzig/liebigstrasse/full.xml
 http://localhost:9090/magdeburg/ovgu-unten/full.xml
+http://localhost:9090/mainz/mensa-georg-foster/full.xml
 http://localhost:9090/marburg/erlenring/full.xml
 http://localhost:9090/muenchen/leopoldstrasse/full.xml
 http://localhost:9090/niederbayern_oberpfalz/uni-regensburg/full.xml
