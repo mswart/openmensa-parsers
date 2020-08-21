@@ -8,6 +8,7 @@ from utils import Parser
 from pyopenmensa.feed import LazyBuilder, extractNotes
 
 price_regex = re.compile(r'(?P<price>\d+[,.]\d{2}) ?€')
+legend_regex = re.compile(r'(?P<name>(\w{1,3}))\s=\s(?P<value>\w+((\s+\w+)*))$')
 
 canteens = {
   # API Extraction: https://github.com/kreativmonkey/jgu-mainz-openmensa/issues/1
@@ -74,16 +75,18 @@ iconLegend = {
   # Removed parts are in the extrasLegend!
   #'S.png' : 'Scheinefleisch',
   #'R.png' : 'Rindfleisch',
-  #'Fi.png' : 'Fisch',
+  'Fi.png' : 'Fisch',
+  'Lamm.png' : 'Enthält Lammfleisch',
+  'W.png' : 'Wildgericht',
   'Gl.png' : 'Glutenfrei',
   'La.png' : 'Lactosefrei',
   'Vegan.png' : 'Vegan',
-  'Veggi.png' : 'Vegetarisch'
+  'Veggi.png' : 'Vegetarisch',
+  'mensa-vital-small-2.png' : 'Mensa Vital'
   }
 
 def get_icon_notes(meal):
   images = meal.find_all('img')
-
   notes = []
       
   # Extracting the icons with special informations about the meal
@@ -119,7 +122,6 @@ def parse_data(canteen, data):
       date = str(v.string).strip()
           
     if 'speiseplan_bldngall_name' in v['class']:
-      # used for the display type 'all'
       canteen_name = str(v.string).strip()
       
     if 'speiseplancounter' in v['class']:
@@ -160,7 +162,7 @@ def parse_url(url, today):
 # The shared_prefix is the page where the Website it self gets its data from.
 parser = Parser('mainz',
       handler=parse_url,
-      shared_prefix='https://www.studierendenwerk-mainz.de/speiseplan/frontend/index.php')
+      shared_prefix='https://www.studierendenwerk-mainz.de/essen-trinken/speiseplan')
 
 for canteen in canteens:
   parser.define(canteens[canteen], suffix='?building_id='+canteen) 
