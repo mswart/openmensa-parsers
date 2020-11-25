@@ -124,13 +124,10 @@ def parse_data(canteen, data):
     if 'speiseplan_bldngall_name' in v['class']:
       canteen_name = str(v.string).strip()
       
-    if 'speiseplancounter' in v['class']:
-      # Save the countername as category to list meals by counter
-      category = str(v.string).strip()
       
     if 'menuspeise' in v['class']:
       meal_name = str(v.find('div', class_="speiseplanname").string).strip()
-      meal_notes = [canteen_name] + get_icon_notes(v)
+      meal_notes = get_icon_notes(v)
       meal_prices = build_meal_price(v)
 
       if date and category:
