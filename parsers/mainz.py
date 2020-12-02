@@ -122,8 +122,8 @@ def parse_data(canteen, data):
       date = str(v.string).strip()
       
     if 'speiseplancounter' in v['class']:
-    # Save the countername as category to list meals by counter
-    category = str(v.string).strip()
+      # Save the countername as category to list meals by counter
+      category = str(v.string).strip()
       
     if 'menuspeise' in v['class']:
       meal_name = str(v.find('div', class_="speiseplanname").string).strip()
