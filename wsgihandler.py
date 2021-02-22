@@ -16,7 +16,7 @@ def application(eniron, start_response):
     match = canteen_request.match(uri)
     if not match:
         start_response("404 Wrong Path", [("Content-type", 'application/xml; charset=utf-8')])
-        return ['<xml version="1.0"><info>{provider}/{canteen}/{feed}.xml</info></xml>']
+        return ['<xml version="1.0"><info>{provider}/{canteen}/{feed}.xml</info></xml>'.encode('utf8')]
     request = utils.Request(eniron)
     try:
         file = match.group('file')
