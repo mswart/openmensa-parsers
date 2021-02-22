@@ -8,7 +8,7 @@ import utils
 canteen_request = re.compile('/(?P<dirs>([\w-]+/)*[\w-]+)/(?P<file>[\w-]+.(xml|json))')
 
 
-def handler(eniron, start_response):
+def application(eniron, start_response):
     prefix = eniron.get('PATH_PREFIX', None)
     uri = eniron['PATH_INFO']
     if prefix and uri.startswith(prefix):
