@@ -54,6 +54,28 @@ As many meal information are only available online as HTML, [Beautiful Soup 4] i
 
    Almost all parsers implement a feed called `full` including all available menu information. Most parsers implement also a `today` feed returning primarily the menu for today.
 
+## Running the full server
+
+You can either use travis or use this similiar approach:
+
+Prequesites: Apache, Unix (Ubuntu for the following lines)
+> sudo apt-get install libapache2-mod-wsgi-py3 python3-pip  
+> sudo pip3 install bs4 lxml  
+
+Create new file wsgi.conf for apache2.
+> sudo touch /etc/apache2/conf-available/wsgi.conf 
+ 
+Insert those lines (depending on your path)
+> WSGIPythonPath /var/www/html/openmensa-parsers/  
+> WSGICallableObject handler  
+> WSGIScriptAlias /get /var/www/html/openmensa-parsers/wsgihandler.py
+
+Restart Apache2
+> sudo systemctl restart apache2  
+
+Check if it works (should return xml links)
+>  wget -O - 127.0.0.1/dresden/index.json
+
 
 ## Tips for adding a new provider
 
