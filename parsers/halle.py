@@ -40,8 +40,14 @@ class Canteen(EasySource):
             name = tds[2].find('img').attrs['alt'].strip()
             if not name:
                 continue
+            noteSpans = tds[1].find_all(['span'], attrs={'style': 'font-weight: normal; font-size: 10px;cursor:pointer;'})
+            notes = set()
+            for span in noteSpans:
+              note = span.get('title')
+              if note != '':
+                notes.add(note)
             prices = {'student': tds[3].text, 'employee': tds[4].text, 'other': tds[5].text}
-            self.feed.addMeal(date, category, name, prices=prices)
+            self.feed.addMeal(date, category, name, notes=notes, prices=prices)
 
     def extract_metadata(self):
         url_template = 'http://www.studentenwerk-halle.de/mensen-cafebars/{}/'
