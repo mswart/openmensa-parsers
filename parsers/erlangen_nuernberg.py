@@ -15,6 +15,7 @@ remove_refs_regex = re.compile('\([ ,a-zA-Z0-9]*\)')
 
 roles = ('student', 'employee', 'other')
 
+
 def get_food_types(piktogramme):
     fs = piktogramme
     food_types = ''
@@ -38,11 +39,15 @@ def get_food_types(piktogramme):
         food_types += 'Vegan '
     if 'MSC.png' in fs:
         food_types += 'MSC Fisch '
+    if 'CO2.png' in fs:
+        food_types += 'CO2 neutral '
     return food_types.strip()
+
 
 def get_refs(title):
     raw = ''.join(refs_regex.findall(title))
     return split_refs_regex.findall(raw)
+
 
 def build_notes_string(title):
     food_is = []
@@ -110,12 +115,14 @@ def build_notes_string(title):
         elif r == 'Man':
             food_contains.append('mit Mandeln')
         else:
-            food_contains.append('mit undefinierter Chemikalie ' + r )
+            food_contains.append('mit undefinierter Chemikalie ' + r)
     return food_contains
+
 
 def get_description(title):
     raw = remove_refs_regex.split(title)
     return ''.join(raw)
+
 
 def parse_url(url, today=False):
     canteen = LazyBuilder()
@@ -125,30 +132,31 @@ def parse_url(url, today=False):
         return canteen.toXMLFeed()
     root = ET.fromstring(xml_data)
     for day in root:
-        date = time.strftime('%d.%m.%Y', time.localtime(int(day.get('timestamp'))))
+        date = time.strftime('%d.%m.%Y',
+                             time.localtime(int(day.get('timestamp'))))
         for item in day:
             title = item.find('title').text
             description = get_description(title)
             notes = build_notes_string(title)
-            plist = [item.find('preis1').text, item.find('preis2').text, item.find('preis3').text]
+            plist = [item.find('preis1').text,
+                     item.find('preis2').text,
+                     item.find('preis3').text]
             food_type = get_food_types(item.find('piktogramme').text)
+            print(f"[{food_type}]")
             canteen.addMeal(date, food_type, description, notes, plist, roles)
     return canteen.toXMLFeed()
 
 
-
 parser = Parser('erlangen_nuernberg',
                 handler=parse_url,
-                shared_prefix='https://www.max-manager.de/daten-extern/sw-erlangen-nuernberg/xml/')
+                shared_prefix= 'https://www.max-manager.de/daten-extern/sw-erlangen-nuernberg/xml/')
 parser.define('er-langemarck', suffix='mensa-lmp.xml')
 parser.define('er-sued', suffix='mensa-sued.xml')
 parser.define('n-schuett', suffix='mensa-inselschuett.xml')
 parser.define('n-regens', suffix='mensa-regensburgerstr.xml')
 parser.define('n-stpaul', suffix='mensateria-st-paul.xml')
 parser.define('n-mensateria', suffix='mensateria-ohm.xml')
-parser.define('n-hohfederstr', suffix='cafeteria-come-in.xml')
-parser.define('n-baerenschanzstr', suffix='cafeteria-baerenschanzstr.xml')
 parser.define('eichstaett', suffix='mensa-eichstaett.xml')
 parser.define('ingolstadt', suffix='mensa-ingolstadt.xml')
 parser.define('ansbach', suffix='mensa-ansbach.xml')
-parser.define('triesdorf', suffix='mensateria-triesdorf.xml')
+parser.define('trieseichstaettdeichstaettorf', suffix='mensateria-triesdorf.xml')
