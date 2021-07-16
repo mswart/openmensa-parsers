@@ -6,7 +6,7 @@ from utils import Parser
 
 from pyopenmensa.feed import LazyBuilder, extractDate
 
-price_regex = re.compile(r'(?P<price>\d+[,.]\d{2}) ?€')
+price_regex = re.compile(r'(?P<price>\d+[,.]\d{2})\s?€')
 speiseplan_regex = re.compile(r'^Speiseplan\s+')
 kein_angebot_regex = re.compile(r'kein Angebot')
 
