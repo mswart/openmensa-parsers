@@ -6,7 +6,6 @@ from datetime import datetime, timedelta, date
 from pyopenmensa.feed import LazyBuilder
 import ssl
 
-#amount_regex = re.compile('\d{1,2},\d{1,2}')
 #
 #
 #def parse_fees(document):
@@ -101,6 +100,33 @@ import ssl
 #			canteen.addMeal(current_date, category, main_dish, notes, costs,
 #							None)
 
+# matches two digit prices such as 1,23 or 23,41 (hoping for low inflation)
+price_regex = re.compile('\d{1,2},\d{1,2}')
+# matches a digit or a letter followed by a digit between whitespace and comma, comma and comma or comma and whitespace
+additives_regex = re.compile('(?<=\s)\S?\d(?=,)|(?<=,)\S?\d(?=,)|(?<=,)\S?\d(?=\s)')
+# matches two or three character blocks
+allergens_regex = re.compile('(?<=\s)\w{2,3}(?=,)|(?<=,)\w{2,3}(?=,)|(?<=,)\w{2,3}(?=\s)')
+
+def parse_meals(document):
+	meals = document.find_all(class_='rowMealInner')
+	for meal in meals:
+		name = meal.find_next(class_='mealText').string.strip()
+
+		additives_string = meal.find_next(class_='zusatzstoffe').string
+		allergens_string = meal.find_next(class_='allergene').string
+
+		misc = []
+		for misc_category in meal.find_all(class_='splIconMeal'):
+			misc.append(misc_category['title'])
+			
+		info = {
+				'additives': additives_regex.findall(additives_string) if additives_string else [],
+				'allergens': allergens_regex.findall(allergens_string) if allergens_string else [],
+				'misc': misc
+		}
+		prices = price_regex.findall(meal.find_next(class_='mealPreise').string)
+		yield (name, info, prices)
+
 class Canteen(EasySource):
 	ENDPOINT_URL = 'https://www.stw-thueringen.de/xhr/loadspeiseplan.html'
 
@@ -122,7 +148,9 @@ class Canteen(EasySource):
 		]
 		print('fetching date ' + post_args[1][1])
 		document = self.parse_remote(self.ENDPOINT_URL, args=post_args, tls_context=self.tls_context)
-		#print(document)
+		for (name, info, prices) in parse_meals(document):
+			#print(name + ": " + str(prices))
+			print(info)
 		return True
 
 	def parse_data(self, start_date, today=False):
