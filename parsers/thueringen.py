@@ -6,106 +6,13 @@ from datetime import datetime, timedelta, date
 from pyopenmensa.feed import LazyBuilder
 import ssl
 
-#
-#
-#def parse_fees(document):
-#	fees_regex = re.compile('Bedienstete.*')
-#
-#	fees = document.find_all('p', class_='MsoNormal', string=fees_regex)
-#
-#	for fee in fees:
-#		fee_strings = fees_regex.findall(fee.text)
-#		for amount_candidate in fee_strings:
-#			amount_strings = amount_regex.findall(amount_candidate)
-#			if len(amount_strings) != 2:
-#				continue
-#
-#			employees_fee = float(amount_strings[0].replace(',', '.'))
-#			guests_fee = float(amount_strings[1].replace(',', '.'))
-#			return employees_fee, guests_fee
-#
-#	return None, None
-#
-#
-#def parse_ingredients(document):
-#	groups_regex = re.compile('([\w\d*]+):\s+(.*)')
-#	groups = dict()
-#
-#	for table in document.select('div.kontextbox > table:nth-of-type(1)'):
-#		for s in table.stripped_strings:
-#			g = groups_regex.search(s)
-#			if g is not None:
-#				groups[g.group(1)] = g.group(2).strip()
-#
-#	return groups
-#
-#
-#def parse_meals(day, groups):
-#	ingredients_regex = re.compile('Inhalt:.*')
-#
-#	meals_t_rows = day.find_all('tr')
-#
-#	for meal_data in meals_t_rows:
-#		meal_t_datas = meal_data.find_all('td')
-#		if len(meal_t_datas) != 3:
-#			continue
-#
-#		category = meal_t_datas[0].text
-#		notes = []
-#		ingredients = ingredients_regex.findall(meal_t_datas[1].text)
-#
-#		if len(ingredients) > 0:
-#			ingredients_list = ingredients[0][8:].strip().split(',')
-#
-#			notes = [groups[note] for note in ingredients_list if note in groups]
-#
-#		main_dish = ingredients_regex.sub('', meal_t_datas[1].text).strip()
-#
-#		students_fee_string = amount_regex.findall(meal_t_datas[2].text)
-#		if len(students_fee_string) != 1:
-#			continue
-#
-#		students_fee = float(students_fee_string[0].replace(',', '.'))
-#		costs = {'student': students_fee}
-#
-#		# Skip empty meals
-#		if len(main_dish) == 0:
-#			continue
-#
-#		yield (main_dish, notes, costs, category)
-#
-#
-#def parse_meals_for_canteen(document, canteen, employees_fee, guests_fee, groups, today):
-#	days_regex = re.compile('day_\d$')
-#	mensa_start_date = parse_start_date(document)
-#
-#	day_divs = document.find_all('div', id=days_regex)
-#
-#	for day in day_divs:
-#		day_id = int(day['id'][-1:])
-#
-#		current_date = mensa_start_date + timedelta(days=day_id - 2)
-#
-#		meals = parse_meals(day, groups)
-#		for meal in meals:
-#			main_dish, notes, costs, category = meal
-#
-#			if employees_fee is not None:
-#				costs['employee'] = costs['student'] + employees_fee
-#			if guests_fee is not None:
-#				costs['other'] = costs['student'] + guests_fee
-#			if today and current_date != date.today():
-#				continue
-#
-#			canteen.addMeal(current_date, category, main_dish, notes, costs,
-#							None)
 
 # matches two digit prices such as 1,23 or 23,41 (hoping for low inflation)
-price_regex = re.compile('\d{1,2},\d{1,2}')
+price_regex = re.compile(r'\d{1,2},\d{1,2}')
 # matches a digit or a letter followed by a digit between whitespace and comma, comma and comma or comma and whitespace
-additives_regex = re.compile('(?<=\s)\S?\d(?=,)|(?<=,)\S?\d(?=,)|(?<=,)\S?\d(?=\s)')
+additives_regex = re.compile(r'(?<=\s)\S?\d(?=,)|(?<=,)\S?\d(?=,)|(?<=,)\S?\d(?=\s)')
 # matches two or three character blocks
-allergens_regex = re.compile('(?<=\s)\w{2,3}(?=,)|(?<=,)\w{2,3}(?=,)|(?<=,)\w{2,3}(?=\s)')
+allergens_regex = re.compile(r'(?<=\s)\w{2,3}(?=,)|(?<=,)\w{2,3}(?=,)|(?<=,)\w{2,3}(?=\s)')
 
 def parse_meals(document):
 	meals = document.find_all(class_='rowMealInner')
@@ -126,6 +33,21 @@ def parse_meals(document):
 		}
 		prices = price_regex.findall(meal.find_next(class_='mealPreise').string)
 		yield (name, info, prices)
+
+
+# matches legend labels
+legend_item_regex = re.compile(r'stoff-.{1,3}')
+# get legend key and value omitting 'mit' and 'enthält'
+legend_key_val_regex = re.compile(r'\((?P<key>\S{1,3})\) (?:(?:mit )|(?:enthält ))?(?P<value>.*)')
+
+def parse_legend(document):
+	legend = {}
+	for item in document.find_all('label', attrs={'for': legend_item_regex}):
+		# is a shortcut with key in parenthesis
+		if match := legend_key_val_regex.search(item.string):
+			(key, value) = match.group('key', 'value')
+			legend[key] = value
+	return legend
 
 class Canteen(EasySource):
 	ENDPOINT_URL = 'https://www.stw-thueringen.de/xhr/loadspeiseplan.html'
@@ -148,9 +70,26 @@ class Canteen(EasySource):
 		]
 		print('fetching date ' + post_args[1][1])
 		document = self.parse_remote(self.ENDPOINT_URL, args=post_args, tls_context=self.tls_context)
+		legend = parse_legend(document)
 		for (name, info, prices) in parse_meals(document):
-			#print(name + ": " + str(prices))
-			print(info)
+			# determine category (Vegan, Vegetarisch, Fisch, Fleisch)
+			category = 'Fleisch'
+			if 'Vegane Speisen' in info['misc']:
+				category = 'Vegan'
+			elif 'Vegetarische Speisen' in info['misc']:
+				category = 'Vegetarisch'
+			elif 'Fisch' in info['misc']:
+				category = 'Fisch'
+
+
+			additives = 'Zusatzstoffe: ' + (', '.join((legend[item] for item in info['additives'])) if info['additives'] else 'keine')
+			allergens = 'Allergene: ' + (', '.join((legend[item] for item in info['allergens'])) if info['allergens'] else 'keine')
+			print(category)
+			print(name)
+			print(additives)
+			print(allergens)
+			print(prices)
+			print('-----')
 		return True
 
 	def parse_data(self, start_date, today=False):
