@@ -71,7 +71,6 @@ class Canteen(EasySource):
 			('resources_id', self.canteen_id),
 			('date', date.strftime('%d.%m.%Y'))
 		]
-		print('fetching date ' + post_args[1][1])
 		document = self.parse_remote(self.ENDPOINT_URL, args=post_args, tls_context=self.tls_context)
 		if not parse_closed(document):
 			legend = parse_legend(document)
@@ -85,20 +84,15 @@ class Canteen(EasySource):
 				elif 'Fisch' in info['misc']:
 					category = 'Fisch'
 
-				additives = 'Zusatzstoffe: ' + (', '.join((legend[item] for item in info['additives'])) if info['additives'] else 'keine')
-				allergens = 'Allergene: ' + (', '.join((legend[item] for item in info['allergens'])) if info['allergens'] else 'keine')
+				additives = 'Zusatzstoffe: ' + ', '.join((legend[item] for item in info['additives'])) if info['additives'] else 'ohne deklarationspflichtige Zusatzstoffe'
+				allergens = 'Allergene: ' + ', '.join((legend[item] for item in info['allergens'])) if info['allergens'] else ''
 				# remove information which is already present in the category
 				misc = ', '.join((item for item in info['misc'] if item not in ['Vegane Speisen', 'Vegetarische Speisen', 'Fisch']))
 
-				print(category)
-				print(name)
-				print(additives)
-				print(allergens)
-				print(misc)
-				print(prices)
-				print('-----')
-				notes = [additives, allergens]
-				# only add misc if not empty
+				notes = [additives]
+				# only add misc and allergens if not empty
+				if len(allergens):
+					notes.append(allergens)
 				if len(misc):
 					notes.append(misc)
 
@@ -122,8 +116,6 @@ class Canteen(EasySource):
 				break
 			# increment day
 			start_date += timedelta(days=1)
-
-		print('--------------------------')
 
 	def extract_metadata(self):
 		city = self.suffix.split('/')[0]
