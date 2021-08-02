@@ -117,34 +117,6 @@ class Canteen(EasySource):
 			# increment day
 			start_date += timedelta(days=1)
 
-	def extract_metadata(self):
-		city = self.suffix.split('/')[0]
-		doc = self.parse_remote(self.BASE_URL + city, tls_context=self.tls_context)
-		data = doc.find(id='tpl_form')
-
-		# The map this data was intended for was removed along with
-		# all data, so this will always be None currently.
-		if data is None:
-			return
-
-		link = data.find(attrs={
-			'name': re.compile(r'^link_'),
-			'value': re.compile(r'{}$'.format(re.escape(self.suffix))),
-		})
-		if link is None:
-			return
-
-		number = link['name'][5:]
-		name = data.find(attrs={'name': 'title_' + number})['value']
-		address = data.find(attrs={'name': 'adresse_' + number})['value']
-		location = data.find(attrs={'name': 'xy_' + number})['value']
-
-		canteen = self.feed
-		canteen.name = name
-		canteen.address = re.sub(r'^(.*)\s+([^\s]+)\s+(\d{5})\s*$', r'\1, \3 \2', address)
-		canteen.city = city.capitalize()
-		canteen.location(*location.split(','))
-
 	@Source.today_feed
 	def today(self, request):
 		day = date.today()
@@ -158,27 +130,26 @@ class Canteen(EasySource):
 		return self.feed.toXMLFeed()
 
 parser = Parser('thueringen', version='2.0')
-#Canteen('ei-wartenberg', parser, suffix='eisenach/mensa-am-wartenberg-2.html')
-#Canteen('ef-nordhaeuser', parser, suffix='erfurt/mensa-nordhaeuser-strasse.html')
-#Canteen('ef-altonaer', parser, suffix='erfurt/mensa-altonaer-strasse.html')
-#Canteen('ef-schlueterstr', parser, suffix='erfurt/cafeteria-schlueterstrasse.html')
-#Canteen('ef-leipzigerstr', parser, suffix='erfurt/cafeteria-leipziger-strasse.html')
-#Canteen('ge-freundschaft', parser, suffix='gera/mensa-weg-der-freundschaft.html')
-#Canteen('il-ehrenberg', parser, suffix='ilmenau/mensa-ehrenberg.html')
-#Canteen('il-cafeteria', parser, suffix='ilmenau/cafeteria-mensa-ehrenberg.html')
-#Canteen('il-nanoteria', parser, suffix='ilmenau/cafeteria-nanoteria.html')
-#Canteen('il-roentgen', parser, suffix='ilmenau/cafeteria-roentgenbau.html')
-#Canteen('je-zeiss', parser, suffix='jena/mensa-carl-zeiss-promenade.html')
-#Canteen('je-eah', parser, suffix='jena/cafeteria-eah.html')
-#Canteen('je-ernstabbe', parser, suffix='jena/mensa-ernst-abbe-platz.html')
-#Canteen('je-vegeTable', parser, suffix='jena/vegetable.html')
-#Canteen('je-rosen', parser, suffix='jena/cafeteria-zur-rosen.html')
+Canteen('ei-wartenberg', parser, canteen_id=69)
+Canteen('ef-nordhaeuser', parser, canteen_id=44)
+Canteen('ef-altonaer', parser, canteen_id=47)
+Canteen('ef-schlueterstr', parser, canteen_id=51)
+Canteen('ef-leipzigerstr', parser, canteen_id=52)
+Canteen('ge-freundschaft', parser, canteen_id=67)
+Canteen('il-ehrenberg', parser, canteen_id=46)
+Canteen('il-cafeteria', parser, canteen_id=53)
+Canteen('il-nanoteria', parser, canteen_id=55)
+Canteen('il-roentgen', parser, canteen_id=57)
+Canteen('je-zeiss', parser, canteen_id=58)
+Canteen('je-eah', parser, canteen_id=61)
+Canteen('je-ernstabbe', parser, canteen_id=41)
+Canteen('je-vegeTable', parser, canteen_id=60)
+Canteen('je-rosen', parser, canteen_id=63)
 Canteen('je-philosophen', parser, canteen_id=59)
-#Canteen('je-haupt', parser, suffix='jena/cafeteria-uni-hauptgebaeude.html')
-#Canteen('je-bib', parser, suffix='jena/cafeteria-bibliothek-thulb.html')
-#Canteen('nh-mensa', parser, suffix='nordhausen/mensa-nordhausen.html')
-#Canteen('sk-mensa', parser, suffix='schmalkalden/mensa-schmalkalden.html')
-#Canteen('we-horn', parser, suffix='weimar/cafeteria-am-horn.html')
-#Canteen('we-park', parser, suffix='weimar/mensa-am-park.html')
-#Canteen('we-anna', parser, suffix='weimar/cafeteria-anna-amalia-bibliothek.html')
-#Canteen('we-coudray', parser, suffix='weimar/cafeteria-coudraystrasse.html')
+Canteen('je-haupt', parser, canteen_id=64)
+Canteen('je-bib', parser, canteen_id=65)
+Canteen('nh-mensa', parser, canteen_id=71)
+Canteen('sk-mensa', parser, canteen_id=73)
+Canteen('we-park', parser, canteen_id=77)
+Canteen('we-anna', parser, canteen_id=80)
+Canteen('we-coudray', parser, canteen_id=81)
