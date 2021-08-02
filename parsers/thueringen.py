@@ -2,7 +2,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup as parse
 import re
 from utils import EasySource, Parser, Source
-from datetime import datetime, timedelta, date
+from datetime import timedelta, date
 from pyopenmensa.feed import LazyBuilder
 import ssl
 
@@ -49,6 +49,9 @@ def parse_legend(document):
 			legend[key] = value
 	return legend
 
+def parse_closed(document):
+	return bool(document.find_all('h2', string='Zum gewählten Datum werden in dieser Einrichtung keine Essen angeboten.'))
+
 class Canteen(EasySource):
 	ENDPOINT_URL = 'https://www.stw-thueringen.de/xhr/loadspeiseplan.html'
 
@@ -70,27 +73,39 @@ class Canteen(EasySource):
 		]
 		print('fetching date ' + post_args[1][1])
 		document = self.parse_remote(self.ENDPOINT_URL, args=post_args, tls_context=self.tls_context)
-		legend = parse_legend(document)
-		for (name, info, prices) in parse_meals(document):
-			# determine category (Vegan, Vegetarisch, Fisch, Fleisch)
-			category = 'Fleisch'
-			if 'Vegane Speisen' in info['misc']:
-				category = 'Vegan'
-			elif 'Vegetarische Speisen' in info['misc']:
-				category = 'Vegetarisch'
-			elif 'Fisch' in info['misc']:
-				category = 'Fisch'
+		if not parse_closed(document):
+			legend = parse_legend(document)
+			for (name, info, prices) in parse_meals(document):
+				# determine category (Vegan, Vegetarisch, Fisch, Fleisch)
+				category = 'Fleisch'
+				if 'Vegane Speisen' in info['misc']:
+					category = 'Vegan'
+				elif 'Vegetarische Speisen' in info['misc']:
+					category = 'Vegetarisch'
+				elif 'Fisch' in info['misc']:
+					category = 'Fisch'
 
+				additives = 'Zusatzstoffe: ' + (', '.join((legend[item] for item in info['additives'])) if info['additives'] else 'keine')
+				allergens = 'Allergene: ' + (', '.join((legend[item] for item in info['allergens'])) if info['allergens'] else 'keine')
+				# remove information which is already present in the category
+				misc = ', '.join((item for item in info['misc'] if item not in ['Vegane Speisen', 'Vegetarische Speisen', 'Fisch']))
 
-			additives = 'Zusatzstoffe: ' + (', '.join((legend[item] for item in info['additives'])) if info['additives'] else 'keine')
-			allergens = 'Allergene: ' + (', '.join((legend[item] for item in info['allergens'])) if info['allergens'] else 'keine')
-			print(category)
-			print(name)
-			print(additives)
-			print(allergens)
-			print(prices)
-			print('-----')
-		return True
+				print(category)
+				print(name)
+				print(additives)
+				print(allergens)
+				print(misc)
+				print(prices)
+				print('-----')
+				notes = [additives, allergens]
+				# only add misc if not empty
+				if len(misc):
+					notes.append(misc)
+
+				self.feed.addMeal(date, category, name, notes=notes, prices=prices, roles=('student', 'employee', 'other'))
+			return True
+		else:
+			return False
 
 	def parse_data(self, start_date, today=False):
 		not_available_count = 0
@@ -140,13 +155,13 @@ class Canteen(EasySource):
 
 	@Source.today_feed
 	def today(self, request):
-		day = datetime.now()
+		day = date.today()
 		self.parse_data(day, True)
 		return self.feed.toXMLFeed()
 
 	@Source.full_feed
 	def full(self, request):
-		day = datetime.now()
+		day = date.today()
 		self.parse_data(day, False)
 		return self.feed.toXMLFeed()
 
