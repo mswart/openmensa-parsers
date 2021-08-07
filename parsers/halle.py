@@ -49,8 +49,8 @@ class Canteen(EasySource):
                         notes = set()
                         for span in noteSpans:
                             note = span.get('title')
-                        if note != '':
-                            notes.add(note)
+                            if note != '':
+                                notes.add(note)
 
                         self.feed.addMeal(date, name, category, prices=prices, notes=notes)
 
