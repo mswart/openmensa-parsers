@@ -63,6 +63,8 @@ def validate_prices(prices=None):
     for key in prices:
         if prices[key] is None:
             prices[key] = float(0)
+        else
+            prices[key] = float(prices[key])
     if 'Studierende' in prices:
         prices['student'] = prices['Studierende']
         del prices['Studierende']
