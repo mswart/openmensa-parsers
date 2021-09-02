@@ -63,6 +63,8 @@ def validate_prices(prices=None):
     for key in prices:
         if prices[key] is None:
             prices[key] = float(0)
+        else:
+            prices[key] = float(prices[key])
     if 'Studierende' in prices:
         prices['student'] = prices['Studierende']
         del prices['Studierende']
@@ -79,7 +81,7 @@ def parse_today(url, canteen):
     for day in days:
         if day["date"] == today_time_string:
             if day["closed"]:
-                canteen.setDayClosed(datetime.today())
+                canteen.setDayClosed(today_time_string)
             else:
                 with urlopen(url + '/days/' + today_time_string + '/meals') as response:
                     meals = json.loads(response.read().decode())
