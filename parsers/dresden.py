@@ -54,7 +54,6 @@ def get_accepted_days(url):
         result = json.loads(response.read().decode())
     return result
 
-
 def validate_prices(prices=None):
     # @Studentenwerk Dresden: it would be nice to remove the two following lines. :-)
     # If it's possible: update your roles
@@ -65,12 +64,21 @@ def validate_prices(prices=None):
             prices[key] = float(0)
         else:
             prices[key] = float(prices[key])
+    newprices = prices.copy()
+    for key in prices:
+        if key not in ['student', 'employee', 'pupil', 'other', 'Studierende', 'Bedienstete', 'Schüler']:
+            newprices['other'] = prices[key]
+            del newprices[key]
+    prices = newprices.copy()
     if 'Studierende' in prices:
         prices['student'] = prices['Studierende']
         del prices['Studierende']
     if 'Bedienstete' in prices:
         prices['employee'] = prices['Bedienstete']
         del prices['Bedienstete']
+    if 'Schüler' in prices:
+        prices['pupil'] = prices['Schüler']
+        del prices['Schüler']
     return prices
 
 
