@@ -18,7 +18,7 @@ LOCATION = {
     'dresden-johannstadt': 'Mensa Johannstadt',
     'tharandt-tellerrandt': 'Mensa TellerRandt',
     'dresden-palucca-hochschule': 'Mensa Palucca Hochschule',
-    'dresden-wueins': 'Mensa WUeins / Sportsbar',
+    'dresden-wueins': 'Mensa WUeins',
     'dresden-bruehl': 'Mensa Brühl',
     'dresden-stimm-gabel': 'Mensa Stimm-Gabel',
     'dresden-u-boot': 'BioMensa U-Boot',
