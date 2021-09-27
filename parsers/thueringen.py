@@ -19,20 +19,24 @@ def parse_meals(document):
 	for meal in meals:
 		name = meal.find_next(class_='mealText').string.strip()
 
-		additives_string = meal.find_next(class_='zusatzstoffe').string
-		allergens_string = meal.find_next(class_='allergene').string
+		additives_element = meal.find_next(class_='zusatzstoffe')
+		allergens_element = meal.find_next(class_='allergene')
 
 		misc = []
 		for misc_category in meal.find_all(class_='splIconMeal'):
 			misc.append(misc_category['title'])
 			
 		info = {
-				'additives': additives_regex.findall(additives_string) if additives_string else [],
-				'allergens': allergens_regex.findall(allergens_string) if allergens_string else [],
+				'additives': additives_regex.findall(additives_element.string) if additives_element and additives_element.string else [],
+				'allergens': allergens_regex.findall(allergens_element.string) if allergens_element and allergens_element.string else [],
 				'misc': misc
 		}
-		prices = price_regex.findall(meal.find_next(class_='mealPreise').string)
-		yield (name, info, prices)
+		prices_element = meal.find_next(class_='mealPreise')
+		prices = price_regex.findall(prices_element.string) if prices_element else None
+		
+		# check for non-empty name
+		if len(name):
+			yield (name, info, prices)
 
 
 # matches legend labels
