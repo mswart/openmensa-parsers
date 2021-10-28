@@ -16,6 +16,7 @@ cities = [
     'karlsruhe',
     'leipzig',
     'magdeburg',
+    'mainz',
     'muenchen',
     'marburg',
     'niederbayern_oberpfalz',
