@@ -78,7 +78,7 @@ class Canteen(EasySource):
     @Source.today_feed
     def today(self, request):
         day = datetime.datetime.now()
-        self.parse_data(day=day.day, month=day.month, year=day.year)
+        self.parse_data(date=day.strftime("%Y-%m-%d"))
         return self.feed.toXMLFeed()
 
     @Source.feed(name='thisWeek', priority=1, hour='8', retry='2 60')
