@@ -1,4 +1,4 @@
-import re
+﻿import re
 import datetime
 
 from utils import Parser, EasySource, Source
@@ -12,36 +12,49 @@ class Canteen(EasySource):
         self.meta = meta
 
     def parse_data(self, **kwargs):
-        kwargs['selected_locations[]'] = self.location
+        kwargs['location_ids[]'] = self.location
         data = self.parse_remote('https://www.meine-mensa.de/speiseplan_iframe',
                                  args=kwargs)
-        table = data.find('table', 'speiseplan')
 
-        date = None
-        pos = 0
-        for tr in table.tbody.find_all('tr', recursive=False):
-            if pos == 0:
-                if self.needed_title:
-                    assert self.needed_title in tr.text, tr.text
+        menuContainer = data.find('div', attrs={'class': 'card mt-3'})
+
+        if menuContainer != None:
+            
+            pos = 0
+            for div in menuContainer.find_all('div', recursive=False):
+                if pos == 0:
+                    if self.needed_title:
+                        assert self.needed_title in div.text, div.text
+                    else:
+                        print(div.text)
                 else:
-                    print(tr.text)
+
+                    date = div.find('div', attrs={'class': 'card-header'}).text.split(" ")[-1]
+
+                    allDaysMenu = div.find_all('div', attrs={'class': 'col-md-6 col-lg-4 mt-3'})
+
+                    for dayMenu in allDaysMenu:
+
+                        name = dayMenu.find('h6', attrs={'class': 'food_title'}).text.strip()
+
+                        if name == 'Dessertschälchen vom Büfett':
+                            category = 'Dessert'
+                        else:
+                            category = 'Hauptessen'
+
+                        priceList = dayMenu.find_all('dd')
+                        prices = {'student': priceList[0].text.strip(), 'employee': priceList[1].text.strip(), 'other': priceList[2].text.strip()}
+
+                        noteSpans = dayMenu.find_all('span', attrs={'data-toggle': 'tooltip'})
+                        notes = set()
+                        for span in noteSpans:
+                            note = span.get('title')
+                            if note != '':
+                                notes.add(note)
+
+                        self.feed.addMeal(date, name, category, prices=prices, notes=notes)
+
                 pos += 1
-                continue
-            elif pos == 1:
-                pos += 1
-                continue
-            if 'break' in tr.attrs.get('class', []):
-                date = list(tr.find_all('td'))[1].text
-                continue
-            if 'empty_cell' in tr.attrs.get('class', []):
-                continue
-            tds = list(tr.find_all('td', recursive=False))
-            category = tds[1].find('span', attrs={'class': 'npsble'}).text.strip() or 'Hauptessen'
-            name = tds[2].find('img').attrs['alt'].strip()
-            if not name:
-                continue
-            prices = {'student': tds[3].text, 'employee': tds[4].text, 'other': tds[5].text}
-            self.feed.addMeal(date, category, name, prices=prices)
 
     def extract_metadata(self):
         url_template = 'http://www.studentenwerk-halle.de/mensen-cafebars/{}/'
