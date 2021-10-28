@@ -36,6 +36,8 @@ class Canteen(EasySource):
                     for dayMenu in allDaysMenu:
 
                         name = dayMenu.find('h6', attrs={'class': 'food_title'}).text.strip()
+                        if not name:
+                            continue
 
                         if name == 'Dessertschälchen vom Büfett':
                             category = 'Dessert'
@@ -52,7 +54,7 @@ class Canteen(EasySource):
                             if note != '':
                                 notes.add(note)
 
-                        self.feed.addMeal(date, name, category, prices=prices, notes=notes)
+                        self.feed.addMeal(date, category, name, prices=prices, notes=notes)
 
                 pos += 1
 
