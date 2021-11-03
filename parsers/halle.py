@@ -38,8 +38,10 @@ class Canteen(EasySource):
                         if not name:
                             continue
 
-                        if name == 'Dessertschälchen vom Büfett':
+                        if name.startswith('Dessertschälchen'):
                             category = 'Dessert'
+                        elif name.startswith('Buntes Salatschälchen'):
+                            category = 'Salat'
                         else:
                             category = 'Hauptessen'
 
