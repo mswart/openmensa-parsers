@@ -41,8 +41,17 @@ As many meal information are only available online as HTML, [Beautiful Soup 4] i
 
 2. Install the dependencies:
    * [Python 3]
+
    * [Beautiful Soup 4] - needed for most parsers/providers.
+
+        `pip install beautifulsoup4`
+
    * [python-lxml] Some parsers use the `lxml` backend of Beautiful Soup, so you might need the Python `lxml` module/extension.
+
+        `pip install lxml`
+   * [PyOpenMensa]
+
+        `pip install pyopenmensa`
 
 3. Try some parsers
 
