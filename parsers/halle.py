@@ -16,12 +16,11 @@ class Canteen(EasySource):
         data = self.parse_remote('https://www.meine-mensa.de/speiseplan_iframe',
                                  args=kwargs)
 
-        menuContainer = data.find('div', attrs={'class': 'card mt-3'})
+        menu_container = data.find('div', attrs={'class': 'card mt-3'})
 
-        if menuContainer != None:
-            
+        if menu_container != None:
             pos = 0
-            for div in menuContainer.find_all('div', recursive=False):
+            for div in menu_container.find_all('div', recursive=False):
                 if pos == 0:
                     if self.needed_title:
                         assert self.needed_title in div.text, div.text
