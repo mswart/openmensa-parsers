@@ -1,107 +1,139 @@
 from urllib.request import urlopen
-from bs4 import BeautifulSoup as parse
-import re
-
+import json
 from utils import Parser
+from datetime import datetime, timedelta
+from pyopenmensa.feed import LazyBuilder
 
-from pyopenmensa.feed import LazyBuilder, extractDate
+# Grab all dresden canteen information from its public original legit API
+API_VERSION = '2'
+URL_BASE = 'https://api.studentenwerk-dresden.de/openmensa/v' + API_VERSION + '/'
 
-price_regex = re.compile(r'(?P<price>\d+[,.]\d{2}) ?€')
-speiseplan_regex = re.compile(r'^Speiseplan\s+')
-kein_angebot_regex = re.compile(r'kein Angebot')
+# Which canteens do we want?
+LOCATION = {
+    'dresden-reichenbachstrasse': 'Mensa Reichenbachstraße',
+    'dresden-zeltschloesschen': 'Zeltschlösschen',
+    'dresden-alte-mensa': 'Alte Mensa',
+    'dresden-mensologie': 'Mensologie',
+    'dresden-siedepunkt': 'Mensa Siedepunkt',
+    'dresden-johannstadt': 'Mensa Johannstadt',
+    'tharandt-tellerrandt': 'Mensa TellerRandt',
+    'dresden-palucca-hochschule': 'Mensa Palucca Hochschule',
+    'dresden-wueins': 'Mensa WUeins',
+    'dresden-bruehl': 'Mensa Brühl',
+    'dresden-stimm-gabel': 'Mensa Stimm-Gabel',
+    'dresden-u-boot': 'BioMensa U-Boot',
+    'dresden-mensa-sport': 'Mensa Sport',
+    'dresden-cafe-cube': 'Grill Cube',
+    'dresden-cafe-mobil': 'Pasta-Mobil',
+    'zittau-kraatschn': 'Mensa Kraatschn',
+    'zittau-mahlwerk': 'Mensa Mahlwerk',
+    'goerlitz-mio': 'MiO - Mensa im Osten',
+    'rothenburg-mensa': 'Mensa Rothenburg',
+    'bautzen-polizeihochschule': 'Mensa Bautzen Polizeihochschule',
+    'bautzen-oberschmausitz': 'Mensa Oberschmausitz'
+}
 
-roles = ('student', 'employee')
+# Create a dict where we save the original ids
+LOCATION_ID = {}
+
+# Which canteens does studentenwerk dresden have?
+with urlopen(URL_BASE + 'canteens') as response:
+    canteens = json.loads(response.read().decode())
+
+# Copy the original ids into our dict
+for item in canteens:
+    for key in LOCATION:
+        if LOCATION[key] == item["name"]:
+            LOCATION_ID.update({key: item["id"]})
 
 
-def parse_week(url, canteen):
-    data = urlopen(url).read().decode('utf-8')
-    document = parse(data, 'lxml')
+# Returns a list of days that the canteen supports (Format YYYY-MM-DD)
+# based on https://doc.openmensa.org/api/v2/canteens/days/ >> "List days of a canteen"
+def get_accepted_days(url):
+    with urlopen(url + '/days') as response:
+        result = json.loads(response.read().decode())
+    return result
 
-    # The day plans are in a div with no special class or id. Thus
-    # we try to find a div with a heading "Speiseplan "
-    for week_heading in document(class_='swdd-ueberschrift',
-                                 text=speiseplan_regex):
-        week_div = week_heading.parent
+def validate_prices(prices=None):
+    # @Studentenwerk Dresden: it would be nice to remove the two following lines. :-)
+    # If it's possible: update your roles
+    if prices is None:
+        prices = {}
+    for key in prices:
+        if prices[key] is None:
+            prices[key] = float(0)
+        else:
+            prices[key] = float(prices[key])
+    newprices = prices.copy()
+    for key in prices:
+        if key not in ['student', 'employee', 'pupil', 'other', 'Studierende', 'Bedienstete', 'Schüler']:
+            newprices['other'] = prices[key]
+            del newprices[key]
+    prices = newprices.copy()
+    if 'Studierende' in prices:
+        prices['student'] = prices['Studierende']
+        del prices['Studierende']
+    if 'Bedienstete' in prices:
+        prices['employee'] = prices['Bedienstete']
+        del prices['Bedienstete']
+    if 'Schüler' in prices:
+        prices['pupil'] = prices['Schüler']
+        del prices['Schüler']
+    return prices
 
-        # The meals for each day a in card. Again there is no class or id to
-        # select the meal cards. Thus we lookung for all card with a card-header
-        # which stores the date
-        for card_header in week_div.find_all(class_='card-header'):
-            day_card = card_header.parent
 
-            try:
-                date = extractDate(card_header.text)
-            except ValueError:
-                # There was no valid date in the table header, which happens eg
-                # for special "Aktionswoche" cards.
-                # TODO: check if this card contains any meals, which was not the
-                #       case when it was used for the first time.
-                continue
+def parse_today(url, canteen):
+    days = get_accepted_days(url)
+    # check if today is within the accepted days
+    today_time_string = datetime.today().strftime("%Y-%m-%d")
+    for day in days:
+        if day["date"] == today_time_string:
+            if day["closed"]:
+                canteen.setDayClosed(today_time_string)
+            else:
+                with urlopen(url + '/days/' + today_time_string + '/meals') as response:
+                    meals = json.loads(response.read().decode())
+                    for meal in meals:
+                        canteen_prices = validate_prices(meal["prices"])
+                        canteen.addMeal(today_time_string, meal["category"], meal["name"], meal["notes"],
+                                        canteen_prices)
 
-            # Check if there is a "kein Angebot" item
-            if day_card.find(class_='list-group-item', text=kein_angebot_regex):
-                canteen.setDayClosed(date)
-                continue
 
-            # Iterate over the list-group-item within the card which are used
-            # for individual meals
-            for meal in day_card.find_all(class_='swdd-link-list-item'):
-
-                name = meal.find(name='span')
-                if name is not None:
-                    name = name.text
-                else:
-                    continue
-
-                if ': ' in name:
-                    category, name = name.split(': ', 1)
-                else:
-                    category = 'Angebote'
-
-                notes = [img['alt'] for img in meal.find_all(class_='swdd-spl-symbol')]
-
-                if '* ' in name:
-                    name, note = name.split('* ', 1)
-                    notes.append(note)
-
-                if meal.strong is not None:
-                    prices = price_regex.findall(meal.strong.text)
-                else:
-                    prices = []
-
-                canteen.addMeal(date, category, name, notes,
-                                prices, roles)
+def parse_full(url, canteen):
+    all_days = get_accepted_days(url)
+    result_days = {}
+    # get first day of timespan - e.g. the first day of this week
+    day_begin = (datetime.today() - timedelta(days=datetime.today().weekday())).date()
+    # add 14 days, as we need this week + next week
+    for i in range(0, 14):
+        for day in all_days:
+            day_iteration = (day_begin + timedelta(i)).isoformat()  # (str) "2021-08-20"
+            if day["date"] == day_iteration:
+                # save all 14 days, that we want and their closed-state
+                result_days[day["date"]] = day["closed"]
+    # for each day set a meal or set closed
+    for day in result_days:
+        if result_days[day] is True:
+            canteen.setDayClosed(day)
+        else:
+            with urlopen(url + '/days/' + day + '/meals') as response:
+                meals = json.loads(response.read().decode())
+                for meal in meals:
+                    canteen_prices = validate_prices(meal["prices"])
+                    canteen.addMeal(day, meal["category"], meal["name"], meal["notes"], canteen_prices)
 
 
 def parse_url(url, today=False):
     canteen = LazyBuilder()
-    parse_week(url + '.html?view=list', canteen)
-    if not today:
-        parse_week(url + '-w1.html?view=list', canteen)
-        parse_week(url + '-w2.html?view=list', canteen)
+    if today:
+        parse_today(url, canteen)
+    else:
+        parse_full(url, canteen)
     return canteen.toXMLFeed()
 
 
-parser = Parser('dresden', handler=parse_url,
-                shared_prefix='https://www.studentenwerk-dresden.de/mensen/speiseplan/')
-parser.define('dresden-reichenbachstrasse', suffix='mensa-reichenbachstrasse')
-parser.define('dresden-zeltschloesschen', suffix='zeltschloesschen')
-parser.define('dresden-alte-mensa', suffix='alte-mensa')
-parser.define('dresden-mensologie', suffix='mensologie')
-parser.define('dresden-siedepunkt', suffix='mensa-siedepunkt')
-parser.define('dresden-johannstadt', suffix='mensa-johannstadt')
-parser.define('tharandt-tellerrandt', suffix='mensa-tellerrandt')
-parser.define('dresden-palucca-hochschule', suffix='mensa-palucca-hochschule')
-parser.define('dresden-wueins', suffix='mensa-wueins')
-parser.define('dresden-bruehl', suffix='mensa-bruehl')
-parser.define('dresden-stimm-gabel', suffix='mensa-stimm-gabel')
-parser.define('dresden-u-boot', suffix='u-boot')
-parser.define('dresden-mensa-sport', suffix='mensa-sport')
-parser.define('dresden-cafe-cube', suffix='grill-cube')
-parser.define('dresden-cafe-mobil', suffix='pasta-mobil')
-parser.define('zittau-kraatschn', suffix='mensa-kraatschn')
-parser.define('zittau-mahlwerk', suffix='mensa-mahlwerk')
-parser.define('goerlitz-mio', suffix='mio-mensa-im-osten')
-parser.define('rothenburg-mensa', suffix='mensa-rothenburg')
-parser.define('bautzen-polizeihochschule', suffix='mensa-bautzen')
-parser.define('bautzen-oberschmausitz', suffix='mensa-oberschmausitz')
+parser = Parser('dresden', handler=parse_url, shared_prefix=URL_BASE + 'canteens/')
+
+# each canteen needs to be defined
+for key in LOCATION_ID:
+    parser.define(key, suffix=str(LOCATION_ID[key]))
