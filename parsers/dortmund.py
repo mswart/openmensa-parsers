@@ -72,12 +72,11 @@ def parse_legend(url):
     data = rq.urlopen(url).read().decode('utf-8')
     soup = BeautifulSoup(data, 'html.parser')
 
-    table = soup.find('table', { 'class' : 'ce-table' })
-    tbody = soup.find('tbody')
+    table = soup.find('table', { 'class' : 'table' })
 
     legend = {}
 
-    for tr in tbody.find_all('tr'):
+    for tr in table.find_all('tr'):
         td = tr.find_all('td')
         key = td[0].text.strip()
         legend[key] = td[1].text.strip()
@@ -85,6 +84,9 @@ def parse_legend(url):
     return legend
 
 def define_category(item, img):
+    if 'fallback' in img['src']:
+        return 'Unbekannt'
+
     if img is not None and len(img['title']) > 0:
         return img['title']
     else:
@@ -101,34 +103,44 @@ def getAndFormatPrice(price):
         return '-'
 
 def parse_day(canteen, soup, wdate):
-    mealsBody = soup.find('div', { 'class' : 'meals-body' })
+    mealsBody = soup.find('tbody', { 'class' : 'meals__tbody' })
 
-    for meal in mealsBody.find_all('div', { 'class' : 'meal-item' }):
-        for item in meal.find_all('div', { 'class' : 'item' }):
-            if 'category' in item['class']:
-                img = item.find('img')
-                category = define_category(item, img)
-            elif 'description' in item['class']:
-                description = item.text.strip()
-            elif 'supplies'in item['class']:
-                supplies = []
-                for supply in item.find_all('img'):
-                    if supply['title']:
-                        supplies.append(supply['title'])
-            elif 'price'in item['class']:
-                price = item.text
-                if 'student' in item['class']:
-                    student_price = getAndFormatPrice(price)
-                elif 'staff' in item['class']:
-                    staff_price = getAndFormatPrice(price)
-                elif 'guest' in item['class']:
-                    guest_price = getAndFormatPrice(price)
+    # Canteen seems to be closed...
+    if mealsBody is None:
+        return
+
+    for meal in mealsBody.find_all('tr', { 'class' : 'meals__row' }):
+
+        # This is needed for Food Fakultaet because there are subheadings
+        if meal.find('th'):
+            continue
+
+        for item in meal.find_all('td'):
+            for cssClass in item['class']:
+                if 'category' in cssClass:
+                    img = item.find('img')
+                    category = define_category(item, img)
+                elif 'title' in cssClass:
+                    title = item.text.strip()
+                elif 'supplies'in cssClass:
+                    supplies = []
+                    for supply in item.find_all('img'):
+                        if supply['title']:
+                            supplies.append(supply['title'])
+                elif 'price'in cssClass:
+                    priceTextContent = item.text
+                    if 'S:' in priceTextContent:
+                        student_price = getAndFormatPrice(priceTextContent)
+                    elif 'B:' in priceTextContent:
+                        staff_price = getAndFormatPrice(priceTextContent)
+                    elif 'G:' in priceTextContent:
+                        guest_price = getAndFormatPrice(priceTextContent)
         try:
-            canteen.addMeal(wdate, category, description, notes=supplies, prices={'student': student_price, 'employee': staff_price, 'other': guest_price})
+            canteen.addMeal(wdate, category, title, notes=supplies, prices={'student': student_price, 'employee': staff_price, 'other': guest_price})
         except ValueError as e:
             if str(e) != "Meal names must not be empty": raise
 
-parser = Parser('dortmund', handler=parse_url, shared_prefix='https://www.stwdo.de/mensa-co/')
+parser = Parser('dortmund', handler=parse_url, shared_prefix='https://www.stwdo.de/mensa-cafes-und-catering/')
 
 parser.define('tu-hauptmensa', suffix='tu-dortmund/hauptmensa/')
 parser.define('tu-mensa-sued', suffix='tu-dortmund/mensa-sued/')
