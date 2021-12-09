@@ -1,13 +1,50 @@
-from bs4 import BeautifulSoup
-import datetime
-import re
-import sys
-from urllib.request import urlopen
+from urllib.request import *
 
-from utils import Parser, EasySource, Source
+import json
+import datetime
+from pprint import pprint
+
+from pyopenmensa.feed import LazyBuilder
+
+from utils import Parser, Source
+
+DATE_STRING = "%Y-%m-%d"
+API_VERSION = "v1"
+URL_BASE = 'https://sls.api.stw-on.de/%s/' % (API_VERSION)
+LOCATIONS = {
+    'sub': {
+        'braunschweig': {
+            'mensa1-mittag': {'id': 101, 'time': 'evening'},
+            'mensa1-abend': {'id': 101, 'time': 'noon'},
+            'mensa360': {'id': 111, 'time': 'all'},
+            'mensa2': {'id': 105, 'time': 'all'},
+            'mensa2-cafeteria': {'id': 106, 'time': 'all'},
+            'hbk': {'id': 120, 'time': 'all'},
+            'bistro-nff': {'id': 109, 'time': 'all'},
+            'clausthal': {'id': 171, 'time': 'all'},
+            'foodtruck-wilhelm': {'id': 194, 'time': 'all'},
+            'foodtruck-katharine': {'id': 195, 'time': 'all'},
+        },
+        'hildesheim': {
+            'uni': {'id': 150, 'time': 'all'},
+            'hohnsen': {'id': 160, 'time': 'all'},
+            'luebecker-strasse': {'id': 153, 'time': 'all'},
+        }
+    },
+    'direct': {
+        'clausthal': {'id': 171, 'time': 'all'},
+        'holzminden': {'id': 163, 'time': 'all'},
+        'lueneburg': {'id': 140, 'time': 'all'},
+        'salzgitter': {'id': 200, 'time': 'all'},
+        'salzgitter-bistro': {'id': 202, 'time': 'all'},
+        'suderburg': {'id': 134, 'time': 'all'},
+        'wolfenbuettel': {'id': 130, 'time': 'all'},
+        'wolfsburg': {'id': 112, 'time': 'all'},
+    }
+}
 
 # Taken from the filter menu on the website
-note_descriptions = {
+NOTE_DESCRIPTIONS = {
     "VEGT": "Vegetarisch",
     "VEGA": "Vegan",
     "SCHW": "Schwein",
@@ -20,7 +57,7 @@ note_descriptions = {
     "BIO": "EU BIO Logo",
     "MV": "mensaVital",
     "NEU": "Neu!",
-# Allergens
+    # Allergens
     "1": "Farbstoff",
     "2": "Konservierungsstoff",
     "3": "Antioxidationsmittel",
@@ -42,7 +79,7 @@ note_descriptions = {
     "60": "Zucker und Süßungsmittel",
     "62": "konserviert mit Thiabendazol und Imazalil",
     "64": "kakaohaltige Fettglasur",
-# Additives
+    # Additives
     "GL": "glutenhaltiges Getreide",
     "GL1": "Weizen",
     "GL2": "Roggen",
@@ -73,107 +110,63 @@ note_descriptions = {
     "WT": "Weichtiere",
 }
 
-class Canteen(EasySource):
-    def __init__(self, *args, id, open_id=None):
-        super(Canteen, self).__init__(*args)
-        self.id = id
-        self.open_id = open_id
-        self._data = None
 
-    @Source.full_feed
-    def parse_data(self, request):
-        data = self.load_data()
+def parse_url(url, id, time, today=False):
+    with urlopen(url) as response:
+        data = json.loads(response.read().decode())
 
-        mensa = data.find("mensa", id=self.id)
+    canteens = {}
+    for meal in data['meals']:
+        if meal['location']['id'] not in canteens:
+            canteens[meal['location']['id']] = {}
+        if not meal['date'] in canteens[meal['location']['id']]:
+            canteens[meal['location']['id']][meal['date']] = []
+        canteens[meal['location']['id']][meal['date']].append(meal)
 
-        for day in mensa.find_all("day"):
-            date = day["date"]
-            for meal in day.find_all("meal"):
-                if self.open_id is not None and meal["oeffnung"].strip() != self.open_id:
-                    continue
+    canteen = LazyBuilder()
+    for day, meals in canteens[id].items():
+        date = datetime.datetime.strptime(day, DATE_STRING).date()
 
-                name = meal["meal"].strip()
-                category = meal["kindname"].strip()
-                if not name or not category:
-                    continue
+        if today and (datetime.date.today() != date):
+            continue
 
-                notes = set()
-                for key in ["kennzeichnung", "allergen_text", "zusatz_text"]:
-                    if not meal[key]:
-                        continue
-                    for note in map(lambda e: e.strip(), meal[key].split(",")):
+        for meal in meals:
+            if time != 'all' and meal['time'] != time:
+                continue
+
+            name = meal['name']
+            category = meal['lane']['name']
+
+            notes = set()
+            if 'tags' in meal:
+                for key in ["additives", "allergens", "categories", "special"]:
+                    for note in meal['tags'][key]:
                         if not note:
                             continue
-                        if note in note_descriptions:
-                            notes.add(note_descriptions[note])
+                        if note['id'] in NOTE_DESCRIPTIONS:
+                            notes.add(NOTE_DESCRIPTIONS[note['id']])
                         else:
-                            print("Unknown note {}: {}, {}".format(note, date, name), file=sys.stderr)
-                            notes.add(note)
+                            if 'name' not in note:
+                                continue
+                            notes.add(note['name'])
 
-                prices = {
-                    'student': meal["price_stud"],
-                    'employee': meal["price_empl"],
-                    'other': meal["price_guest"],
-                }
-                self.feed.addMeal(date, category, name, notes=notes, prices=prices)
+            prices = {}
+            if 'price' in meal:
+                for key, price in meal['price'].items():
+                    if key == 'guest':
+                        key = 'other'
+                    prices[key] = price
 
-        return self.feed.toXMLFeed()
+            canteen.addMeal(date, category, name, notes, prices)
 
-    def extract_metadata(self):
-        data = self.load_data()
-        mensa = data.find("mensa", id=self.id)
+    return canteen.toXMLFeed()
 
-        address = re.match(
-            r'^(?P<street>.*)\s+(?P<postcode>\d{5})\s+(?P<city>.+)$',
-            mensa["address"]
-        )
+parser = Parser('ostniedersachsen', handler=parse_url, shared_args=[URL_BASE + 'meals'])
 
-        canteen = self.feed
-        canteen.name = mensa["showname"]
-        if address is not None:
-            canteen.address = "{}, {} {}".format(
-                address.group("street").strip(),
-                address.group("postcode"),
-                address.group("city").strip(),
-            )
-            canteen.city = address.group("city").strip().capitalize()
-        pass
+for sub, locs in LOCATIONS['sub'].items():
+    sub = parser.sub(sub)
+    for name, loc in locs.items():
+        sub.define(name, suffix=name, args=[loc['id'], loc['time']])
 
-    def load_data(self):
-        # Cache the data for 15 min to not stress the API too much
-        now = datetime.datetime.now()
-        if self._data is None or now - self._data[1] > datetime.timedelta(minutes=15):
-            content = urlopen(self.parser.shared_prefix).read()
-            data = BeautifulSoup(content.decode('utf-8'), 'xml')
-            self._data = (data, now)
-        return self._data[0]
-
-parser = Parser('ostniedersachsen', version="1.0", shared_prefix='http://api.stw-on.de/xml/mensa.xml')
-
-braunschweig = parser.sub('braunschweig')
-Canteen('mensa1-mittag', braunschweig, id="101", open_id="2")
-Canteen('mensa1-abend', braunschweig, id="101", open_id="3")
-Canteen('mensa360', braunschweig, id="111")
-Canteen('mensa2', braunschweig, id="105")
-Canteen('mensa2-cafeteria', braunschweig, id="106")
-Canteen('hbk', braunschweig, id="120")
-Canteen('bistro-nff', braunschweig, id="109")
-
-Canteen('clausthal', parser, id="171")
-
-hildesheim = parser.sub('hildesheim')
-Canteen('uni', hildesheim, id="150")
-Canteen('hohnsen', hildesheim, id="160")
-Canteen('luebecker-strasse', hildesheim, id="153")
-
-Canteen('holzminden', parser, id="163")
-
-Canteen('lueneburg', parser, id="140")
-
-Canteen('salzgitter', parser, id="200")
-
-Canteen('suderburg', parser, id="134")
-
-Canteen('wolfenbuettel', parser, id="130")
-
-Canteen('wolfsburg', parser, id="112")
+for name, loc in LOCATIONS['direct'].items():
+    parser.define(name, suffix=name, args=[loc['id'], loc['time']])
