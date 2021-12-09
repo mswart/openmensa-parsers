@@ -22,6 +22,8 @@ LOCATIONS = {
             'hbk': {'id': 120, 'time': 'all'},
             'bistro-nff': {'id': 109, 'time': 'all'},
             'clausthal': {'id': 171, 'time': 'all'},
+            'foodtruck-wilhelm': {'id': 194, 'time': 'all'},
+            'foodtruck-katharine': {'id': 195, 'time': 'all'},
         },
         'hildesheim': {
             'uni': {'id': 150, 'time': 'all'},
@@ -34,6 +36,7 @@ LOCATIONS = {
         'holzminden': {'id': 163, 'time': 'all'},
         'lueneburg': {'id': 140, 'time': 'all'},
         'salzgitter': {'id': 200, 'time': 'all'},
+        'salzgitter-bistro': {'id': 202, 'time': 'all'},
         'suderburg': {'id': 134, 'time': 'all'},
         'wolfenbuettel': {'id': 130, 'time': 'all'},
         'wolfsburg': {'id': 112, 'time': 'all'},
