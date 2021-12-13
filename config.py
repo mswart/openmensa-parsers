@@ -4,6 +4,7 @@ from utils import CanteenPrefixer, ParserRenamer
 
 cities = [
     'aachen',
+    'berlin',
     'chemnitz_zwickau',
     'darmstadt',
     'dortmund',
