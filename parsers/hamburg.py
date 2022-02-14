@@ -1,70 +1,95 @@
-from urllib.request import urlopen
-from bs4 import BeautifulSoup as parse
+from bs4 import BeautifulSoup
 import re
-from datetime import date
-
+import requests
 from utils import Parser
-
-from pyopenmensa.feed import LazyBuilder, extractWeekDates
-
-extra_regex = re.compile('\(.*?\)')
-strip_regex = re.compile('\s{2,}')
-price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€?')
+from pyopenmensa.feed import LazyBuilder, extractDate, buildPrices
 
 
-def parse_week(url, date, canteen):
-    url += '/{0}/{1:0>2}/'.format(*date.isocalendar())
-    document = parse(urlopen(url).read())
-    week_data = document.find('table', id='week-menu')
-    if week_data is None:
-        print('week not found')
+def parse_week(url: str, location_id: str, canteen: LazyBuilder):
+    r = requests.get(url)
+    if not r.status_code == 200:
         return
-    weekDays = extractWeekDates(week_data.thead.find_all('th')[0].text)
-    for category_tr in week_data.find_all('tr'):
-        category = category_tr.find('th').text
-        i = 0
-        for day_td in category_tr.find_all('td'):
-            for meal_data in day_td.find_all('p', 'dish'):
-                if not meal_data.find('strong'):
-                    continue
-                name = extra_regex.sub('', meal_data.find('strong').text)
-                name = strip_regex.sub(' ', name).strip()
-                if len(name) > 250:
-                    name = name[:245] + '...'
-                notes = [span['title'] for span in meal_data.find_all('span', 'tooltip')]
-                notes += [img['title'] for img in meal_data.find_all('img')]
-                prices = price_regex.findall(meal_data.find('span', 'price').text)
-                canteen.addMeal(weekDays[i], category, name,
-                                list(set(notes)),
-                                prices, ('student', 'employee', 'other')
-                                )
-            i += 1
+    soup = BeautifulSoup(r.text, "lxml")
+    # get all menus of this week for the given location_id
+    mensa_data_per_location = soup.find(
+        "div",
+        {"class": "container-fluid px-0 tx-epwerkmenu-menu-location-container", "data-location-id": location_id}
+    )
+    if mensa_data_per_location is None:
+        print('currently no data for this week available')
+        return
+
+    canteen.name = soup.find("h5", class_="mensainfo__title").text.strip()
+    canteen.address = " ".join(soup.find("a", class_="infocard__link").text.strip().split())
+
+    for category in mensa_data_per_location.find_all(
+            "div", class_="tx-epwerkmenu-menu-timestamp-wrapper tx-epwerkmenu-menu-timestamp-active"):
+        day = extractDate(category['data-timestamp'])
+        category_name = category.find_next("h5", class_="menulist__categorytitle").text.strip()
+        meals = category.find_all("div", class_="singlemeal")
+        if not meals:
+            continue
+        for meal in meals:
+            # sometimes meals are not grabable - maybe a bug!
+            try:
+                meal_name = meal.find("h5", class_="singlemeal__headline singlemeal__headline--").text.strip()
+            except AttributeError:
+                continue
+            # get rid of everything in brackets (allergens, and co.)
+            meal_name = re.sub("[\(\[].*?[\)\]]", "", meal_name)
+            price_dict = {}
+            allergens_list = []
+            prices = meal.find("div", class_="col-12 col-xl-auto offset-xl-1 col-custom-2 mb-3 mb-xl-0")
+            for price in prices.find_all("span", class_="singlemeal__info"):
+                price_num = price.text.strip().split("€")[0]
+                if "stud" in price.text.strip().lower():
+                    price_dict["student"] = price_num
+                elif "bedienst" in price.text.strip().lower():
+                    price_dict["employee"] = price_num
+                elif "gäst" in price.text.strip().lower():
+                    price_dict["other"] = price_num
+            for allergen in meal.find_all("dd", class_="dlist__item dlist__item--inline"):
+                allergens_list.append(allergen.text.strip().split("\n")[0])
+            canteen.addMeal(
+                date=day,
+                category=category_name,
+                name=meal_name,
+                prices=buildPrices(price_dict),
+                notes=allergens_list
+            )
 
 
 def parse_url(url, today=False):
     canteen = LazyBuilder()
-    parse_week(url, date.today(), canteen)
-    if not today:
-        parse_week(url, date.today() + date.resolution * 7, canteen)
+    canteen.city = "Hamburg"
+
+    location_id = url[-3:]
+    parse_week(url=url, location_id=location_id, canteen=canteen)
     return canteen.toXMLFeed()
 
 
 parser = Parser('hamburg', handler=parse_url,
-                shared_prefix='http://speiseplan.studierendenwerk-hamburg.de/de/')
-parser.define('armgartstrasse', suffix='590')
-parser.define('bergedorf', suffix='520')
-parser.define('berliner-tor', suffix='530')
-parser.define('botanischer-garten', suffix='560')
-parser.define('bucerius-law-school', suffix='410')
-parser.define('cafe-mittelweg', suffix='690')
-parser.define('cafe-cfel', suffix='680')
-parser.define('cafe-jungiusstrasse', suffix='610')
-parser.define('cafe-alexanderstrasse', suffix='660')
-parser.define('campus', suffix='340')
-parser.define('finkenau', suffix='420')
-parser.define('geomatikum', suffix='540')
-parser.define('harburg', suffix='570')
-parser.define('hcu', suffix='430')
-parser.define('philosophenturm', suffix='350')
-parser.define('stellingen', suffix='580')
-parser.define('studierendenhaus', suffix='310')
+                shared_prefix='https://www.studierendenwerk-hamburg.de/speiseplan-nocache?t=this_week&')
+parser.define('alexanderstraße', suffix='l=176')
+parser.define('armgartstraße', suffix='l=174')
+parser.define('bergedorf', suffix='l=168')
+parser.define('berliner-tor', suffix='l=170')
+parser.define('botanischer-garten', suffix='l=156')
+parser.define('bucerius-law-school', suffix='l=162')
+parser.define('cafe-cfel', suffix='l=177')
+parser.define('cafe-jungiusstrasse', suffix='l=175')
+parser.define('cafe-alexanderstrasse', suffix='l=')
+parser.define('campus', suffix='l=142')
+parser.define('finkenau', suffix='l=174')
+parser.define('geomatikum', suffix='l=151')
+parser.define('harburg', suffix='l=158')
+parser.define('ins-gruene-harburg', suffix='l=159')
+parser.define('hcu', suffix='l=166')
+parser.define('ueberseering', suffix='l=154')
+parser.define('stellingen', suffix='l=161')
+parser.define('studierendenhaus', suffix='l=137')
+parser.define('mittelweg', suffix='l=178')
+parser.define('cafe-zessP', suffix='l=383')
+parser.define('cafe-del-arte', suffix='l=148')
+parser.define('food-truck', suffix='l=179')
+parser.define('schlueters', suffix='l=148')
