@@ -51,7 +51,7 @@ def parse_url(url, today=False):
 
         # extract legend
         legend = {}
-        legends = document.find('div', 'tx-stwm-speiseplan')
+        legends = document.find('div', 'tx-stwm-hochschulgastronomie')
         additions = legends.find('div', 'c-schedule__filter-body')
         for table in additions.find_all('div', 'c-schedule__filter-item'):
             for ingredient in table.find('ul').find_all('li'):
