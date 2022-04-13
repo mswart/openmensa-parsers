@@ -25,11 +25,18 @@ def parse_meals(document):
 		misc = []
 		for misc_category in meal.find_all(class_='splIconMeal'):
 			misc.append(misc_category['title'])
+
+		# look whether meal is in a container which also contains Abendessen class
+		meal_container = meal.find_parent(class_='splGroupWrapper')
+		meal_time = None
+		if meal_container:
+			meal_time = meal_container.find(class_='splGroupAbendmensa')
 			
 		info = {
 				'additives': additives_regex.findall(additives_element.string) if additives_element and additives_element.string else [],
 				'allergens': allergens_regex.findall(allergens_element.string) if allergens_element and allergens_element.string else [],
-				'misc': misc
+				'misc': misc,
+				'is_dinner': meal_time != None and meal_time.string == 'Abendessen'
 		}
 		prices_element = meal.find_next(class_='mealPreise')
 		prices = price_regex.findall(prices_element.string) if prices_element else None
@@ -81,6 +88,9 @@ class Canteen(EasySource):
 				elif 'Fisch' in info['misc']:
 					category = 'Fisch'
 
+				if info['is_dinner']:
+					category = 'Abend: {}'.format(category)
+
 				additives = 'Zusatzstoffe: ' + ', '.join((legend[item] for item in info['additives'])) if info['additives'] else 'ohne deklarationspflichtige Zusatzstoffe'
 				allergens = 'Allergene: ' + ', '.join((legend[item] for item in info['allergens'])) if info['allergens'] else ''
 				# remove information which is already present in the category
@@ -126,7 +136,7 @@ class Canteen(EasySource):
 		self.parse_data(day, False)
 		return self.feed.toXMLFeed()
 
-parser = Parser('thueringen', version='2.0')
+parser = Parser('thueringen', version='2.1')
 Canteen('ei-wartenberg', parser, canteen_id=69)
 Canteen('ef-nordhaeuser', parser, canteen_id=44)
 Canteen('ef-altonaer', parser, canteen_id=47)
