@@ -13,7 +13,7 @@ price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€?')
 base = 'http://www.studentenwerk-muenchen.de/mensa'
 
 
-def parse_url(url, today=False):
+def parse_url(url, today=False): 
     canteen = LazyBuilder()
 
     # prices are stored on a separate page
@@ -51,14 +51,14 @@ def parse_url(url, today=False):
 
         # extract legend
         legend = {}
-        legends = document.find('div', 'tx-stwm-speiseplan')
-        additions = legends.find('div', 'c-schedule__filter-body')
-        for table in additions.find_all('div', 'c-schedule__filter-item'):
+        additions = document.find('div', 'c-schedule__filter-body')
+        # create list with additions
+        for table in additions.find_all('div', 'c-schedule__filter-item'):         
             for ingredient in table.find('ul').find_all('li'):
                 name = ingredient.find('dt').text.strip()
                 description = ingredient.find('dd').text.strip()
                 legend[name] = description
-        for label in legends.find('ul', 'c-schedule__type-list').find_all('li'):
+        for label in document.find('ul', 'c-schedule__type-list').find_all('li'): 
             name = label.find('dt').text.replace('(', '').replace(')', '').strip()
             description = label.find('dd').text.strip()
             legend[name] = description
@@ -111,7 +111,7 @@ def parse_url(url, today=False):
         date += datetime.timedelta(days=1)
         if today:
             break
-
+        
     return canteen.toXMLFeed()
 
 
