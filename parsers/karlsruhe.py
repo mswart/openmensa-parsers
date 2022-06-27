@@ -7,7 +7,7 @@ from utils import Parser
 
 from pyopenmensa.feed import OpenMensaCanteen
 
-day_regex = re.compile('(?P<date>\d{4}-\d{2}-\d{2})')
+day_regex = re.compile('canteen_day_nav_\d')
 price_regex = re.compile('(?P<price>\d+[,.]\d{2}) ?€')
 notes_regex = re.compile('\[(?:(([A-Za-z0-9]+),?)+)\]$')
 legend_number_regex = re.compile('\((?P<number>\d+)\)\s+-?\s*(?P<text>.+?)(?:\||$)')
@@ -87,10 +87,10 @@ def icon(src):
     return 'ICON=' + src.rsplit('/', 1).pop()
 
 
-def parse_week(canteen, url, place_class=None):
+def parse_week(canteen, url):
     content = urlopen(url).read().decode('utf-8', errors='ignore')
     document = parse(content, features='lxml')
-    legend = document.find('div', {'id': 'leg'})
+    legend = document.find('div', {'class': 'acc-c'})
     if legend and legend.find('br'):
         # Update legend
         legend_content = legend.find('br').parent
@@ -114,14 +114,11 @@ def parse_week(canteen, url, place_class=None):
                 # Icon
                 current_img = icon(child['src'])
 
-    if place_class:
-        document = document.find(id=place_class)
+    for day_data in document.find_all('div', {'id', 'canteen-day'}):
+        day_id = day_data['id'][-1]
+        day_header = document.find(id='canteen_day_nav_' + day_id)
+        date = day_header['rel'][0]
 
-    for day_a in document.find_all('a', rel=day_regex):
-        day_data = document.find(id=day_a['href'].replace('#', ''))
-        if not day_data:
-            continue
-        date = day_a['rel'][0]
         day_table = day_data.table
         if not day_table:
             continue
@@ -203,25 +200,25 @@ def parse_week(canteen, url, place_class=None):
 
 def parse_url(url, place_class=None, today=False):
     canteen = OpenMensaCanteen()
-    parse_week(canteen, url, place_class)
+    parse_week(canteen, url + place_class)
     day = datetime.date.today()
     old = -1
     day += datetime.date.resolution * 7
     if not today:
-        parse_week(canteen, '{}?kw={}'.format(url, day.isocalendar()[1]), place_class)
+        parse_week(canteen, '{}?kw={}'.format(url, day.isocalendar()[1]))
     day += datetime.date.resolution * 7
     while not today and old != canteen.dayCount():
         old = canteen.dayCount()
-        parse_week(canteen, '{}?kw={}'.format(url, day.isocalendar()[1]), place_class)
+        parse_week(canteen, '{}?kw={}'.format(url, day.isocalendar()[1]))
         day += datetime.date.resolution * 7
     return canteen.toXMLFeed()
 
 
 parser = Parser('karlsruhe', handler=parse_url,
-                shared_args=['https://www.sw-ka.de/de/essen/'])
-parser.define('adenauerring', args=['canteen_place_1'])
-parser.define('moltke', args=['canteen_place_2'])
-parser.define('erzbergerstrasse', args=['canteen_place_3'])
-parser.define('schloss-gottesaue', args=['canteen_place_4'])
-parser.define('tiefenbronner-strasse', args=['canteen_place_5'])
-parser.define('holzgartenstrasse', args=['canteen_place_6'])
+                shared_args=['https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/'])
+parser.define('adenauerring', args=['mensa_adenauerring'])
+parser.define('moltke', args=['mensa_moltke'])
+parser.define('erzbergerstrasse', args=['mensa_erzberger'])
+parser.define('schloss-gottesaue', args=['mensa_gottesaue'])
+parser.define('tiefenbronner-strasse', args=['mensa_tiefenbronner'])
+parser.define('holzgartenstrasse', args=['mensa_holzgarten'])
