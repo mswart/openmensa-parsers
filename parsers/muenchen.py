@@ -51,8 +51,8 @@ def parse_url(url, today=False):
 
         # extract legend
         legend = {}
-        legends = document.find('div', 'tx-stwm-speiseplan')
-        additions = legends.find('div', 'c-schedule__filter-body')
+        legends = document.find('div', 'tx-stwm-hochschulgastronomie')
+        additions = legends.find('div', 'c-schedule')
         for table in additions.find_all('div', 'c-schedule__filter-item'):
             for ingredient in table.find('ul').find_all('li'):
                 name = ingredient.find('dt').text.strip()
@@ -81,9 +81,8 @@ def parse_url(url, today=False):
             # are comma-separated lists enclosed in brackets or parentheses
             notes = []
             for note in meal.find_all('span', 'c-schedule__marker'):
-                note_text = note.find('span', 'u-text-sup').text \
-                    .replace('(', '').replace(')', '') \
-                    .replace('[', '').replace(']', '')
+                note_text = note.attrs['data-essen']
+
                 notes += [n for n in note_text.split(',') if n]
 
             # some meals contain the GQB label in their name (instead of in notes)
