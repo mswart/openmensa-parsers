@@ -62,8 +62,7 @@ def parse_url(url, today=False):
 
 parser = Parser('wuerzburg', handler=parse_url,
                 shared_prefix='https://www.studentenwerk-wuerzburg.de/essen-trinken/speiseplaene/')
-#parser.define('austrasse', suffix='austrasse-bamberg.html')
-parser.define('markusplatz', suffix='interimsmensa-markusplatz-bamberg.html')
+parser.define('austrasse', suffix='mensa-austrasse-bamberg.html')
 parser.define('burse', suffix='burse-am-studentenhaus-wuerzburg.html')
 parser.define('feldkirchenstrasse', suffix='feldkirchenstrasse-bamberg.html')
 #parser.define('frankenstube', suffix='frankenstube-wuerzburg.html')
