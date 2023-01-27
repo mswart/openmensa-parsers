@@ -74,11 +74,11 @@ class Canteen(EasySource):
 			for (name, info, prices) in parse_meals(document):
 				# determine category (Vegan, Vegetarisch, Fisch, Fleisch)
 				category = 'Fleisch'
-				if 'Vegane Speisen' in info['misc']:
+				if 'Vegane Speisen (V*)' in info['misc']:
 					category = 'Vegan'
-				elif 'Vegetarische Speisen' in info['misc']:
+				elif 'Vegetarische Speisen (V)' in info['misc']:
 					category = 'Vegetarisch'
-				elif 'Fisch' in info['misc']:
+				elif 'Fisch (F)' in info['misc']:
 					category = 'Fisch'
 
 				additives = 'Zusatzstoffe: ' + ', '.join((legend[item] for item in info['additives'])) if info['additives'] else 'ohne deklarationspflichtige Zusatzstoffe'
