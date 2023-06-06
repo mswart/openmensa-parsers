@@ -41,6 +41,12 @@ def get_food_types(piktogramme):
         food_types += 'MSC Fisch '
     if 'CO2.png' in fs:
         food_types += 'CO2 neutral '
+    if 'Gf.png' in fs:
+        food_types += 'Glutenfrei '
+    if 'MV.png' in fs:
+        food_types += 'mensaVital '
+    if 'B.png' in fs:
+        food_types += 'Biologischer Anbau '
     return food_types.strip()
 
 
@@ -84,13 +90,13 @@ def build_notes_string(title):
         # parse allergic footnotes
         elif r == 'a1':
             food_contains.append('mit Gluten')
-        elif r == 'a2' or r == 'G':
-            food_contains.append('mit Krebstiere')
+        elif r == 'a2' or r == 'Kr':
+            food_contains.append('mit Krebstieren')
         elif r == 'a3' or r == 'Ei':
             food_contains.append('mit Eier')
         elif r == 'a4':
             food_contains.append('mit Fisch')
-        elif r == 'a5':
+        elif r == 'a5' or r == 'Er':
             food_contains.append('mit Erdnüsse')
         elif r == 'a6' or r == 'So':
             food_contains.append('mit Soja')
@@ -108,14 +114,34 @@ def build_notes_string(title):
             food_contains.append('mit Schwefeldioxid/Sulfite')
         elif r == 'a13':
             food_contains.append('mit Lupinen')
-        elif r == 'a14':
+        elif r == 'a14' or r == 'We':
             food_contains.append('mit Weichtiere')
         elif r == 'Wz':
             food_contains.append('mit Weizen')
         elif r == 'Man':
             food_contains.append('mit Mandeln')
+        elif r== 'Ro':
+            food_contains.append('mit Roggen')
+        elif r== 'Ge':
+            food_contains.append('mit Gerste')
+        elif r== 'Hf':
+            food_contains.append('mit Hafer')
+        elif r== 'Hs':
+            food_contains.append('mit Haselnüssen')
+        elif r == 'Wa':
+            food_contains.append('mit Walnüssen')
+        elif r== 'Ka':
+            food_contains.append('mit Cashew-Nüssen')
+        elif r== 'Pe':
+            food_contains.append('mit Pekannüssen')
+        elif r== 'Pa':
+            food_contains.append('mit Paranüssen')
+        elif r== 'Pi':
+            food_contains.append('mit Pistazien')
+        elif r== 'Mac':
+            food_contains.append('mit Macadamia-Nüssen')
         else:
-            food_contains.append('mit undefinierter Chemikalie ' + r)
+            food_contains.append('mit undefiniertem Allergen ' + r)
     return food_contains
 
 
