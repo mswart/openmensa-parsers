@@ -10,7 +10,7 @@ from utils import Parser
 
 refs_regex = re.compile('(\([ ,a-zA-Z0-9]*\))')
 split_refs_regex = re.compile('[\(,]([ a-zA-Z0-9]*)')
-remove_refs_regex = re.compile('\([ ,a-zA-Z0-9]*\)')
+remove_refs_regex = re.compile(' ?\([ ,a-zA-Z0-9]*\)')
 
 
 roles = ('student', 'employee', 'other')
