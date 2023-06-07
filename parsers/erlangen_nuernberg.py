@@ -94,7 +94,7 @@ def build_notes_string(title):
             food_contains.append('mit Krebstieren')
         elif r == 'a3' or r == 'Ei':
             food_contains.append('mit Eier')
-        elif r == 'a4':
+        elif r == 'a4' or r == 'Fi':
             food_contains.append('mit Fisch')
         elif r == 'a5' or r == 'Er':
             food_contains.append('mit Erdnüsse')
