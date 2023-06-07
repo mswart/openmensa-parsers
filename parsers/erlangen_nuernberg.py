@@ -10,7 +10,7 @@ from utils import Parser
 
 refs_regex = re.compile('(\([ ,a-zA-Z0-9]*\))')
 split_refs_regex = re.compile('[\(,]([ a-zA-Z0-9]*)')
-remove_refs_regex = re.compile('\([ ,a-zA-Z0-9]*\)')
+remove_refs_regex = re.compile(' ?\([ ,a-zA-Z0-9]*\)')
 
 
 roles = ('student', 'employee', 'other')
@@ -41,6 +41,12 @@ def get_food_types(piktogramme):
         food_types += 'MSC Fisch '
     if 'CO2.png' in fs:
         food_types += 'CO2 neutral '
+    if 'Gf.png' in fs:
+        food_types += 'Glutenfrei '
+    if 'MV.png' in fs:
+        food_types += 'mensaVital '
+    if 'B.png' in fs:
+        food_types += 'Biologischer Anbau '
     return food_types.strip()
 
 
@@ -84,13 +90,13 @@ def build_notes_string(title):
         # parse allergic footnotes
         elif r == 'a1':
             food_contains.append('mit Gluten')
-        elif r == 'a2' or r == 'G':
-            food_contains.append('mit Krebstiere')
+        elif r == 'a2' or r == 'Kr':
+            food_contains.append('mit Krebstieren')
         elif r == 'a3' or r == 'Ei':
             food_contains.append('mit Eier')
-        elif r == 'a4':
+        elif r == 'a4' or r == 'Fi':
             food_contains.append('mit Fisch')
-        elif r == 'a5':
+        elif r == 'a5' or r == 'Er':
             food_contains.append('mit Erdnüsse')
         elif r == 'a6' or r == 'So':
             food_contains.append('mit Soja')
@@ -108,20 +114,79 @@ def build_notes_string(title):
             food_contains.append('mit Schwefeldioxid/Sulfite')
         elif r == 'a13':
             food_contains.append('mit Lupinen')
-        elif r == 'a14':
+        elif r == 'a14' or r == 'We':
             food_contains.append('mit Weichtiere')
         elif r == 'Wz':
             food_contains.append('mit Weizen')
         elif r == 'Man':
             food_contains.append('mit Mandeln')
+        elif r== 'Ro':
+            food_contains.append('mit Roggen')
+        elif r== 'Ge':
+            food_contains.append('mit Gerste')
+        elif r== 'Hf':
+            food_contains.append('mit Hafer')
+        elif r== 'Hs':
+            food_contains.append('mit Haselnüssen')
+        elif r == 'Wa':
+            food_contains.append('mit Walnüssen')
+        elif r== 'Ka':
+            food_contains.append('mit Cashew-Nüssen')
+        elif r== 'Pe':
+            food_contains.append('mit Pekannüssen')
+        elif r== 'Pa':
+            food_contains.append('mit Paranüssen')
+        elif r== 'Pi':
+            food_contains.append('mit Pistazien')
+        elif r== 'Mac':
+            food_contains.append('mit Macadamia-Nüssen')
         else:
-            food_contains.append('mit undefinierter Chemikalie ' + r)
+            food_contains.append('mit undefiniertem Allergen ' + r)
     return food_contains
 
 
 def get_description(title):
     raw = remove_refs_regex.split(title)
     return ''.join(raw)
+
+def parse_nutrition_facts(meal:ET.Element):
+    from locale import setlocale, LC_NUMERIC
+    setlocale(LC_NUMERIC,'de_DE')
+    nutr = []
+
+    kj =         float(meal.find('kj').text)            if meal.find('kj') is not None            else None
+    kcal =       float(meal.find('kcal').text)          if meal.find('kcal') is not None          else None
+    fat =        float(meal.find('fett').text)          if meal.find('fett') is not None          else None
+    sat_fat_ac = float(meal.find('gesfett').text)       if meal.find('gesfett') is not None       else None
+    ch =         float(meal.find('kh').text)            if meal.find('kh') is not None            else None
+    sugar =      float(meal.find('zucker').text)        if meal.find('zucker') is not None        else None
+    diet_fiber = float(meal.find('ballaststoffe').text) if meal.find('ballaststoffe') is not None else None
+    egg =        float(meal.find('eiweiss').text)       if meal.find('eiweiss') is not None       else None
+    salt =       float(meal.find('salz').text)          if meal.find('salz') is not None          else None
+
+    if kj is not None or kcal is not None:
+        if kj is not None and kcal is not None:
+            nutr.append(f'Energie: {kj:n} kJ ({kcal:n} kCal)')
+        elif kj is not None:
+            nutr.append(f'Energie: {kj:n} kJ')
+        elif kcal is not None:
+            nutr.append(f'Energie: {kcal:n} kCal')
+    if fat is not None:
+        nutr.append(f'Fett: {fat:n} g')
+    if sat_fat_ac is not None:
+        nutr.append(f'{"Davon g" if fat is not None else "G"}esättigte Fettsäuren: {sat_fat_ac:n} g')
+    if ch is not None:
+        nutr.append(f'Kohlenhydrate: {ch:n} g')
+    if sugar is not None:
+        nutr.append(f'{"Davon " if ch is not None else ""}Zucker: {sugar:n} g')
+    if diet_fiber is not None:
+        nutr.append(f'Ballaststoffe: {diet_fiber:n} g')
+    if egg is not None:
+        nutr.append(f'Eiweiß: {egg:n} g')
+    if salt is not None:
+        nutr.append(f'Salz: {salt:n} g')
+    
+    return ' | '.join(nutr) if len(nutr) > 0 else None
 
 
 def parse_url(url, today=False):
@@ -138,6 +203,9 @@ def parse_url(url, today=False):
             title = item.find('title').text
             description = get_description(title)
             notes = build_notes_string(title)
+            nutritions = parse_nutrition_facts(item)
+            if nutritions:
+                notes.append(nutritions)
             plist = [item.find('preis1').text,
                      item.find('preis2').text,
                      item.find('preis3').text]
@@ -152,10 +220,20 @@ parser = Parser('erlangen_nuernberg',
                 shared_prefix= 'https://www.max-manager.de/daten-extern/sw-erlangen-nuernberg/xml/')
 parser.define('er-langemarck', suffix='mensa-lmp.xml')
 parser.define('er-sued', suffix='mensa-sued.xml')
+parser.define('er-koch', suffix='cafeteria-kochstr.xml')
+parser.define('er-suedblick', suffix='cafeteria-suedblick.xml') # currently no data
+parser.define('er-erwinrommel', suffix='wohnanlage-erwin-rommel-str.xml')
+parser.define('er-hartmann', suffix='wohnanlage-hartmannstr.xml') # currently no data
 parser.define('n-schuett', suffix='mensa-inselschuett.xml')
 parser.define('n-regens', suffix='mensa-regensburgerstr.xml')
-parser.define('n-stpaul', suffix='mensateria-st-paul.xml')
+parser.define('n-stpeter', suffix='wohnanlage-st-peter.xml')
+parser.define('n-stpaul', suffix='mensateria-st-paul.xml') # currently no data
 parser.define('n-mensateria', suffix='mensateria-ohm.xml')
+parser.define('n-veilhof', suffix='cafeteria-veilhofstr.xml')
+parser.define('n-hohfeder', suffix='cafeteria-come-in.xml')
+parser.define('n-langegasse', suffix='cafeteria-wiso.xml') # currently no data
+parser.define('n-baerensch', suffix='cafeteria-baerenschanzstr.xml')
+parser.define('n-bing', suffix='cafeteria-bingstr.xml')
 parser.define('eichstaett', suffix='mensa-eichstaett.xml')
 parser.define('ingolstadt', suffix='mensa-ingolstadt.xml')
 parser.define('ansbach', suffix='mensa-ansbach.xml')
