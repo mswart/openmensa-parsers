@@ -126,8 +126,8 @@ def parse_legend(raw_legend):
 def parse_menu_items(items):
     strings = []
     raw_legend = set()  # this will just contain lists of legend keys
-    vegan = true;
-    fleischlos = true;
+    vegan = true
+    fleischlos = true
     for item in items:
         # collect text from current item
         text = item.text.strip()
@@ -151,9 +151,9 @@ def parse_menu_items(items):
         meal_name = meal_name.replace(sub, '')
     #  return result + raw legend
     if not vegan:
-      raw_legend.remove('V');
+        raw_legend.remove('V')
     if not fleischlos:
-      raw_legend.remove('F');
+        raw_legend.remove('F')
     return (meal_name.strip(), raw_legend)
 
 
