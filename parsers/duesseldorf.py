@@ -126,6 +126,8 @@ def parse_legend(raw_legend):
 def parse_menu_items(items):
     strings = []
     raw_legend = set()  # this will just contain lists of legend keys
+    vegan = true
+    fleischlos = true
     for item in items:
         # collect text from current item
         text = item.text.strip()
@@ -139,6 +141,8 @@ def parse_menu_items(items):
                 li = li[1:-1]
                 # split notes in list and append master list
                 li = li.split(',')
+                vegan = vegan and 'V' in li;
+                fleischlos = fleischlos and ('V' in li or 'F' in li);
                 raw_legend.update(li)
             strings.append(text)
     # join all strings and remove duplicate pricing information
@@ -146,6 +150,10 @@ def parse_menu_items(items):
     for sub in remove_strings:
         meal_name = meal_name.replace(sub, '')
     #  return result + raw legend
+    if not vegan:
+        raw_legend.remove('V')
+    if not fleischlos:
+        raw_legend.remove('F')
     return (meal_name.strip(), raw_legend)
 
 
